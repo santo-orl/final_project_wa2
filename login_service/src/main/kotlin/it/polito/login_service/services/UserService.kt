@@ -35,7 +35,7 @@ class UserService(var activationRepository: ActivationRepository,
     lateinit var emailSender: JavaMailSender
 
     //used in /user/register controller
-    fun registerUser(userDTO: UserDTO): UUID {
+    fun registerUser(userDTO: UserDTO, role: Role): UUID {
         val username = userDTO.username
         val password = userDTO.password
         val email = userDTO.email
@@ -66,7 +66,7 @@ class UserService(var activationRepository: ActivationRepository,
         var pswHash = bCryptPasswordEncoder.encode(password)
 
         //create user and save into db with hashed psw
-        var user: User = User(username, pswHash/*password*/, email, "inactive")
+        var user: User = User(username, pswHash/*password*/, email, "inactive",role)
         user = userRepository.save(user)
 
         //create activation and save into db
@@ -79,7 +79,7 @@ class UserService(var activationRepository: ActivationRepository,
 
         //send email containing the activation code
         val message = SimpleMailMessage()
-        message.setFrom("chiocciolapuntopuntopunto@gmail.com")
+        message.setFrom("donotreplyfinalproject@gmail.com")
         message.setTo(user.email)
         message.setSubject("RECEIVING ACTIVATION CODE")
         message.setText("activation code: "+activationCode)

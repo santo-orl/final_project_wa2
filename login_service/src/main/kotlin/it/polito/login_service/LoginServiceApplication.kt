@@ -23,8 +23,8 @@ class LoginServiceApplication {
         val mailSender = JavaMailSenderImpl()
         mailSender.host = "smtp.gmail.com"
         mailSender.port = 587
-        mailSender.username = "chiocciolapuntopuntopunto@gmail.com"
-        mailSender.password = "wa2polito"
+        mailSender.username = "donotreplyfinalproject@gmail.com"
+        mailSender.password = "Wa2polito123."
         val javaMailProperties = mailSender.javaMailProperties
         javaMailProperties["mail.smtp.auth"] = true
         javaMailProperties["mail.smtp.starttls.enable"] = true

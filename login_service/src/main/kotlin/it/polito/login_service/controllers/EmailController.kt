@@ -19,7 +19,7 @@ class EmailController {
     @PostMapping("/mail/send")
     fun sendEmail(@RequestBody mail: EmailService.Email): Unit {
         val message = SimpleMailMessage()
-        message.setFrom("chiocciolapuntopuntopunto@gmail.com")
+        message.setFrom("donotreplyfinalproject@gmail.com")
         message.setTo("email@prova.it")
         message.setSubject("prova")
         message.setText("aaaa")

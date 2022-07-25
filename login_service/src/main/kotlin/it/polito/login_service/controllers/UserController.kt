@@ -33,7 +33,7 @@ class UserController {
 
         var id: UUID
         try {
-            id = userService.registerUser(user)
+            id = userService.registerUser(user,Role.CUSTOMER)
         } catch (e: BadCredentialsException) {
             //username o password non validi
             println("Exception: $e, credentials not valid")
@@ -88,4 +88,20 @@ class UserController {
         //qua ritorno il jwt come responseEntity con sub,iat,exp,role
         return ResponseEntity<String>(ret, HttpStatus.OK)
     }
+
+    @PostMapping("/admin/register", produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun registrationAdmin(@RequestBody user: UserDTO): ResponseEntity<String> {
+
+        var id: UUID
+        try {
+            id = userService.registerUser(user,Role.ADMIN)
+        } catch (e: BadCredentialsException) {
+            //username o password non validi
+            println("Exception: $e, credentials not valid")
+            return ResponseEntity(HttpStatus.BAD_REQUEST)
+        }
+        val email = user.email
+        return ResponseEntity("{\"provisional_id\":\"$id\",\"email\":\"$email\"}", HttpStatus.ACCEPTED)
+    }
+
 }

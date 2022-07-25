@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository
 @Repository
 interface UserRepository: CrudRepository<User,Long> {
 
-    @Query("SELECT u FROM User u WHERE u.username = ?1")
+    @Query("SELECT u FROM User u WHERE u.userrname = ?1")
     fun findUserByUsername(username: String?): List<User>
 
     @Query("SELECT u FROM User u WHERE u.email = ?1")
