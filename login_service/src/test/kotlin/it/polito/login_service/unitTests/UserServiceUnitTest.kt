@@ -1,6 +1,7 @@
 package it.polito.login_service.unitTests
 
 import it.polito.login_service.dtos.UserDTO
+import it.polito.login_service.entities.Role
 import it.polito.login_service.exceptions.BadCredentialsException
 import it.polito.login_service.repositories.ActivationRepository
 import it.polito.login_service.repositories.UserRepository
@@ -42,7 +43,7 @@ class UserServiceUnitTest {
         fun registerUserEmptyUsername() {
             //BadCredentialsException
             Assertions.assertThrows(BadCredentialsException::class.java) {
-                userService.registerUser(UserDTO("", "GiorgiaChiotti1.", "miao@miao.it"))
+                userService.registerUser(UserDTO("", "GiorgiaChiotti1.", "miao@miao.it"), Role.CUSTOMER)
             }
         }
 
@@ -51,7 +52,7 @@ class UserServiceUnitTest {
         fun registerUserEmptyPassword() {
             //BadCredentialsException
             Assertions.assertThrows(BadCredentialsException::class.java) {
-                userService.registerUser(UserDTO("miao", "", "miao@miao.it"))
+                userService.registerUser(UserDTO("miao", "", "miao@miao.it"), Role.CUSTOMER)
             }
         }
 
@@ -60,7 +61,7 @@ class UserServiceUnitTest {
         fun registerUserEmptyEmail() {
             //BadCredentialsException
             Assertions.assertThrows(BadCredentialsException::class.java) {
-                userService.registerUser(UserDTO("miao", "GiorgiaChiotti1.", ""))
+                userService.registerUser(UserDTO("miao", "GiorgiaChiotti1.", ""), Role.CUSTOMER)
             }
         }
 
@@ -69,8 +70,8 @@ class UserServiceUnitTest {
         fun registerUserDuplicateUsername() {
             //BadCredentialsException
             Assertions.assertThrows(BadCredentialsException::class.java) {
-                userService.registerUser(UserDTO("Giovanni", "Password1.", "mo@miao.it"))
-                userService.registerUser(UserDTO("Giovanni", "GiorgiaChiotti1.", "miao@miao.it"))
+                userService.registerUser(UserDTO("Giovanni", "Password1.", "mo@miao.it"), Role.CUSTOMER)
+                userService.registerUser(UserDTO("Giovanni", "GiorgiaChiotti1.", "miao@miao.it"), Role.CUSTOMER)
             }
 
         }
@@ -80,8 +81,8 @@ class UserServiceUnitTest {
         fun registerUserDuplicateEmail() {
             //BadCredentialsException
             Assertions.assertThrows(BadCredentialsException::class.java) {
-                userService.registerUser(UserDTO("Antonio", "GiorgiaChiotti1.", "miao@miao.it"))
-                userService.registerUser(UserDTO("Giovanni", "GiorgiaChiotti1.", "miao@miao.it"))
+                userService.registerUser(UserDTO("Antonio", "GiorgiaChiotti1.", "miao@miao.it"), Role.CUSTOMER)
+                userService.registerUser(UserDTO("Giovanni", "GiorgiaChiotti1.", "miao@miao.it"), Role.CUSTOMER)
             }
         }
 
@@ -90,7 +91,7 @@ class UserServiceUnitTest {
         fun registerUserPasswordWithWhitespace() {
             //BadCredentialsException
             Assertions.assertThrows(BadCredentialsException::class.java) {
-                userService.registerUser(UserDTO("Giovanni", "GiorgiaChiotti1. bau", "miao@miao.it"))
+                userService.registerUser(UserDTO("Giovanni", "GiorgiaChiotti1. bau", "miao@miao.it"), Role.CUSTOMER)
             }
         }
 
@@ -99,7 +100,7 @@ class UserServiceUnitTest {
         fun registerUserShortPassword() {
             //BadCredentialsException
             Assertions.assertThrows(BadCredentialsException::class.java) {
-                userService.registerUser(UserDTO("Giovanni", "miao", "miao@miao.it"))
+                userService.registerUser(UserDTO("Giovanni", "miao", "miao@miao.it"), Role.CUSTOMER)
             }
         }
 
@@ -108,7 +109,7 @@ class UserServiceUnitTest {
         fun registerUserPasswordWithoutDigits() {
             //BadCredentialsException
             Assertions.assertThrows(BadCredentialsException::class.java) {
-                userService.registerUser(UserDTO("Giovanni", "GiorgiaChiotti.", "miao@miao.it"))
+                userService.registerUser(UserDTO("Giovanni", "GiorgiaChiotti.", "miao@miao.it"), Role.CUSTOMER)
             }
         }
 
@@ -117,7 +118,7 @@ class UserServiceUnitTest {
         fun registerUserPasswordWithoutLowercase() {
             //BadCredentialsException
             Assertions.assertThrows(BadCredentialsException::class.java) {
-                userService.registerUser(UserDTO("Giovanni", "GIORGIACHIOTTI1.", "miao@miao.it"))
+                userService.registerUser(UserDTO("Giovanni", "GIORGIACHIOTTI1.", "miao@miao.it"), Role.CUSTOMER)
             }
         }
 
@@ -126,7 +127,7 @@ class UserServiceUnitTest {
         fun registerUserPasswordWithoutUppercase() {
             //BadCredentialsException
             Assertions.assertThrows(BadCredentialsException::class.java) {
-                userService.registerUser(UserDTO("Giovanni", "giorgiachiotti1.", "miao@miao.it"))
+                userService.registerUser(UserDTO("Giovanni", "giorgiachiotti1.", "miao@miao.it"), Role.CUSTOMER)
             }
         }
 
@@ -135,7 +136,7 @@ class UserServiceUnitTest {
         fun registerUserPasswordWithoutAlphanumeric() {
             //BadCredentialsException
             Assertions.assertThrows(BadCredentialsException::class.java) {
-                userService.registerUser(UserDTO("Giovanni", "GiorgiaChiotti1", "miao@miao.it"))
+                userService.registerUser(UserDTO("Giovanni", "GiorgiaChiotti1", "miao@miao.it"), Role.CUSTOMER)
             }
         }
 
@@ -144,7 +145,7 @@ class UserServiceUnitTest {
         fun registerUserInvalidEmail() {
             //BadCredentialsException
             Assertions.assertThrows(BadCredentialsException::class.java) {
-                userService.registerUser(UserDTO("Giovanni", "1GiorgiaChiotti1.", "miao@miao."))
+                userService.registerUser(UserDTO("Giovanni", "1GiorgiaChiotti1.", "miao@miao."), Role.CUSTOMER)
             }
         }
 
@@ -152,7 +153,7 @@ class UserServiceUnitTest {
         //check fun registerUser: a user having the given parameters should be added to the Users table
         fun userAdded() {
             //user should be in db
-            userService.registerUser(UserDTO("Giovanni", "GiorgiaChiotti1.", "miao@miao.it"))
+            userService.registerUser(UserDTO("Giovanni", "GiorgiaChiotti1.", "miao@miao.it"), Role.CUSTOMER)
             var userList = userRepo.findUserByUsername("Giovanni")
             assert(userList.isNotEmpty())
         }
@@ -161,7 +162,7 @@ class UserServiceUnitTest {
         //check fun registerUser: an activation having the given parameters should be added to the Activation table
         fun activationAdded() {
             //activation should be in db
-            userService.registerUser(UserDTO("Giovanni", "GiorgiaChiotti1.", "miao@miao.it"))
+            userService.registerUser(UserDTO("Giovanni", "GiorgiaChiotti1.", "miao@miao.it"), Role.CUSTOMER)
             var activationList = activationRepo.findActivationByUsername("Giovanni")
             assert(activationList.isNotEmpty())
         }

@@ -1,6 +1,7 @@
 package it.polito.login_service.security
 
 
+import it.polito.login_service.entities.Role
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
@@ -22,7 +23,7 @@ class SecurityConfiguration(val bCryptPasswordEncoder: BCryptPasswordEncoder) : 
         http
             .addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter::class.java)
                 .authorizeRequests()
-                .antMatchers("/admin").hasRole("ADMIN")
+                .antMatchers("/admin").hasRole(Role.ADMIN.toString())
                 .antMatchers("/user").permitAll()
                 .and()
                 .csrf().disable()
