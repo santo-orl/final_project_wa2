@@ -94,7 +94,6 @@ class UserController {
 
     @PostMapping("/admin/register", produces = [MediaType.APPLICATION_JSON_VALUE])
     fun registrationAdmin(@RequestBody user: UserDTO): ResponseEntity<String> {
-        println("entrato")
         var id: UUID
         try {
             id = userService.registerUser(user,Role.ADMIN)
