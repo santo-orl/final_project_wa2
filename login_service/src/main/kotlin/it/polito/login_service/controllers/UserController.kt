@@ -83,6 +83,9 @@ class UserController {
         } catch (e: BadLoginException) {
             println("Exception: $e, bad login")
             return ResponseEntity(HttpStatus.UNAUTHORIZED)
+        }catch(e: IndexOutOfBoundsException){
+            println("Exception: $e, invalid credentials")
+            return ResponseEntity(HttpStatus.UNAUTHORIZED)
         }
         val ret = userService.toJWT(username, Date(), role)
         //qua ritorno il jwt come responseEntity con sub,iat,exp,role
@@ -91,7 +94,7 @@ class UserController {
 
     @PostMapping("/admin/register", produces = [MediaType.APPLICATION_JSON_VALUE])
     fun registrationAdmin(@RequestBody user: UserDTO): ResponseEntity<String> {
-
+        println("entrato")
         var id: UUID
         try {
             id = userService.registerUser(user,Role.ADMIN)

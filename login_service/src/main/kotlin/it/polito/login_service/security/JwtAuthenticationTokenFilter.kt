@@ -32,30 +32,35 @@ class JwtAuthenticationTokenFilter : OncePerRequestFilter() {
 
     @Throws(ServletException::class, IOException::class)
     override fun doFilterInternal(request: HttpServletRequest, response: HttpServletResponse, filterChain: FilterChain) {
-        val jwt = parseJwt(request)
-        if (jwt != null && jwtUtils.validateJwt(jwt)) { //se è valido il jwt
-            var username = ""
-            //prendo lo user
-            try{
-                username = jwtUtils.getDetailsJwt(jwt).username
-            }catch(e:Exception){
-                //se viene fatta una richiesta e l'utente non è nella tabella user_details_impl
-                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Error: User not registered");
-                return
-            }
-            val userDetails: UserDetails = userDetailsServiceImpl.loadUserByUsername(username)
-            //lo imposto in authentication in modo da poterlo prendere poi dai controller
-            val authentication = UsernamePasswordAuthenticationToken(
-                    userDetails, null, userDetails.getAuthorities())
-            authentication.details = WebAuthenticationDetailsSource().buildDetails(request)
-            SecurityContextHolder.getContext().authentication = authentication
-            //vado avanti nella catena di filtri
+        if(!shouldApplyFilter(request)){
             filterChain.doFilter(request, response)
-        } else {
-            //se il jwt non è valido ritorno 401
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Error: Unauthorized");
         }
-
+        else {
+            val jwt = parseJwt(request)
+            if (jwt != null && jwtUtils.validateJwt(jwt)) { //se è valido il jwt
+                var username = ""
+                //prendo lo user
+                try {
+                    username = jwtUtils.getDetailsJwt(jwt).username
+                } catch (e: Exception) {
+                    //se viene fatta una richiesta e l'utente non è nella tabella user_details_impl
+                    response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Error: User not registered");
+                    return
+                }
+                val userDetails: UserDetails = userDetailsServiceImpl.loadUserByUsername(username)
+                //lo imposto in authentication in modo da poterlo prendere poi dai controller
+                val authentication = UsernamePasswordAuthenticationToken(
+                    userDetails, null, userDetails.getAuthorities()
+                )
+                authentication.details = WebAuthenticationDetailsSource().buildDetails(request)
+                SecurityContextHolder.getContext().authentication = authentication
+                //vado avanti nella catena di filtri
+                filterChain.doFilter(request, response)
+            } else {
+                //se il jwt non è valido ritorno 401
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Error: unauthorized user");
+            }
+        }
 
     }
 
@@ -65,6 +70,11 @@ class JwtAuthenticationTokenFilter : OncePerRequestFilter() {
         return if (StringUtils.hasText(headerAuth) && headerAuth.startsWith(bearerPrefixString)) {
             headerAuth.substring(bearerPrefixString.length, headerAuth.length)
         } else null
+    }
+
+    //ritorna true solo se il path matcha /admin/**, ovvero l'unico path su cui applicare il filtro
+    private fun shouldApplyFilter(request: HttpServletRequest): Boolean{
+        return request.requestURL.toString().matches(Regex(".+\\/admin\\/.*"))
     }
 
 }
