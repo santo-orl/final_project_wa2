@@ -21,9 +21,9 @@ class LoginServiceApplication {
     @Bean
     fun mailSender(): JavaMailSender {
         val mailSender = JavaMailSenderImpl()
-        mailSender.host = "smtp.gmail.com"
+        mailSender.host = "smtp.libero.it"
         mailSender.port = 587
-        mailSender.username = "donotreplyfinalproject@gmail.com"
+        mailSender.username = "finalprojectwa2@libero.it"
         mailSender.password = "Wa2polito123."
         val javaMailProperties = mailSender.javaMailProperties
         javaMailProperties["mail.smtp.auth"] = true

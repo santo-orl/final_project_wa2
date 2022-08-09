@@ -79,7 +79,7 @@ class UserService(var activationRepository: ActivationRepository,
 
         //send email containing the activation code
         val message = SimpleMailMessage()
-        message.setFrom("donotreplyfinalproject@gmail.com")
+        message.setFrom("finalprojectwa2@libero.it")
         message.setTo(user.email)
         message.setSubject("RECEIVING ACTIVATION CODE")
         message.setText("activation code: "+activationCode)
