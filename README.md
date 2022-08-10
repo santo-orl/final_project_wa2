@@ -1,7 +1,7 @@
 # final_project_wa2
 Web Applications II final project 
 
-## Microservizi
+### Microservizi
 
 L'applicazione è composta da 4 microservizi: 
 * **login_service**: gestisce la registrazione di nuovi utenti (da confermare con email) e il login. Per quest'ultimo ritorna un jwt da allegare nell'header Bearer per le richieste agli altri microservizi.
@@ -9,7 +9,7 @@ L'applicazione è composta da 4 microservizi:
 * **ticket_catalogue_service**: permette di ottenere e modificare la lista di tipi di ticket disponibili, la lista di ordini effettuati ed espone l'endpoint per l'acquisto di ticket
 * **payment_service**: effettua le richieste di pagamento e fornisce la lista di transazioni effettuate
 
-## Elenco dei servizi offerti
+### Elenco dei servizi offerti
 
 * traveler deve registrarsi con email e password
   * login_service POST /user/register
