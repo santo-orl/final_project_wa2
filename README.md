@@ -41,4 +41,6 @@ L'applicazione è composta da 4 microservizi:
 * admin loggato può ottenere il profilo di un traveler dato il suo userID
   * traveler_service GET /admin/traveler/{userID}/profile
 * admin loggato può ottenere la lista di ticket attualmente in possesso dell'utente
-  * traveler_service GET /admin/traveler/{userID}/tickets     
+  * traveler_service GET /admin/traveler/{userID}/tickets
+* traveler loggato può ottenere la lista di ticket attualmente in suo possesso
+  * traveler_service GET /my/tickets  
