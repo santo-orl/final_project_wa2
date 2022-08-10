@@ -9,7 +9,7 @@ L'applicazione è composta da 4 microservizi:
 * **ticket_catalogue_service**: permette di ottenere e modificare la lista di tipi di ticket disponibili, la lista di ordini effettuati ed espone l'endpoint per l'acquisto di ticket
 * **payment_service**: effettua le richieste di pagamento e fornisce la lista di transazioni effettuate
 
-### Elenco dei servizi offerti
+### Servizi richiesti
 
 * traveler deve registrarsi con email e password
   * login_service POST /user/register
@@ -33,3 +33,12 @@ L'applicazione è composta da 4 microservizi:
 * amministratore loggato può eliminare tipi di travel cards
 * amministratore loggato può accedere a report di acquisti relativi a singoli utenti o totali relativi a periodi di tempo selezionabili
 * amministratore loggato può accedere a report di transiti relativi a singoli utenti o totali relativi a periodi di tempo selezionabili
+
+### Servizi aggiuntivi
+
+* admin loggato può ottenere la lista di traveler
+  * traveler_service GET /admin/travelers
+* admin loggato può ottenere il profilo di un traveler dato il suo userID
+  * traveler_service GET /admin/traveler/{userID}/profile
+* admin loggato può ottenere la lista di ticket attualmente in possesso dell'utente
+  * traveler_service GET /admin/traveler/{userID}/tickets     
