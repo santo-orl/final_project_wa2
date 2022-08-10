@@ -10,36 +10,24 @@ L'applicazione è composta da 4 microservizi:
 Elenco dei servizi offerti:
 
 * traveler deve registrarsi con email e password
-  login_service POST /user/register
-
+  * login_service POST /user/register
+  * login_service POST /user/login
 * traveler loggato deve gestire il suo profilo
-
+  * traveler_service GET /my/profile
+  * traveler_service POST /my/profile
 * traveler loggato deve comprare tickets
-
 * traveler loggato deve comprare travel cards
-
 * traveler loggato deve consultare la lista degli acquisti
-
 * traveler loggato deve scaricare singoli documenti di viaggio sottoforma di QR che rappresenta un JWS
-
 * QR readers devono autenticarsi come sistemi embedded e quindi ottenere il segreto per validare il JWS
-
 * QR readers devono validare il JWS e dare info su transit count
-
 * amministratore loggato deve registrare altri amministratori
-
+  * login_service POST /admin/register
 * amministratore loggato può creare tipi di tickets
-
 * amministratore loggato può modificare proprietà dei tipi di tickets (scritte su traccia)
-
 * amministratore loggato può eliminare tipi di tickets
-
 * amministratore loggato può creare tipi di travel cards
-
 * amministratore loggato può modificare proprietà dei tipi di travel cards (scritte su traccia)
-
 * amministratore loggato può eliminare tipi di travel cards
-
 * amministratore loggato può accedere a report di acquisti relativi a singoli utenti o totali relativi a periodi di tempo selezionabili
-
 * amministratore loggato può accedere a report di transiti relativi a singoli utenti o totali relativi a periodi di tempo selezionabili
