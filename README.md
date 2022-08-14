@@ -18,16 +18,21 @@ L'applicazione è composta da 4 microservizi:
   * traveler_service GET /my/profile
   * traveler_service POST /my/profile
 * traveler loggato deve comprare tickets
+  * ticket_catalogue_service POST /shop/{ticket-id}
 * traveler loggato deve comprare travel cards
 * traveler loggato deve consultare la lista degli acquisti
+  * ticket_catalogue_service GET /orders
 * traveler loggato deve scaricare singoli documenti di viaggio sottoforma di QR che rappresenta un JWS
 * QR readers devono autenticarsi come sistemi embedded e quindi ottenere il segreto per validare il JWS
 * QR readers devono validare il JWS e dare info su transit count
 * amministratore loggato deve registrare altri amministratori
   * login_service POST /admin/register
 * amministratore loggato può creare tipi di tickets
+  * ticket_catalogue_service POST /admin/tickets
 * amministratore loggato può modificare proprietà dei tipi di tickets (scritte su traccia)
+  * ticket_catalogue_service PUT /admin/tickets/{ticket-id}
 * amministratore loggato può eliminare tipi di tickets
+  * ticket_catalogue_service DELETE /admin/tickets/{ticket-id}
 * amministratore loggato può creare tipi di travel cards
 * amministratore loggato può modificare proprietà dei tipi di travel cards (scritte su traccia)
 * amministratore loggato può eliminare tipi di travel cards
@@ -43,4 +48,12 @@ L'applicazione è composta da 4 microservizi:
 * admin loggato può ottenere la lista di ticket attualmente in possesso dell'utente
   * traveler_service GET /admin/traveler/{userID}/tickets
 * traveler loggato può ottenere la lista di ticket attualmente in suo possesso
-  * traveler_service GET /my/tickets  
+  * traveler_service GET /my/tickets 
+* traveler loggato può ottenere il catalogo dei tipi di ticket disponibili
+  * ticket_catalogue_service GET /tickets 
+* traveler loggato può consultare un suo acquisto nello specifico
+  * ticket_catalogue_service GET /orders/{order-id}
+* amministratore loggato può consultare l'elenco degli ordini di tutti gli utenti
+  * ticket_catalogue_service GET /admin/orders
+* amministratore loggato può consultare l'elenco degli ordini di uno specifico utente
+  * ticket_catalogue_service GET /admin/orders/{user-id}
