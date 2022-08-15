@@ -112,7 +112,7 @@ class UserDetailsController {
     }
 
     //GET /admin/traveler/{userID}/tickets  only available for ADMIN
-    @GetMapping("/admin/traveler/{userID}/tickets", produces = [MediaType.APPLICATION_JSON_VALUE])
+        @GetMapping("/admin/traveler/{userID}/tickets", produces = [MediaType.APPLICATION_JSON_VALUE])
     fun getUserTickets(@PathVariable userID: Long): ResponseEntity<List<TicketPurchasedDTO>> {
 
         var tickets: List<TicketPurchasedDTO> = ticketPurchasedService.getAllTickets(userID)
