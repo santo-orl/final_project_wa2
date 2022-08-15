@@ -1,10 +1,10 @@
-package it.polito.lab5.lab5_ticketcatalogueservice
+package it.polito.payment_service
 
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.context.SpringBootTest
 
 @SpringBootTest
-class Lab5TicketCatalogueServiceApplicationTests {
+class PaymentServiceApplicationTests {
 
     @Test
     fun contextLoads() {
