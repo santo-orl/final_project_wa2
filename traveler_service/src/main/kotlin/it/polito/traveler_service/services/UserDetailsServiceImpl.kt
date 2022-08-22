@@ -2,6 +2,7 @@ package it.polito.traveler_service.services
 
 import it.polito.traveler_service.dtos.UserDetailsDTO
 import it.polito.traveler_service.dtos.toDTO
+import it.polito.traveler_service.entities.UserDetailsImpl
 import it.polito.traveler_service.repositories.UserDetailsRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.core.userdetails.UserDetails
@@ -25,15 +26,28 @@ class UserDetailsServiceImpl : UserDetailsService {
         return ret
     }
 
-    fun updateTraveler(username: String, userDTO: UserDetailsDTO) {
-        val userDetails = userDetailsRepository.findUserDetailsByUserr(username).get(0)
-        //traveler dovrebbe essere managed, quindi i cambiamenti che faccio potranno passare al db
+    fun insertTraveler(username: String, userDTO: UserDetailsDTO) {
+        //TODO check correttezza parametri
+        var userDetails = UserDetailsImpl()
         userDetails.name = userDTO.name
         userDetails.address = userDTO.address
         userDetails.dateOfBirth = userDTO.dateOfBirth
         userDetails.telephoneNumber = userDTO.telephoneNumber
-        println(userDetails)
         userDetailsRepository.save(userDetails)
+    }
+
+    fun updateTraveler(username: String, userDTO: UserDetailsDTO) {
+        //TODO check correttezza parametri
+        var userDetails = userDetailsRepository.findUserDetailsByUserr(username).get(0)
+        if(userDetails==null)
+            insertTraveler(username, userDTO)
+        else {
+            userDetails.name = userDTO.name
+            userDetails.address = userDTO.address
+            userDetails.dateOfBirth = userDTO.dateOfBirth
+            userDetails.telephoneNumber = userDTO.telephoneNumber
+            userDetailsRepository.save(userDetails)
+        }
     }
 
 

@@ -34,14 +34,22 @@ class UserDetailsController {
         return ResponseEntity(userDetails, HttpStatus.OK)
     }
 
-    @PutMapping("/my/profile")
-    fun updateTravelerInfo(@RequestHeader("authorization") jwt: String, @RequestBody traveler: UserDetailsDTO): ResponseEntity<String> {
+    @PostMapping("/my/profile")
+    fun insertTravelerInfo(@RequestHeader("authorization") jwt: String, @RequestBody traveler: UserDetailsDTO): ResponseEntity<String> {
         //lo username va ottenuto dall'utente attualmente loggato
-        //finché non finiamo la parte di security possiamo usarne uno di prova
         val principal = SecurityContextHolder.getContext().authentication.principal;
         principal as UserDetailsImpl
         val username = principal.userr
+        userDetailsServiceImpl.insertTraveler(username,traveler)
+        return ResponseEntity(HttpStatus.OK)
+    }
 
+    @PutMapping("/my/profile")
+    fun updateTravelerInfo(@RequestHeader("authorization") jwt: String, @RequestBody traveler: UserDetailsDTO): ResponseEntity<String> {
+        //lo username va ottenuto dall'utente attualmente loggato
+        val principal = SecurityContextHolder.getContext().authentication.principal;
+        principal as UserDetailsImpl
+        val username = principal.userr
         userDetailsServiceImpl.updateTraveler(username,traveler)
         return ResponseEntity(HttpStatus.OK)
     }
