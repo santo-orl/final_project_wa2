@@ -8,6 +8,7 @@ import javax.persistence.GenerationType
 import javax.persistence.Id
 import javax.persistence.OneToMany
 import org.springframework.security.core.userdetails.UserDetails
+import java.time.LocalDateTime
 
 @Entity
 class UserDetailsImpl : UserDetails {
@@ -24,6 +25,8 @@ class UserDetailsImpl : UserDetails {
 
     @OneToMany(mappedBy = "userDetails")
     var ticketList: List<TicketPurchased>? = null
+    @OneToMany(mappedBy = "userDetails")
+    var transitList: List<Transit>? = null
 
     //specifico quali siano le authorities dell'userr
     override fun getAuthorities(): MutableCollection<out GrantedAuthority> {

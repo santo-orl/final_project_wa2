@@ -2,10 +2,12 @@ package it.polito.traveler_service.controllers
 
 import it.polito.traveler_service.dtos.CreateTicketsDTO
 import it.polito.traveler_service.dtos.TicketPurchasedDTO
+import it.polito.traveler_service.dtos.TransitDTO
 import it.polito.traveler_service.dtos.UserDetailsDTO
 import it.polito.traveler_service.entities.UserDetailsImpl
 import it.polito.traveler_service.exceptions.UnauthorizedTicketAccessException
 import it.polito.traveler_service.services.TicketPurchasedService
+import it.polito.traveler_service.services.TransitService
 import it.polito.traveler_service.services.UserDetailsServiceImpl
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
@@ -25,6 +27,9 @@ class UserDetailsController {
 
     @Autowired
     lateinit var ticketPurchasedService: TicketPurchasedService
+
+    @Autowired
+    lateinit var transitService: TransitService
 
     @GetMapping("/my/profile")
     fun getUserDetailsInfo(@RequestHeader("authorization") jwt: String): ResponseEntity<UserDetailsDTO> {
@@ -149,6 +154,18 @@ class UserDetailsController {
             return ResponseEntity(HttpStatus.NOT_FOUND)
         }
         return ResponseEntity(tickets, HttpStatus.OK)
+    }
+
+    @GetMapping("/admin/traveler/transits/{username}", produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun getUserTransitsInRange(@PathVariable username: String, @RequestParam("from") from: String,@RequestParam("to") to: String): ResponseEntity<List<TransitDTO>> {
+        var transits = userDetailsServiceImpl.getUserTransits(username,from,to)
+        return ResponseEntity(transits, HttpStatus.OK)
+    }
+
+    @GetMapping("/admin/transits", produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun getTransitsInRange(@RequestParam("from") from: String,@RequestParam("to") to: String): ResponseEntity<List<TransitDTO>> {
+        var transits = transitService.getInRange(from,to)
+        return ResponseEntity(transits, HttpStatus.OK)
     }
 
 }

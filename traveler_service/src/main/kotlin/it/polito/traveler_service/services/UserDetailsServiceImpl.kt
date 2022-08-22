@@ -1,5 +1,6 @@
 package it.polito.traveler_service.services
 
+import it.polito.traveler_service.dtos.TransitDTO
 import it.polito.traveler_service.dtos.UserDetailsDTO
 import it.polito.traveler_service.dtos.toDTO
 import it.polito.traveler_service.entities.UserDetailsImpl
@@ -8,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.stereotype.Service
+import java.time.LocalDateTime
 
 @Service
 class UserDetailsServiceImpl : UserDetailsService {
@@ -62,6 +64,14 @@ class UserDetailsServiceImpl : UserDetailsService {
 
     fun getUserById(uId : Long): UserDetailsDTO{
         return userDetailsRepository.findById(uId).get().toDTO()
+    }
+
+    fun getUserTransits(username: String,from: String, to: String): List<TransitDTO>{
+        val user = userDetailsRepository.findUserDetailsByUserr(username)
+        user as UserDetailsImpl
+        //TODO eccezione se user not found
+        return user.transitList!!.filter { transit -> transit.date.isAfter(LocalDateTime.parse(from)) && transit.date.isBefore(LocalDateTime.parse(to)) }
+            .map{transit -> transit.toDTO()}
     }
 
 }
