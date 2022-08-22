@@ -33,6 +33,7 @@ class UserDetailsServiceImpl : UserDetailsService {
         userDetails.address = userDTO.address
         userDetails.dateOfBirth = userDTO.dateOfBirth
         userDetails.telephoneNumber = userDTO.telephoneNumber
+        userDetails.userr = username
         userDetailsRepository.save(userDetails)
     }
 

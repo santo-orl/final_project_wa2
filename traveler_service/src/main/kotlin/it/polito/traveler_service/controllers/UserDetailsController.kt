@@ -31,12 +31,14 @@ class UserDetailsController {
         //ora posso usarlo per ciò che mi serve
         val username = principal.userr
         val userDetails: UserDetailsDTO? = userDetailsServiceImpl.getUserDetails(username)
+        println(principal.role)
         return ResponseEntity(userDetails, HttpStatus.OK)
     }
 
     @PostMapping("/my/profile")
     fun insertTravelerInfo(@RequestHeader("authorization") jwt: String, @RequestBody traveler: UserDetailsDTO): ResponseEntity<String> {
         //lo username va ottenuto dall'utente attualmente loggato
+        println("2")
         val principal = SecurityContextHolder.getContext().authentication.principal;
         principal as UserDetailsImpl
         val username = principal.userr

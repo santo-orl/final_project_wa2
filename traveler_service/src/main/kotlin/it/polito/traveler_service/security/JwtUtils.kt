@@ -66,4 +66,26 @@ class JwtUtils {
         return u.toDTO()
     }
 
+    fun getRole(authToken: String): String {
+        //jws sicuramente valido perché è passato da validateJwt
+        val key = Keys.hmacShaKeyFor(Encoders.BASE64.encode(jwtValidationKey.toByteArray()).toByteArray())
+        var jws = Jwts
+            .parserBuilder()
+            .setSigningKey(key)
+            .build()
+            .parseClaimsJws(authToken)
+        return jws.body["role"].toString()
+    }
+
+    fun getUsername(authToken: String): String {
+        //jws sicuramente valido perché è passato da validateJwt
+        val key = Keys.hmacShaKeyFor(Encoders.BASE64.encode(jwtValidationKey.toByteArray()).toByteArray())
+        var jws = Jwts
+            .parserBuilder()
+            .setSigningKey(key)
+            .build()
+            .parseClaimsJws(authToken)
+        return jws.body["sub"].toString()
+    }
+
 }

@@ -1,5 +1,6 @@
 package it.polito.traveler_service.security
 
+import it.polito.traveler_service.entities.UserDetailsImpl
 import it.polito.traveler_service.services.UserDetailsServiceImpl
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
@@ -31,23 +32,44 @@ class JwtAuthenticationTokenFilter : OncePerRequestFilter() {
     override fun doFilterInternal(request: HttpServletRequest, response: HttpServletResponse, filterChain: FilterChain) {
         val jwt = parseJwt(request)
         if (jwt != null && jwtUtils.validateJwt(jwt)) { //se è valido il jwt
-            var username = ""
-            //prendo lo user
-            try{
-                username = jwtUtils.getDetailsJwt(jwt).userr
-            }catch(e:Exception){
-                //se viene fatta una richiesta e l'utente non è nella tabella user_details_impl
-                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Error: User not registered");
-                return
+            //se la richiesta è una post a /my/profile l'utente sta aggiungendo per la prima volta i dati
+            //quindi basta che sia valido il jwt per impostare username, per il resto può passare
+            if(request.requestURL.toString().matches(Regex(".+\\/my\\/profile\\/?"))
+                && request.method.equals("POST")){
+                var userDetails = UserDetailsImpl()
+                userDetails.role = jwtUtils.getRole(jwt)
+                userDetails.userr = jwtUtils.getUsername(jwt)
+                //lo imposto in authentication in modo da poterlo prendere poi dai controller
+                val authentication = UsernamePasswordAuthenticationToken(
+                    userDetails, null, userDetails.getAuthorities()
+                )
+                authentication.details = WebAuthenticationDetailsSource().buildDetails(request)
+                SecurityContextHolder.getContext().authentication = authentication
+                //vado avanti nella catena di filtri
+                filterChain.doFilter(request, response)
             }
-            val userDetails: UserDetails = userDetailsServiceImpl.loadUserByUsername(username)
-            //lo imposto in authentication in modo da poterlo prendere poi dai controller
-            val authentication = UsernamePasswordAuthenticationToken(
-                    userDetails, null, userDetails.getAuthorities())
-            authentication.details = WebAuthenticationDetailsSource().buildDetails(request)
-            SecurityContextHolder.getContext().authentication = authentication
-            //vado avanti nella catena di filtri
-            filterChain.doFilter(request, response)
+            else {
+                var username = ""
+                //prendo lo user
+                try {
+                    username = jwtUtils.getDetailsJwt(jwt).userr
+                } catch (e: Exception) {
+                    //se viene fatta una richiesta e l'utente non è nella tabella user_details_impl
+                    response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Error: User not registered");
+                    return
+                }
+                val userDetails: UserDetails = userDetailsServiceImpl.loadUserByUsername(username)
+                userDetails as UserDetailsImpl
+                userDetails.role = jwtUtils.getRole(jwt)
+                //lo imposto in authentication in modo da poterlo prendere poi dai controller
+                val authentication = UsernamePasswordAuthenticationToken(
+                    userDetails, null, userDetails.getAuthorities()
+                )
+                authentication.details = WebAuthenticationDetailsSource().buildDetails(request)
+                SecurityContextHolder.getContext().authentication = authentication
+                //vado avanti nella catena di filtri
+                filterChain.doFilter(request, response)
+            }
         } else {
             //se il jwt non è valido ritorno 401
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Error: Unauthorized");
