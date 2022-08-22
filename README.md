@@ -36,7 +36,10 @@ L'applicazione è composta da 4 microservizi:
 * amministratore loggato può creare tipi di travel cards
 * amministratore loggato può modificare proprietà dei tipi di travel cards (scritte su traccia)
 * amministratore loggato può eliminare tipi di travel cards
-* amministratore loggato può accedere a report di acquisti relativi a singoli utenti o totali relativi a periodi di tempo selezionabili
+* amministratore loggato può accedere a report di acquisti relativi a singoli utenti relativi a periodi di tempo selezionabili
+  * payment_service GET /admin/transactions/user/range/?from=xxx&to=yyy
+* amministratore loggato può accedere a report di acquisti totali relativi a periodi di tempo selezionabili
+  * payment_service GET /admin/transactions/range/?from=xxx&to=yyy
 * amministratore loggato può accedere a report di transiti relativi a singoli utenti o totali relativi a periodi di tempo selezionabili
 
 ### Servizi aggiuntivi
