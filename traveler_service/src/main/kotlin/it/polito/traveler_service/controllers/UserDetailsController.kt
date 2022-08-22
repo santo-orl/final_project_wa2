@@ -4,6 +4,7 @@ import it.polito.traveler_service.dtos.CreateTicketsDTO
 import it.polito.traveler_service.dtos.TicketPurchasedDTO
 import it.polito.traveler_service.dtos.UserDetailsDTO
 import it.polito.traveler_service.entities.UserDetailsImpl
+import it.polito.traveler_service.exceptions.UnauthorizedTicketAccessException
 import it.polito.traveler_service.services.TicketPurchasedService
 import it.polito.traveler_service.services.UserDetailsServiceImpl
 import org.springframework.beans.factory.annotation.Autowired
@@ -12,6 +13,9 @@ import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.client.HttpClientErrorException.Unauthorized
+import java.util.*
+import kotlin.collections.ArrayList
 
 @RestController
 class UserDetailsController {
@@ -77,6 +81,28 @@ class UserDetailsController {
 
     }
 
+    @GetMapping("/my/tickets/qr/{ticketId}", produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun getTicketAsQR(@PathVariable ticketId: Long): ResponseEntity<String> {
+        val ret: String
+        var ticket: TicketPurchasedDTO
+        try {
+            val principal = SecurityContextHolder.getContext().authentication.principal;
+            principal as UserDetailsImpl
+            //prendo il ticket, al suo interno ha già il jws
+            try {
+                ticket = ticketPurchasedService.getTicketById(ticketId,principal.userr)
+            }catch(e: UnauthorizedTicketAccessException){
+                //se un utente richiede il QR di un biglietto non suo
+                return ResponseEntity(HttpStatus.UNAUTHORIZED)
+            }
+            //ritorno il jws codificato in base64
+            ret = Base64.getEncoder().encodeToString(ticket.jws.toByteArray())
+        } catch (e: Exception) {
+            return ResponseEntity(HttpStatus.NOT_FOUND)
+        }
+        return ResponseEntity(ret,HttpStatus.OK)
+    }
+
     //POST /my/tickets
     @PostMapping("/my/tickets")        //genera i ticket
     fun generateTickets(@RequestBody createTickets: CreateTicketsDTO): ResponseEntity<List<TicketPurchasedDTO>> {
@@ -99,11 +125,8 @@ class UserDetailsController {
     //GET /admin/travelers  only available for ADMIN
     @GetMapping("/admin/travelers", produces = [MediaType.APPLICATION_JSON_VALUE]) //returns a json list
     fun getAllTravelers(): ResponseEntity<List<String>> {
-
         var travelers: List<String> = userDetailsServiceImpl.getTravelers()
-
         return ResponseEntity(travelers, HttpStatus.OK)
-
     }
 
     //GET /admin/traveler/{userID}/profile only available for ADMIN
@@ -113,26 +136,19 @@ class UserDetailsController {
         try {
             usr = userDetailsServiceImpl.getUserById(userID)
         } catch (e: Exception) {
-
             return ResponseEntity(HttpStatus.NOT_FOUND)
         }
-
         return ResponseEntity(usr, HttpStatus.OK)
-
     }
 
     //GET /admin/traveler/{userID}/tickets  only available for ADMIN
         @GetMapping("/admin/traveler/{userID}/tickets", produces = [MediaType.APPLICATION_JSON_VALUE])
     fun getUserTickets(@PathVariable userID: Long): ResponseEntity<List<TicketPurchasedDTO>> {
-
         var tickets: List<TicketPurchasedDTO> = ticketPurchasedService.getAllTickets(userID)
-
         if(tickets.isEmpty()){
             return ResponseEntity(HttpStatus.NOT_FOUND)
         }
-
         return ResponseEntity(tickets, HttpStatus.OK)
-
     }
 
 }

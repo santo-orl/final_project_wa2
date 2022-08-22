@@ -3,6 +3,7 @@ package it.polito.traveler_service.services
 import it.polito.traveler_service.dtos.TicketPurchasedDTO
 import it.polito.traveler_service.dtos.toDTO
 import it.polito.traveler_service.entities.TicketPurchased
+import it.polito.traveler_service.exceptions.UnauthorizedTicketAccessException
 import it.polito.traveler_service.repositories.TicketPurchasedRepository
 import it.polito.traveler_service.repositories.UserDetailsRepository
 import org.springframework.beans.factory.annotation.Autowired
@@ -43,6 +44,13 @@ class TicketPurchasedService {
         val ticket = ticketPurchasedRepository.findById(sub).get()
         if(ticket!=null)
             ticketPurchasedRepository.delete(ticket)
+    }
+
+    fun getTicketById(ticketId: Long, username: String): TicketPurchasedDTO{
+        val ticket = ticketPurchasedRepository.findById(ticketId).get()
+        if(!ticket.userDetails?.userr.equals(username))
+            throw UnauthorizedTicketAccessException("This ticket doesn't belong to the user requesting it")
+        return ticket.toDTO()
     }
 
 }
