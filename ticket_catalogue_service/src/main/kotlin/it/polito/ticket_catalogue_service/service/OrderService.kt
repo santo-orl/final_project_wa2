@@ -8,6 +8,7 @@ import it.polito.ticket_catalogue_service.exceptions.UserNotFoundException
 import it.polito.ticket_catalogue_service.repository.OrderRepository
 import it.polito.ticket_catalogue_service.repository.TicketCatRepository
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
@@ -16,6 +17,7 @@ import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.awaitBody
+import java.time.LocalDateTime
 
 @Service
 class OrderService {
@@ -44,11 +46,9 @@ class OrderService {
     }
 
     suspend fun getUserOrders(userId: String): Flow<OrderDTO> {
-        var ret = orderRepository.findByUserId(userId).map { order -> order.toDTO() }
-        if (ret == null) throw UserNotFoundException("user not found")
-        return ret
+        if(orderRepository.findByUserId(userId) == null) throw UserNotFoundException("user not found")
+        return orderRepository.findByUserId(userId).map { order -> order.toDTO() }
     }
-
 
     @KafkaListener(topics = ["PaymentResponseTopic"], groupId = "group-id")
     suspend fun updateOrderByPaymentOutcome(paymentOutcome: String) {

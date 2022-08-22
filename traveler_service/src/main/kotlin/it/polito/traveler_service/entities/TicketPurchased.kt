@@ -13,11 +13,9 @@ class TicketPurchased {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     var sub: Long = 0L
-
     var iat: LocalDateTime = LocalDateTime.now()
     var exp: LocalDateTime = LocalDateTime.now()
     var zid: String = ""
-
     //campi del lab 5
     var validFrom: LocalDateTime = LocalDateTime.now()
     var type: String = ""

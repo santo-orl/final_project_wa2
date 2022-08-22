@@ -27,7 +27,7 @@ class WebSecurityConfig {
             .formLogin().disable()
             .httpBasic().disable()
             .authorizeExchange()
-            .pathMatchers(HttpMethod.GET,"/admin/transactions").hasAuthority("ADMIN")
+            .pathMatchers(HttpMethod.GET,"/admin/**").hasAuthority("ADMIN")
             .pathMatchers(HttpMethod.GET,"/transactions").hasAnyAuthority("ADMIN","CUSTOMER")
 
             .anyExchange().permitAll()
