@@ -38,4 +38,11 @@ class TicketPurchasedService {
         ticketPurchasedRepository.save(ticket)
         return ticket.toDTO()
     }
+
+    fun removeTicket(sub: Long){
+        val ticket = ticketPurchasedRepository.findById(sub).get()
+        if(ticket!=null)
+            ticketPurchasedRepository.delete(ticket)
+    }
+
 }
