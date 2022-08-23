@@ -23,6 +23,7 @@ L'applicazione è composta da 4 microservizi:
 * traveler loggato deve consultare la lista degli acquisti
   * ticket_catalogue_service GET /orders
 * traveler loggato deve scaricare singoli documenti di viaggio sottoforma di QR che rappresenta un JWS
+  * traveler_service GET /my/tickets/qr/{ticketId}
 * QR readers devono autenticarsi come sistemi embedded e quindi ottenere il segreto per validare il JWS
 * QR readers devono validare il JWS e dare info su transit count
 * amministratore loggato deve registrare altri amministratori
@@ -40,7 +41,10 @@ L'applicazione è composta da 4 microservizi:
   * payment_service GET /admin/transactions/user/range/?from=xxx&to=yyy
 * amministratore loggato può accedere a report di acquisti totali relativi a periodi di tempo selezionabili
   * payment_service GET /admin/transactions/range/?from=xxx&to=yyy
-* amministratore loggato può accedere a report di transiti relativi a singoli utenti o totali relativi a periodi di tempo selezionabili
+* amministratore loggato può accedere a report di transiti relativi a singoli utenti relativi a periodi di tempo selezionabili
+  * traveler_service GET /admin/traveler/transits/{username}?from=xxx&to=yyy
+* amministratore loggato può accedere a report di transiti totali relativi a periodi di tempo selezionabili
+  * traveler_service GET /admin/transits/{username}?from=xxx&to=yyy
 
 ### Servizi aggiuntivi
 
