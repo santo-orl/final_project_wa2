@@ -5,7 +5,7 @@ Web Applications II final project
 
 L'applicazione è composta da 4 microservizi: 
 * **login_service**: gestisce la registrazione di nuovi utenti (da confermare con email) e il login. Per quest'ultimo ritorna un jwt da allegare nell'header Bearer per le richieste agli altri microservizi.
-* **traveler_service**: permette di ottenere e modificare info sui traveler, di ottenere info sui ticket e di aggiungere ticket alla lista di quelli comprati da un certo traveler
+* **traveler_service**: permette di ottenere e modificare info sui traveler, di ottenere info sui ticket e di aggiungere ticket alla lista di quelli comprati da un certo traveler. Inoltre contiene i path per le cose dei qr reader
 * **ticket_catalogue_service**: permette di ottenere e modificare la lista di tipi di ticket disponibili, la lista di ordini effettuati ed espone l'endpoint per l'acquisto di ticket
 * **payment_service**: effettua le richieste di pagamento e fornisce la lista di transazioni effettuate
 
@@ -24,8 +24,12 @@ L'applicazione è composta da 4 microservizi:
   * ticket_catalogue_service GET /orders
 * traveler loggato deve scaricare singoli documenti di viaggio sottoforma di QR che rappresenta un JWS
   * traveler_service GET /my/tickets/qr/{ticketId}
-* QR readers devono autenticarsi come sistemi embedded e quindi ottenere il segreto per validare il JWS
+* QR readers devono autenticarsi come sistemi embedded
+  * login_service POST /user/login
+* QR readers devono ottenere il segreto per validare il JWS
+  * traveler_service GET /qr/validation
 * QR readers devono validare il JWS e dare info su transit count
+  * traveler_service POST /qr/ticket-validated
 * amministratore loggato deve registrare altri amministratori
   * login_service POST /admin/register
 * amministratore loggato può creare tipi di tickets
