@@ -26,9 +26,9 @@ L'applicazione è composta da 4 microservizi:
   * traveler_service GET /my/tickets/qr/{ticketId}
 * QR readers devono autenticarsi come sistemi embedded
   * login_service POST /user/login
-* QR readers devono ottenere il segreto per validare il JWS
+* QR readers loggati devono ottenere il segreto per validare il JWS
   * traveler_service GET /qr/validation
-* QR readers devono validare il JWS e dare info su transit count
+* QR readers loggati devono validare il JWS e dare info su transit count
   * traveler_service POST /qr/ticket-validated
 * amministratore loggato deve registrare altri amministratori
   * login_service POST /admin/register
