@@ -7,6 +7,7 @@ import it.polito.login_service.entities.Role
 import it.polito.login_service.exceptions.*
 import it.polito.login_service.services.UserService
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
@@ -21,9 +22,9 @@ import java.util.*
 @RestController
 
 class UserController {
+
     @Autowired
     lateinit var userService: UserService
-
 
     @GetMapping("/hello")
     fun hello() = "hello"
@@ -105,5 +106,6 @@ class UserController {
         val email = user.email
         return ResponseEntity("{\"provisional_id\":\"$id\",\"email\":\"$email\"}", HttpStatus.ACCEPTED)
     }
+
 
 }

@@ -75,13 +75,14 @@ class User: EntityBase<Long>,UserDetails{//class
     }
 
     fun roleToString():String{
-        if(role == Role.CUSTOMER){ return "CUSTOMER" }
-        else{ return "ADMIN" }
+        if(role == Role.CUSTOMER) return "CUSTOMER"
+        else if(role == Role.QR_READER) return "QR_READER"
+        else return "ADMIN"
     }
 
 }
 
 //enum class
 enum class Role{
-    CUSTOMER, ADMIN
+    CUSTOMER, ADMIN, QR_READER
 }

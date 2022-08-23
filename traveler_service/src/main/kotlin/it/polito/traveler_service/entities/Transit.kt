@@ -14,4 +14,9 @@ class Transit {
     @JoinColumn(name = "userDetails")
     var userDetails: UserDetailsImpl? = null
 
+    constructor(date: LocalDateTime, userDetails: UserDetailsImpl){
+        this.date = date
+        this.userDetails = userDetails
+    }
+
 }

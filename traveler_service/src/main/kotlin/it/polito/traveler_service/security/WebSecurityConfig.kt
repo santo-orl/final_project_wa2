@@ -26,6 +26,7 @@ class WebSecurityConfig(val bCryptPasswordEncoder: BCryptPasswordEncoder, userDe
                 .authorizeRequests()
                 .antMatchers("/admin/**").hasAuthority("ADMIN")
                 .antMatchers("/my/**").hasAnyAuthority("CUSTOMER","ADMIN")
+                .antMatchers("/qr/**").hasAuthority("QR_READER")
     }
 
 }
