@@ -52,7 +52,7 @@ class OrderController{
             var res = orderService.getOrder(orderId)
             return ResponseEntity(res,HttpStatus.OK)
         }catch(e: NullOrderException){ //eccezione se non c'è l'ordine
-            return ResponseEntity(HttpStatus.BAD_REQUEST)
+            return ResponseEntity(HttpStatus.NOT_FOUND)
         }
     }
 
@@ -66,10 +66,10 @@ class OrderController{
 
     @GetMapping("/admin/orders/{userId}", produces = [MediaType.APPLICATION_NDJSON_VALUE]) //returns a json list
     suspend fun getUserOrders(@PathVariable userId: String): ResponseEntity<Flow<OrderDTO>> {
-        try {
-            return ResponseEntity(orderService.getUserOrders(userId), HttpStatus.OK)
+        return try {
+            ResponseEntity(orderService.getUserOrders(userId), HttpStatus.OK)
         } catch (e: UserNotFoundException) { //user id not found
-            return ResponseEntity(HttpStatus.NOT_FOUND)
+            ResponseEntity(HttpStatus.NOT_FOUND)
         }
     }
 

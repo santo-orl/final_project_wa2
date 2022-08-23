@@ -5,6 +5,7 @@ import it.polito.ticket_catalogue_service.dtos.TicketDTO
 import it.polito.ticket_catalogue_service.dtos.UserDetailsDTO
 import it.polito.ticket_catalogue_service.entities.Order
 import it.polito.ticket_catalogue_service.entities.Ticket
+import it.polito.ticket_catalogue_service.exceptions.TicketNotFoundException
 import it.polito.ticket_catalogue_service.repository.OrderRepository
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
@@ -39,7 +40,6 @@ class TicketCatController {
      suspend fun shopTickets(@RequestHeader("Authorization") jwt: String, @RequestBody req : ShopRequestDTO,princ: Principal): ResponseEntity<Long?> {
          //controllo sugli autenticati
          //vedo se hanno restrizioni e se l'utente rientra in esse
-
          if(ticketCatService.isValid(jwt,req.ticketId)){
              //salvo l'ordine nel db con status pending
              val orderId=orderService.createOrder(princ.name,req.nTickets,req.ticketId)
@@ -66,7 +66,11 @@ class TicketCatController {
 
     @PutMapping("/admin/tickets/{ticketId}", produces = [MediaType.APPLICATION_NDJSON_VALUE])
     suspend fun updateTicket(@PathVariable ticketId: Long, @RequestBody newTicket: TicketDTO, @RequestHeader("authorization") jwt: String ): ResponseEntity<TicketDTO>{
-        return ResponseEntity(ticketCatService.updateTicket(ticketId,newTicket),HttpStatus.CREATED)
+        return try {
+            ResponseEntity(ticketCatService.updateTicket(ticketId, newTicket), HttpStatus.CREATED)
+        }catch(e: TicketNotFoundException){
+            ResponseEntity(HttpStatus.NOT_FOUND)
+        }
     }
 
 }

@@ -23,13 +23,10 @@ class TransactionService {
     }
 
     fun findUserTransactions(userId: String): Flow<TransactionDTO> {
-        var ret = transactionRepository.findByUserId(userId).map { transaction -> transaction.toDTO() }
-        if (ret == null) throw Exception("Transactions not found")
-        return ret
+        return transactionRepository.findByUserId(userId).map { transaction -> transaction.toDTO() }
     }
 
     fun getUserTransactionsInTimeRange(userId: String, from: LocalDateTime, to: LocalDateTime): Flow<TransactionDTO> {
-        if (transactionRepository.findByUserId(userId) == null) throw UserNotFoundException("user not found")
         return transactionRepository.findByUserId(userId)
             .filter { transaction -> transaction.date.isAfter(from) && transaction.date.isBefore(to) }
             .map { transaction -> transaction.toDTO() }

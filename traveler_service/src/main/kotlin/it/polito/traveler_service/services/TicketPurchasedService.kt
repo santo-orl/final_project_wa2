@@ -3,6 +3,7 @@ package it.polito.traveler_service.services
 import it.polito.traveler_service.dtos.TicketPurchasedDTO
 import it.polito.traveler_service.dtos.toDTO
 import it.polito.traveler_service.entities.TicketPurchased
+import it.polito.traveler_service.exceptions.TicketNotFoundException
 import it.polito.traveler_service.exceptions.UnauthorizedTicketAccessException
 import it.polito.traveler_service.repositories.TicketPurchasedRepository
 import it.polito.traveler_service.repositories.UserDetailsRepository
@@ -21,15 +22,12 @@ class TicketPurchasedService {
     lateinit var userDetailsRepository: UserDetailsRepository
 
 
-    fun getAllTickets(id:Long):List<TicketPurchasedDTO>{
-
+    fun getAllTickets(userId:Long):List<TicketPurchasedDTO>{
         var list: ArrayList<TicketPurchasedDTO> = ArrayList()
-        var ret = ticketPurchasedRepository.findAllTickets(id)
-
+        var ret = ticketPurchasedRepository.findAllTickets(userId)
         for(ticketPurchased in ret){
             list.add(ticketPurchased.toDTO())
         }
-
         return list
     }
 
@@ -41,13 +39,22 @@ class TicketPurchasedService {
     }
 
     fun removeTicket(sub: Long){
-        val ticket = ticketPurchasedRepository.findById(sub).get()
-        if(ticket!=null)
-            ticketPurchasedRepository.delete(ticket)
+        var ticket: TicketPurchased
+        try {
+            ticket = ticketPurchasedRepository.findById(sub).get()
+        }catch(e: NoSuchElementException){
+            throw TicketNotFoundException("ticket not found")
+        }
+        ticketPurchasedRepository.delete(ticket)
     }
 
     fun getTicketById(ticketId: Long, username: String): TicketPurchasedDTO{
-        val ticket = ticketPurchasedRepository.findById(ticketId).get()
+        var ticket: TicketPurchased
+        try {
+            ticket = ticketPurchasedRepository.findById(ticketId).get()
+        }catch(e: NoSuchElementException){
+            throw TicketNotFoundException("Ticket not found")
+        }
         if(!ticket.userDetails?.userr.equals(username))
             throw UnauthorizedTicketAccessException("This ticket doesn't belong to the user requesting it")
         return ticket.toDTO()

@@ -1,6 +1,8 @@
 package it.polito.traveler_service.controllers
 
 import it.polito.traveler_service.dtos.TicketValidatedDTO
+import it.polito.traveler_service.exceptions.TicketNotFoundException
+import it.polito.traveler_service.exceptions.UserNotFoundException
 import it.polito.traveler_service.services.TicketPurchasedService
 import it.polito.traveler_service.services.TransitService
 import it.polito.traveler_service.services.UserDetailsServiceImpl
@@ -31,11 +33,19 @@ class QRController {
     }
 
     @PostMapping("/qr/ticket-validated")
-    fun ticketValidated(@RequestHeader("authorization") jwt: String, @RequestBody ticketValidated: TicketValidatedDTO): ResponseEntity<Any> {
+    fun ticketValidated(@RequestHeader("authorization") jwt: String, @RequestBody ticketValidated: TicketValidatedDTO): ResponseEntity<String> {
         //rimuovo il ticket purchased dall'elenco
-        ticketPurchasedService.removeTicket(ticketValidated.ticketId)
+        try {
+            ticketPurchasedService.removeTicket(ticketValidated.ticketId)
+        }catch(e: TicketNotFoundException){
+            return ResponseEntity("Ticket not found",HttpStatus.NOT_FOUND)
+        }
         //aggiorno i transit dell'utente aggiungendo la data
-        userDetailsServiceImpl.addTransit(ticketValidated.username,ticketValidated.date)
+        try {
+            userDetailsServiceImpl.addTransit(ticketValidated.username, ticketValidated.date)
+        }catch(e: UserNotFoundException){
+            return ResponseEntity("User not found",HttpStatus.NOT_FOUND)
+        }
         return ResponseEntity(HttpStatus.OK)
     }
 
