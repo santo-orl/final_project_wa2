@@ -5,7 +5,7 @@ import io.jsonwebtoken.Jws
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.io.Encoders
 import io.jsonwebtoken.security.Keys
-import it.polito.lab5.lab5_ticketcatalogueservice.dtos.UserDetailsDTO
+import it.polito.ticket_catalogue_service.dtos.UserDetailsDTO
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component

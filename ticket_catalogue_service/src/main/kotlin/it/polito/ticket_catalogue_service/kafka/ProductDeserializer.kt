@@ -1,7 +1,7 @@
 package it.polito.ticket_catalogue_service.kafka
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import it.polito.lab5.lab5_ticketcatalogueservice.dtos.PaymentOutcomeDTO
+import it.polito.ticket_catalogue_service.dtos.PaymentOutcomeDTO
 import org.apache.kafka.common.errors.SerializationException
 import org.apache.kafka.common.serialization.Deserializer
 import org.slf4j.LoggerFactory
