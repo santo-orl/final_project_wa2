@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import it.polito.ticket_catalogue_service.dtos.*
 import it.polito.ticket_catalogue_service.entities.Order
 import it.polito.ticket_catalogue_service.exceptions.NullOrderException
+import it.polito.ticket_catalogue_service.exceptions.TicketNotFoundException
 import it.polito.ticket_catalogue_service.exceptions.UserNotFoundException
 import it.polito.ticket_catalogue_service.repository.OrderRepository
 import it.polito.ticket_catalogue_service.repository.TicketCatRepository
@@ -50,6 +51,24 @@ class OrderService {
         return orderRepository.findByUserId(userId).map { order -> order.toDTO() }
     }
 
+    suspend fun createOrder(username: String,nTickets: Int, ticketId: Long): Long? {
+        if(ticketRepository.findById(ticketId)==null) throw TicketNotFoundException("Ticket not found")
+        val order = orderRepository.save(Order(null, username, "PENDING",nTickets,ticketId))
+        return order.id
+    }
+
+    //TODO questa funzione non deve fare una richiesta rest ma deve usare kafka
+    suspend fun sendPurchasedTicketsToTraveler(nTickets: Int,ticketId:Long,jwt:String){
+        val ticket = ticketRepository.findById(ticketId)
+        var ret = client.post()
+            .uri(travelerServiceUrl + "/my/tickets")
+            .header("Authorization", jwt)
+            .accept(MediaType.APPLICATION_JSON)
+            .retrieve()
+            .awaitBody<List<TicketDTO>>()
+    }
+
+
     @KafkaListener(topics = ["PaymentResponseTopic"], groupId = "group-id")
     suspend fun updateOrderByPaymentOutcome(paymentOutcome: String) {
         val paymentOutcome = ObjectMapper().readValue(paymentOutcome, PaymentOutcomeDTO::class.java)
@@ -62,22 +81,6 @@ class OrderService {
         } else {
             orderRepository.updateOrderStatus(paymentOutcome.orderId, "CANCELED")
         }
-    }
-
-
-    suspend fun createOrder(username: String,nTickets: Int, ticketId: Long): Long? {
-        val order = orderRepository.save(Order(null, username, "PENDING",nTickets,ticketId))
-        return order.id
-    }
-
-    suspend fun sendPurchasedTicketsToTraveler(nTickets: Int,ticketId:Long,jwt:String){
-        val ticket = ticketRepository.findById(ticketId)
-        var ret = client.post()
-            .uri(travelerServiceUrl + "/my/tickets")
-            .header("Authorization", jwt)
-            .accept(MediaType.APPLICATION_JSON)
-            .retrieve()
-            .awaitBody<List<TicketDTO>>()
     }
 
 }

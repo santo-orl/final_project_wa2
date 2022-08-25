@@ -41,11 +41,15 @@ class TicketCatController {
          //controllo sugli autenticati
          //vedo se hanno restrizioni e se l'utente rientra in esse
          if(ticketCatService.isValid(jwt,req.ticketId)){
-             //salvo l'ordine nel db con status pending
-             val orderId=orderService.createOrder(princ.name,req.nTickets,req.ticketId)
-             //procedo a chiedere il pagamento a PaymentService
-             ticketCatService.askForPayment(req,orderId!!,princ.name,jwt)
-             return ResponseEntity(orderId,HttpStatus.OK)
+             try {
+                 //salvo l'ordine nel db con status pending
+                 val orderId = orderService.createOrder(princ.name, req.nTickets, req.ticketId)
+                 //procedo a chiedere il pagamento a PaymentService
+                 ticketCatService.askForPayment(req, orderId!!, princ.name, jwt)
+                 return ResponseEntity(orderId,HttpStatus.OK)
+             }catch(e: TicketNotFoundException){
+                 return ResponseEntity(HttpStatus.NOT_FOUND)
+             }
          }
          else{ //se l'utente non rientra nelle restrizioni
              return ResponseEntity(HttpStatus.BAD_REQUEST)

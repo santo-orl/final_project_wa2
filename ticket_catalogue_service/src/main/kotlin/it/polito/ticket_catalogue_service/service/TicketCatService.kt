@@ -65,17 +65,14 @@ class TicketCatService {
     }//isValid
 
     suspend fun askForPayment(request: ShopRequestDTO,orderId:Long,username:String,jwt:String) {
-
             val ticket = ticketCatRepository.findById(request.ticketId)
             var totalPrice=0F
             if (ticket != null) {
                 totalPrice = request.nTickets * ticket.price
             }
             //mando le info per il pagamento a PaymentService con Kafka
-
         val paymentRequest = PaymentRequestDTO(request.cardHolder,request.creditCardNumber.toString(),request.expDate,request.cvv.toString(),orderId, totalPrice,username,jwt)
-
-        runBlocking {
+        runBlocking { //TODO si può togliere runBlocking?
             kafkaTemplate.send(requestTopic, paymentRequest)
         }
     }
