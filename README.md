@@ -9,6 +9,12 @@ L'applicazione è composta da 4 microservizi:
 * **ticket_catalogue_service**: permette di ottenere e modificare la lista di tipi di ticket disponibili, la lista di ordini effettuati ed espone l'endpoint per l'acquisto di ticket
 * **payment_service**: effettua le richieste di pagamento e fornisce la lista di transazioni effettuate
 
+I microservizi espongono **api** a cui utenti (traveler, admin, qr reader) possono fare richieste.
+I microservizi comunicano fra loro tramite **Kafka**. In particolare:
+* ticket_catalogue_service manda messaggi a payment_service tramite il topic PaymentRequestTopic
+* payment_service manda messaggi a ticket_catalogue_service tramite il topic PaymentResponseTopic
+* ticket_catalogue_service manda messaggi a traveler_service tramite il topic TicketPurchasedTopic
+
 ### Servizi richiesti
 
 * traveler deve registrarsi con email e password
