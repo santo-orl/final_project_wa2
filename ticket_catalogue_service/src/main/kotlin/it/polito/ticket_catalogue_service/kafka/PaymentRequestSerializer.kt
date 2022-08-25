@@ -2,13 +2,12 @@ package it.polito.ticket_catalogue_service.kafka
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import it.polito.ticket_catalogue_service.dtos.PaymentRequestDTO
-import it.polito.ticket_catalogue_service.dtos.ShopRequestDTO
 import org.apache.kafka.common.errors.SerializationException
 import org.apache.kafka.common.serialization.Serializer
 import org.slf4j.LoggerFactory
 
 
-class ProductSerializer : Serializer<PaymentRequestDTO> {
+class PaymentRequestSerializer : Serializer<PaymentRequestDTO> {
     private val objectMapper = ObjectMapper()
     private val log = LoggerFactory.getLogger(javaClass)
 

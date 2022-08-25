@@ -117,8 +117,8 @@ class UserDetailsController {
         return ResponseEntity(ret, HttpStatus.OK)
     }
 
-    //TODO vedere se va sostituita con una comunicazione kafka fra questo microservizio e ticket purchased
-    //POST /my/tickets
+    //TODO questa non si usa più perché è stata sostituita dalla comunicazione con kafka
+    //TODO se createTicketPurchased in TicketPurchasedService funziona, eliminare questa funzione
     @PostMapping("/my/tickets")        //genera i ticket
     fun generateTickets(@RequestBody createTickets: CreateTicketsDTO): ResponseEntity<List<TicketPurchasedDTO>> {
         var ticketsList: ArrayList<TicketPurchasedDTO> = ArrayList()

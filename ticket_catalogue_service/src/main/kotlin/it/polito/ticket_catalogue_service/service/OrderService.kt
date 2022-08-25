@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.MediaType
 import org.springframework.kafka.annotation.KafkaListener
+import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.awaitBody
@@ -27,9 +28,15 @@ class OrderService {
     lateinit var orderRepository: OrderRepository
     @Autowired
     lateinit var ticketRepository: TicketCatRepository
+    @Autowired
+    lateinit var kafkaTicketPurchasedTemplate: KafkaTemplate<String, Any>
+
     @Value("\${travelerServiceUrl}")
     lateinit var travelerServiceUrl: String
     var client: WebClient = WebClient.create()
+
+    @Value("\${topics.ticket-purchased-topic.name}")
+    lateinit var ticketPurchasedTopic: String
 
 
     suspend fun getOrder(orderId: Long): OrderDTO {
@@ -57,30 +64,14 @@ class OrderService {
         return order.id
     }
 
-    //TODO questa funzione non deve fare una richiesta rest ma deve usare kafka
-    suspend fun sendPurchasedTicketsToTraveler(nTickets: Int,ticketId:Long,jwt:String){
+    //TODO inizialmente faceva una richiesta http, ora usa kafka, vedere se funziona
+    suspend fun sendPurchasedTicketsToTraveler(nTickets: Int,ticketId:Long,jwt:String, username: String){
         val ticket = ticketRepository.findById(ticketId)
-        var ret = client.post()
-            .uri(travelerServiceUrl + "/my/tickets")
-            .header("Authorization", jwt)
-            .accept(MediaType.APPLICATION_JSON)
-            .retrieve()
-            .awaitBody<List<TicketDTO>>()
+        val createTicketsDTO = CreateTicketsDTO("create",nTickets,ticket!!.zid,ticket.validFrom,ticket.ticketType,username)
+        kafkaTicketPurchasedTemplate.send(ticketPurchasedTopic, createTicketsDTO)
     }
 
 
-    @KafkaListener(topics = ["PaymentResponseTopic"], groupId = "group-id")
-    suspend fun updateOrderByPaymentOutcome(paymentOutcome: String) {
-        val paymentOutcome = ObjectMapper().readValue(paymentOutcome, PaymentOutcomeDTO::class.java)
-        if (paymentOutcome.outcome) {
-            //PaymentService dice che il pagamento è andato a buon fine
-            orderRepository.updateOrderStatus(paymentOutcome.orderId, "COMPLETED")
-            val order = orderRepository.findById(paymentOutcome.orderId)
-            //Chiamata a TravelerService per inserire nel db il ticketpurchased
-            sendPurchasedTicketsToTraveler(order.nTickets,order.ticketId,paymentOutcome.jwt)
-        } else {
-            orderRepository.updateOrderStatus(paymentOutcome.orderId, "CANCELED")
-        }
-    }
+
 
 }

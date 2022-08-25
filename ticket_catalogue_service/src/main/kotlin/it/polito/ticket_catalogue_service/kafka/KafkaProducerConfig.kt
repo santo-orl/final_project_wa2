@@ -15,16 +15,32 @@ class KafkaProducerConfig(
 ) {
     private val servers: String = "localhost:29092"
     @Bean
-    fun producerFactory(): ProducerFactory<String, Any> {
+    fun paymentRequestProducerFactory(): ProducerFactory<String, Any> {
         val configProps: MutableMap<String, Any> = HashMap()
         configProps[ProducerConfig.BOOTSTRAP_SERVERS_CONFIG] = servers
         configProps[ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG] = StringSerializer::class.java
-        configProps[ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG] = ProductSerializer::class.java
+        configProps[ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG] = PaymentRequestSerializer::class.java
         return DefaultKafkaProducerFactory(configProps)
     }
 
     @Bean
-    fun kafkaTemplate(): KafkaTemplate<String, Any> {
-        return KafkaTemplate(producerFactory())
+    fun kafkaPaymentTemplate(): KafkaTemplate<String, Any> {
+        return KafkaTemplate(paymentRequestProducerFactory())
     }
+
+    @Bean
+    fun ticketPurchasedProducerFactory(): ProducerFactory<String, Any> {
+        val configProps: MutableMap<String, Any> = HashMap()
+        configProps[ProducerConfig.BOOTSTRAP_SERVERS_CONFIG] = servers
+        configProps[ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG] = StringSerializer::class.java
+        configProps[ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG] = TicketPurchasedRequestSerializer::class.java
+        return DefaultKafkaProducerFactory(configProps)
+    }
+
+    @Bean
+    fun kafkaTicketPurchasedTemplate(): KafkaTemplate<String, Any> {
+        return KafkaTemplate(ticketPurchasedProducerFactory())
+    }
+
+
 }

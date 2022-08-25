@@ -1,4 +1,4 @@
-package it.polito.traveler_service.dtos
+package it.polito.ticket_catalogue_service.dtos
 
 data class CreateTicketsDTO(
     val cmd: String, //inutile?

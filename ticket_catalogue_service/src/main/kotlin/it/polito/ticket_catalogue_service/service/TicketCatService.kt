@@ -25,13 +25,13 @@ class TicketCatService {
     lateinit var ticketCatRepository: TicketCatRepository
 
     @Autowired
-    lateinit var kafkaTemplate: KafkaTemplate<String, Any>
+    lateinit var kafkaPaymentTemplate: KafkaTemplate<String, Any>
 
     @Value("\${travelerServiceUrl}")
     lateinit var travelerServiceUrl: String
 
     @Value("\${topics.payment-request-topic.name}")
-    lateinit var requestTopic: String
+    lateinit var paymentRequestTopic: String
 
 
     var client: WebClient = WebClient.create()
@@ -73,8 +73,9 @@ class TicketCatService {
             //mando le info per il pagamento a PaymentService con Kafka
         val paymentRequest = PaymentRequestDTO(request.cardHolder,request.creditCardNumber.toString(),request.expDate,request.cvv.toString(),orderId, totalPrice,username,jwt)
         runBlocking { //TODO si può togliere runBlocking?
-            kafkaTemplate.send(requestTopic, paymentRequest)
+            kafkaPaymentTemplate.send(paymentRequestTopic, paymentRequest)
         }
+        //ricevo la risposta sul listener in OrderService
     }
 
     fun ageInRange(dateOfBirth: String, minAge: Int?, maxAge: Int?): Boolean {

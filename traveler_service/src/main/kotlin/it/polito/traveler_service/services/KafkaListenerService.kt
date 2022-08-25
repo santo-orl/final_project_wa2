@@ -1,0 +1,36 @@
+package it.polito.traveler_service.services
+
+import com.fasterxml.jackson.databind.ObjectMapper
+import it.polito.traveler_service.dtos.CreateTicketsDTO
+import it.polito.traveler_service.repositories.UserDetailsRepository
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.kafka.annotation.KafkaListener
+import org.springframework.stereotype.Service
+
+@Service
+class KafkaListenerService {
+
+    @Autowired
+    lateinit var ticketPurchasedService: TicketPurchasedService
+    @Autowired
+    lateinit var userDetailsRepository: UserDetailsRepository
+
+    //riceve da ticket_purchased_service la richiesta di aggiungere al db dei ticket purchased
+    //uno o più ticket il cui acquisto è andato a buon fine
+    @KafkaListener(topics = ["TicketPurchasedTopic"], groupId = "group-id")
+    suspend fun createTicketPurchased(createTicketPurchasedString: String) {
+        //TODO gestione errori
+        val createTicketsPurchased: CreateTicketsDTO =
+            ObjectMapper().readValue(createTicketPurchasedString, CreateTicketsDTO::class.java)
+        val user = userDetailsRepository.findUserDetailsByUserr(createTicketsPurchased.username).get(0)
+        for (i in 0 until createTicketsPurchased.quantity) {
+            var ticket = ticketPurchasedService.createTicket(
+                createTicketsPurchased.zones,
+                user.id,
+                createTicketsPurchased.validFrom,
+                createTicketsPurchased.type
+            )
+        }
+    }
+
+}
