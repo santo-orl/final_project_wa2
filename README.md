@@ -79,3 +79,12 @@ I microservizi comunicano fra loro tramite **Kafka**. In particolare:
   * ticket_catalogue_service GET /admin/orders
 * amministratore loggato può consultare l'elenco degli ordini di uno specifico utente
   * ticket_catalogue_service GET /admin/orders/{user-id}
+
+### Funzionamento dei QR
+
+* Manualmente bisogna inserire uno user con role QR_READER in login_service.
+* Il qr reader si autentica da login_service
+* Il qr reader riceve la chiave da usare per validare i jws con la chiamata GET /qr/validation a traveler_service
+* Il traveler ha i suoi ticket/travelcard purchased e può scaricarli singolarmente sotto forma di qr con una get a /my/tickets/qr/{ticketId} o a /my/travelcards/qr/{travelcardId} di traveler_service
+* Il traveler avrà quindi il suo qr sul telefono, lo passa fisicamente dal qr reader. Quest'ultimo ha il jws per validarlo, quindi eseguirà internamente la validazione. 
+* Una volta validato, il qr reader dovrà contattare traveler_service per rimuovere il ticket/travelcard purchased dalla lista dell'utente e aggiornare il rispettivo elenco dei transiti. Lo fa con una post a /qr/ticket-validated o a /qr/travelcard-validated di traveler_service
