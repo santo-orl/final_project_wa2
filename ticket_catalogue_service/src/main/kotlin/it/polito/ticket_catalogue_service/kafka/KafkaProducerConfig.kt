@@ -14,6 +14,8 @@ import org.springframework.kafka.core.ProducerFactory
 class KafkaProducerConfig(
 ) {
     private val servers: String = "localhost:29092"
+
+    //per il payment
     @Bean
     fun paymentRequestProducerFactory(): ProducerFactory<String, Any> {
         val configProps: MutableMap<String, Any> = HashMap()
@@ -27,6 +29,8 @@ class KafkaProducerConfig(
     fun kafkaPaymentTemplate(): KafkaTemplate<String, Any> {
         return KafkaTemplate(paymentRequestProducerFactory())
     }
+
+    //per il ticketPurchased
 
     @Bean
     fun ticketPurchasedProducerFactory(): ProducerFactory<String, Any> {
@@ -42,5 +46,20 @@ class KafkaProducerConfig(
         return KafkaTemplate(ticketPurchasedProducerFactory())
     }
 
+    //per la travelcard purchased
+
+    @Bean
+    fun travelcardPurchasedProducerFactory(): ProducerFactory<String, Any> {
+        val configProps: MutableMap<String, Any> = HashMap()
+        configProps[ProducerConfig.BOOTSTRAP_SERVERS_CONFIG] = servers
+        configProps[ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG] = StringSerializer::class.java
+        configProps[ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG] = TravelcardPurchasedRequestSerializer::class.java
+        return DefaultKafkaProducerFactory(configProps)
+    }
+
+    @Bean
+    fun kafkaTravelcardPurchasedTemplate(): KafkaTemplate<String, Any> {
+        return KafkaTemplate(travelcardPurchasedProducerFactory())
+    }
 
 }

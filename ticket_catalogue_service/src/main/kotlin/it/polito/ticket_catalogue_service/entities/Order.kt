@@ -10,5 +10,8 @@ data class Order (
         val userId: String,     // username
         val status: String, //PENDING o COMPLETED o CANCELED
         val nTickets: Int,
-        val ticketId: Long,
+        val ticketId: Long, //"ticketId" ma va bene anche per travelcardId
+        val type: OrderType
 )
+
+enum class OrderType{TICKET,TRAVELCARD}

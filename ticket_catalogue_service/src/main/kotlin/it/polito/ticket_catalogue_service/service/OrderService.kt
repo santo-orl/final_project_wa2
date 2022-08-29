@@ -3,11 +3,13 @@ package it.polito.ticket_catalogue_service.service
 import com.fasterxml.jackson.databind.ObjectMapper
 import it.polito.ticket_catalogue_service.dtos.*
 import it.polito.ticket_catalogue_service.entities.Order
+import it.polito.ticket_catalogue_service.entities.OrderType
 import it.polito.ticket_catalogue_service.exceptions.NullOrderException
 import it.polito.ticket_catalogue_service.exceptions.TicketNotFoundException
 import it.polito.ticket_catalogue_service.exceptions.UserNotFoundException
 import it.polito.ticket_catalogue_service.repository.OrderRepository
 import it.polito.ticket_catalogue_service.repository.TicketCatRepository
+import it.polito.ticket_catalogue_service.repository.TravelcardRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
@@ -30,13 +32,15 @@ class OrderService {
     lateinit var ticketRepository: TicketCatRepository
     @Autowired
     lateinit var kafkaTicketPurchasedTemplate: KafkaTemplate<String, Any>
-
-    @Value("\${travelerServiceUrl}")
-    lateinit var travelerServiceUrl: String
-    var client: WebClient = WebClient.create()
+    @Autowired
+    lateinit var travelcardRepository: TravelcardRepository
+    @Autowired
+    lateinit var kafkaTravelcardPurchasedTemplate: KafkaTemplate<String, Any>
 
     @Value("\${topics.ticket-purchased-topic.name}")
     lateinit var ticketPurchasedTopic: String
+    @Value("\${topics.travelcard-purchased-topic.name}")
+    lateinit var travelcardPurchasedTopic: String
 
 
     suspend fun getOrder(orderId: Long): OrderDTO {
@@ -60,7 +64,13 @@ class OrderService {
 
     suspend fun createOrder(username: String,nTickets: Int, ticketId: Long): Long? {
         if(ticketRepository.findById(ticketId)==null) throw TicketNotFoundException("Ticket not found")
-        val order = orderRepository.save(Order(null, username, "PENDING",nTickets,ticketId))
+        val order = orderRepository.save(Order(null, username, "PENDING",nTickets,ticketId,OrderType.TICKET))
+        return order.id
+    }
+
+    suspend fun createTravelcardOrder(username: String, travelcardId: Long): Long? {
+        if(travelcardRepository.findById(travelcardId)==null) throw TicketNotFoundException("Travelcard not found")
+        val order = orderRepository.save(Order(null, username, "PENDING",1,travelcardId,OrderType.TRAVELCARD))
         return order.id
     }
 
@@ -69,6 +79,12 @@ class OrderService {
         val ticket = ticketRepository.findById(ticketId)
         val createTicketsDTO = CreateTicketsDTO("create",nTickets,ticket!!.zid,ticket.validFrom,ticket.ticketType,username)
         kafkaTicketPurchasedTemplate.send(ticketPurchasedTopic, createTicketsDTO)
+    }
+
+    suspend fun sendPurchasedTravelcardToTraveler(travelcardId:Long,jwt:String,username: String){
+        val travelcard = travelcardRepository.findById(travelcardId)
+        val createTravelcardDTO = CreateTravelcardDTO("create",travelcard!!.zid,travelcard.validFrom,travelcard.travelcardType,username,travelcard.maxUsages)
+        kafkaTravelcardPurchasedTemplate.send(travelcardPurchasedTopic, createTravelcardDTO)
     }
 
 

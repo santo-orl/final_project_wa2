@@ -12,7 +12,9 @@ class KafkaConfig(
     @Value("\${topics.payment-request-topic.name}")
     private val paymentRequestTopic: String,
     @Value("\${topics.ticket-purchased-topic.name}")
-    private val ticketPurchasedTopic: String
+    private val ticketPurchasedTopic: String,
+    @Value("\${topics.travelcard-purchased-topic.name}")
+    private val travelcardPurchasedTopic: String
 ) {
     private val servers: String = "localhost:29092"
     @Bean
@@ -44,6 +46,15 @@ class KafkaConfig(
     fun createTicketPurchasedTopic(): NewTopic {
         return NewTopic(
             ticketPurchasedTopic,
+            1,
+            1
+        )
+    }
+
+    @Bean
+    fun createTravelcardPurchasedTopic(): NewTopic {
+        return NewTopic(
+            travelcardPurchasedTopic,
             1,
             1
         )

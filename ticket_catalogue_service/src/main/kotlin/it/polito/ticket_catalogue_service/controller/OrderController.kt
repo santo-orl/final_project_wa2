@@ -33,21 +33,20 @@ class OrderController{
 
     @Autowired
     lateinit var orderRepository: OrderRepository
-
     @Autowired
     lateinit var orderService: OrderService
 
 
     @FlowPreview
     @GetMapping("/orders", produces=[MediaType.APPLICATION_NDJSON_VALUE])
-    suspend fun getTickets(@RequestHeader("authorization") jwt: String,princ: Principal): ResponseEntity<Flow<OrderDTO>> {
+    suspend fun getOrders(@RequestHeader("authorization") jwt: String,princ: Principal): ResponseEntity<Flow<OrderDTO>> {
         val res = orderRepository.findByUserId(princ.name).map{ order:Order-> order.toDTO() }
         return ResponseEntity(res,HttpStatus.OK)
     }
 
 
     @GetMapping("/orders/{orderId}", produces=[MediaType.APPLICATION_NDJSON_VALUE])
-    suspend fun getOrders(@RequestHeader("authorization") jwt: String,princ: Principal,@PathVariable orderId: Long): ResponseEntity<OrderDTO?> {
+    suspend fun getOrder(@RequestHeader("authorization") jwt: String,princ: Principal,@PathVariable orderId: Long): ResponseEntity<OrderDTO?> {
         try {
             var res = orderService.getOrder(orderId)
             return ResponseEntity(res,HttpStatus.OK)

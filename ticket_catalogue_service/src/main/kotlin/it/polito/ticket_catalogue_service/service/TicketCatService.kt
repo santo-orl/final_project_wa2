@@ -2,12 +2,14 @@ package it.polito.ticket_catalogue_service.service
 
 import it.polito.ticket_catalogue_service.dtos.*
 import it.polito.ticket_catalogue_service.entities.Ticket
+import it.polito.ticket_catalogue_service.entities.Travelcard
 import it.polito.ticket_catalogue_service.exceptions.InvalidTicketException
 import it.polito.ticket_catalogue_service.exceptions.NullTicketException
 import it.polito.ticket_catalogue_service.exceptions.TicketNotFoundException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import it.polito.ticket_catalogue_service.repository.TicketCatRepository
+import it.polito.ticket_catalogue_service.repository.TravelcardRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.runBlocking
 import org.springframework.beans.factory.annotation.Value
@@ -23,19 +25,20 @@ class TicketCatService {
 
     @Autowired
     lateinit var ticketCatRepository: TicketCatRepository
-
     @Autowired
     lateinit var kafkaPaymentTemplate: KafkaTemplate<String, Any>
+    @Autowired
+    lateinit var travelcardRepository: TravelcardRepository
 
     @Value("\${travelerServiceUrl}")
     lateinit var travelerServiceUrl: String
-
     @Value("\${topics.payment-request-topic.name}")
     lateinit var paymentRequestTopic: String
 
 
     var client: WebClient = WebClient.create()
 
+    //TODO la comunicazione con traveler service va fatta con kafka
     suspend fun isValid(jwt: String, ticketId: Long): Boolean {
         val ticket = ticketCatRepository.findById(ticketId)
         var userDetails: UserDetailsDTO = UserDetailsDTO(" ", " ", " ", " ", " ")
@@ -75,7 +78,7 @@ class TicketCatService {
         runBlocking { //TODO si può togliere runBlocking?
             kafkaPaymentTemplate.send(paymentRequestTopic, paymentRequest)
         }
-        //ricevo la risposta sul listener in OrderService
+        //ricevo la risposta sul listener in KafkaListenerService
     }
 
     fun ageInRange(dateOfBirth: String, minAge: Int?, maxAge: Int?): Boolean {
@@ -130,6 +133,10 @@ class TicketCatService {
                 newTicket.zid,
                 newTicket.validFrom
         )).toDTO()
+    }
+
+    fun getTravelcards(): Flow<Travelcard> {
+        return travelcardRepository.findAll()
     }
 
 }

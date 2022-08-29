@@ -2,6 +2,7 @@ package it.polito.ticket_catalogue_service.service
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import it.polito.ticket_catalogue_service.dtos.PaymentOutcomeDTO
+import it.polito.ticket_catalogue_service.entities.OrderType
 import it.polito.ticket_catalogue_service.repository.OrderRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.kafka.annotation.KafkaListener
@@ -23,8 +24,12 @@ class KafkaListenerService {
             //PaymentService dice che il pagamento è andato a buon fine
             orderRepository.updateOrderStatus(paymentOutcome.orderId, "COMPLETED")
             val order = orderRepository.findById(paymentOutcome.orderId)
-            //Chiamata a TravelerService per inserire nel db il ticketpurchased
-            orderService.sendPurchasedTicketsToTraveler(order.nTickets,order.ticketId,paymentOutcome.jwt,order.userId)
+            if(order.type==OrderType.TICKET)
+                //chiamata a traveler_service per inserire nel db il ticketpurchased
+                orderService.sendPurchasedTicketsToTraveler(order.nTickets,order.ticketId,paymentOutcome.jwt,order.userId)
+            else
+            //chiamata a traveler_service per inserire nel db la travelcardpurchased
+                orderService.sendPurchasedTravelcardToTraveler(order.ticketId,paymentOutcome.jwt,order.userId)
         } else {
             orderRepository.updateOrderStatus(paymentOutcome.orderId, "CANCELED")
         }

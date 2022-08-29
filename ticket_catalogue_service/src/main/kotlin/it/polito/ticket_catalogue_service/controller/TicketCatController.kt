@@ -1,10 +1,9 @@
 package it.polito.ticket_catalogue_service.controller
 
-import it.polito.ticket_catalogue_service.dtos.ShopRequestDTO
-import it.polito.ticket_catalogue_service.dtos.TicketDTO
-import it.polito.ticket_catalogue_service.dtos.UserDetailsDTO
+import it.polito.ticket_catalogue_service.dtos.*
 import it.polito.ticket_catalogue_service.entities.Order
 import it.polito.ticket_catalogue_service.entities.Ticket
+import it.polito.ticket_catalogue_service.entities.Travelcard
 import it.polito.ticket_catalogue_service.exceptions.TicketNotFoundException
 import it.polito.ticket_catalogue_service.repository.OrderRepository
 import kotlinx.coroutines.FlowPreview
@@ -13,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import it.polito.ticket_catalogue_service.repository.TicketCatRepository
 import it.polito.ticket_catalogue_service.service.OrderService
 import it.polito.ticket_catalogue_service.service.TicketCatService
+import it.polito.ticket_catalogue_service.service.TravelcardService
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
@@ -27,52 +27,128 @@ class TicketCatController {
 
     @Autowired
     lateinit var ticketCatService: TicketCatService
+
+    @Autowired
+    lateinit var travelcardService: TravelcardService
+
     @Autowired
     lateinit var orderService: OrderService
 
     @FlowPreview
-    @GetMapping("/tickets", produces=[MediaType.APPLICATION_NDJSON_VALUE])
-    suspend fun getTickets(@RequestHeader("authorization") jwt: String,princ:Principal): ResponseEntity<Flow<Ticket>> {
+    @GetMapping("/tickets", produces = [MediaType.APPLICATION_NDJSON_VALUE])
+    suspend fun getTickets(
+        @RequestHeader("authorization") jwt: String,
+        princ: Principal
+    ): ResponseEntity<Flow<Ticket>> {
         return ResponseEntity(ticketCatService.getTickets(), HttpStatus.OK)
     }
 
-    @PostMapping("/shop")
-     suspend fun shopTickets(@RequestHeader("Authorization") jwt: String, @RequestBody req : ShopRequestDTO,princ: Principal): ResponseEntity<Long?> {
-         //controllo sugli autenticati
-         //vedo se hanno restrizioni e se l'utente rientra in esse
-         if(ticketCatService.isValid(jwt,req.ticketId)){
-             try {
-                 //salvo l'ordine nel db con status pending
-                 val orderId = orderService.createOrder(princ.name, req.nTickets, req.ticketId)
-                 //procedo a chiedere il pagamento a PaymentService
-                 ticketCatService.askForPayment(req, orderId!!, princ.name, jwt)
-                 return ResponseEntity(orderId,HttpStatus.OK)
-             }catch(e: TicketNotFoundException){
-                 return ResponseEntity(HttpStatus.NOT_FOUND)
-             }
-         }
-         else{ //se l'utente non rientra nelle restrizioni
-             return ResponseEntity(HttpStatus.BAD_REQUEST)
-         }
+    @FlowPreview
+    @GetMapping("/travelcards", produces = [MediaType.APPLICATION_NDJSON_VALUE])
+    suspend fun getTravelcards(
+        @RequestHeader("authorization") jwt: String,
+        princ: Principal
+    ): ResponseEntity<Flow<Travelcard>> {
+        return ResponseEntity(ticketCatService.getTravelcards(), HttpStatus.OK)
+    }
 
-     }
+    @PostMapping("/shop/tickets")
+    suspend fun shopTickets(
+        @RequestHeader("Authorization") jwt: String,
+        @RequestBody req: ShopRequestDTO,
+        princ: Principal
+    ): ResponseEntity<Long?> {
+        //controllo sugli autenticati
+        //vedo se hanno restrizioni e se l'utente rientra in esse
+        if (ticketCatService.isValid(jwt, req.ticketId)) {
+            try {
+                //salvo l'ordine nel db con status pending
+                val orderId = orderService.createOrder(princ.name, req.nTickets, req.ticketId)
+                //procedo a chiedere il pagamento a PaymentService
+                ticketCatService.askForPayment(req, orderId!!, princ.name, jwt)
+                return ResponseEntity(orderId, HttpStatus.OK)
+            } catch (e: TicketNotFoundException) {
+                return ResponseEntity(HttpStatus.NOT_FOUND)
+            }
+        } else { //se l'utente non rientra nelle restrizioni
+            return ResponseEntity(HttpStatus.BAD_REQUEST)
+        }
+    }
+
+    @PostMapping("/shop/travelcard")
+    suspend fun shopTravelcard(
+        @RequestHeader("Authorization") jwt: String,
+        @RequestBody req: ShopTravelcardRequestDTO,
+        princ: Principal
+    ): ResponseEntity<Long?> {
+        //TODO vedere se va fatto un controllo di validità come si fa in shopTickets
+        try {
+            //salvo l'ordine nel db con status pending
+            val orderId = orderService.createTravelcardOrder(princ.name, req.travelcardId)
+            //procedo a chiedere il pagamento a PaymentService
+            travelcardService.askForPayment(req, orderId!!, princ.name, jwt)
+            return ResponseEntity(orderId, HttpStatus.OK)
+        } catch (e: TicketNotFoundException) {
+            return ResponseEntity(HttpStatus.NOT_FOUND)
+        }
+    }
 
     @PostMapping("/admin/tickets", produces = [MediaType.APPLICATION_NDJSON_VALUE])
-    suspend fun addTicket(@RequestBody addTicketRequest: TicketDTO, @RequestHeader("authorization") jwt: String ): ResponseEntity<TicketDTO>{
-        return ResponseEntity(ticketCatService.addNewTicket(addTicketRequest),HttpStatus.CREATED)
+    suspend fun addTicket(
+        @RequestBody addTicketRequest: TicketDTO,
+        @RequestHeader("authorization") jwt: String
+    ): ResponseEntity<TicketDTO> {
+        return ResponseEntity(ticketCatService.addNewTicket(addTicketRequest), HttpStatus.CREATED)
+    }
+
+    @PostMapping("/admin/travelcards", produces = [MediaType.APPLICATION_NDJSON_VALUE])
+    suspend fun addTravelcard(
+        @RequestBody addTravelcardRequest: TravelcardDTO,
+        @RequestHeader("authorization") jwt: String
+    ): ResponseEntity<TravelcardDTO> {
+        return ResponseEntity(travelcardService.addNewTravelcard(addTravelcardRequest), HttpStatus.CREATED)
     }
 
     @DeleteMapping("/admin/tickets/{ticketId}")
-    suspend fun removeTicket(@PathVariable ticketId: Long, @RequestHeader("authorization") jwt: String ): ResponseEntity<Long>{
+    suspend fun removeTicket(
+        @PathVariable ticketId: Long,
+        @RequestHeader("authorization") jwt: String
+    ): ResponseEntity<Long> {
         ticketCatService.removeTicket(ticketId)
-        return ResponseEntity(ticketId,HttpStatus.OK)
+        return ResponseEntity(ticketId, HttpStatus.OK)
+    }
+
+    @DeleteMapping("/admin/travelcards/{ticketId}")
+    suspend fun removeTravelcard(
+        @PathVariable travelcardId: Long,
+        @RequestHeader("authorization") jwt: String
+    ): ResponseEntity<Long> {
+        travelcardService.removeTravelcard(travelcardId)
+        return ResponseEntity(travelcardId, HttpStatus.OK)
     }
 
     @PutMapping("/admin/tickets/{ticketId}", produces = [MediaType.APPLICATION_NDJSON_VALUE])
-    suspend fun updateTicket(@PathVariable ticketId: Long, @RequestBody newTicket: TicketDTO, @RequestHeader("authorization") jwt: String ): ResponseEntity<TicketDTO>{
+    suspend fun updateTicket(
+        @PathVariable ticketId: Long,
+        @RequestBody newTicket: TicketDTO,
+        @RequestHeader("authorization") jwt: String
+    ): ResponseEntity<TicketDTO> {
         return try {
             ResponseEntity(ticketCatService.updateTicket(ticketId, newTicket), HttpStatus.CREATED)
-        }catch(e: TicketNotFoundException){
+        } catch (e: TicketNotFoundException) {
+            ResponseEntity(HttpStatus.NOT_FOUND)
+        }
+    }
+
+    @PutMapping("/admin/travelcards/{travelcardId}", produces = [MediaType.APPLICATION_NDJSON_VALUE])
+    suspend fun updateTravelcard(
+        @PathVariable travelcardId: Long,
+        @RequestBody newTravelcard: TravelcardDTO,
+        @RequestHeader("authorization") jwt: String
+    ): ResponseEntity<TravelcardDTO> {
+        return try {
+            ResponseEntity(travelcardService.updateTravelcard(travelcardId, newTravelcard), HttpStatus.CREATED)
+        } catch (e: TicketNotFoundException) {
             ResponseEntity(HttpStatus.NOT_FOUND)
         }
     }
