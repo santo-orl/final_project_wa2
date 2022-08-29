@@ -14,6 +14,7 @@ I microservizi comunicano fra loro tramite **Kafka**. In particolare:
 * **ticket_catalogue_service** comunica con **payment_service** tramite il topic PaymentRequestTopic per mandare richieste di pagamento
 * **payment_service** comunica con **ticket_catalogue_service** tramite il topic PaymentResponseTopic per mandare l'esito del pagamento
 * **ticket_catalogue_service** comunica con **traveler_service** tramite il topic TicketPurchasedTopic per dirgli - in seguito a un pagamento avvenuto con successo - di aggiungere ticket alla tabella dei ticket acquistati
+* **ticket_catalogue_service** comunica con **traveler_service** tramite il topic TravelcardPurchasedTopic per dirgli - in seguito a un pagamento avvenuto con successo - di aggiungere travelcard alla tabella delle travelcard acquistate
 
 ### Servizi richiesti
 
@@ -24,8 +25,9 @@ I microservizi comunicano fra loro tramite **Kafka**. In particolare:
   * traveler_service GET /my/profile
   * traveler_service POST /my/profile
 * traveler loggato deve comprare tickets
-  * ticket_catalogue_service POST /shop/{ticket-id}
+  * ticket_catalogue_service POST /shop/tickets/{ticket-id}
 * traveler loggato deve comprare travel cards
+  * ticket_catalogue_service POST /shop/travelcards/{travelcard-id}
 * traveler loggato deve consultare la lista degli acquisti
   * ticket_catalogue_service GET /orders
 * traveler loggato deve scaricare singoli documenti di viaggio sottoforma di QR che rappresenta un JWS
@@ -40,13 +42,16 @@ I microservizi comunicano fra loro tramite **Kafka**. In particolare:
   * login_service POST /admin/register
 * amministratore loggato può creare tipi di tickets
   * ticket_catalogue_service POST /admin/tickets
-* amministratore loggato può modificare proprietà dei tipi di tickets (scritte su traccia)
+* amministratore loggato può modificare proprietà dei tipi di tickets
   * ticket_catalogue_service PUT /admin/tickets/{ticket-id}
 * amministratore loggato può eliminare tipi di tickets
   * ticket_catalogue_service DELETE /admin/tickets/{ticket-id}
 * amministratore loggato può creare tipi di travel cards
-* amministratore loggato può modificare proprietà dei tipi di travel cards (scritte su traccia)
+  * ticket_catalogue_service POST /admin/travelcards
+* amministratore loggato può modificare proprietà dei tipi di travel cards
+  * ticket_catalogue_service PUT /admin/travelcards/{travelcard-id}
 * amministratore loggato può eliminare tipi di travel cards
+  * ticket_catalogue_service DELETE /admin/travelcards/{travelcard-id}
 * amministratore loggato può accedere a report di acquisti relativi a singoli utenti relativi a periodi di tempo selezionabili
   * payment_service GET /admin/transactions/user/range/?from=xxx&to=yyy
 * amministratore loggato può accedere a report di acquisti totali relativi a periodi di tempo selezionabili
