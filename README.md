@@ -5,8 +5,8 @@ Web Applications II final project
 
 L'applicazione è composta da 4 microservizi: 
 * **login_service**: gestisce la registrazione di nuovi utenti (da confermare con email) e il login. Per quest'ultimo ritorna un jwt da allegare nell'header Bearer per le richieste agli altri microservizi.
-* **traveler_service**: permette di ottenere e modificare info sui traveler, di ottenere info sui ticket e di aggiungere ticket alla lista di quelli comprati da un certo traveler. Inoltre contiene i path per le cose dei qr reader
-* **ticket_catalogue_service**: permette di ottenere e modificare la lista di tipi di ticket disponibili, la lista di ordini effettuati ed espone l'endpoint per l'acquisto di ticket
+* **traveler_service**: permette di ottenere e modificare info sui traveler, di ottenere info sui ticket/travelcard e di aggiungere ticket/travelcard alla lista di quelli comprati da un certo traveler. Inoltre contiene i path per le cose dei qr reader
+* **ticket_catalogue_service**: permette di ottenere e modificare la lista di tipi di ticket/travelcard disponibili, la lista di ordini effettuati ed espone l'endpoint per l'acquisto di ticket
 * **payment_service**: effettua le richieste di pagamento e fornisce la lista di transazioni effettuate
 
 I microservizi espongono **api** a cui utenti (traveler, admin, qr reader) possono fare richieste.
