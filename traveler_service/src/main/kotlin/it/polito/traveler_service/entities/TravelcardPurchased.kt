@@ -9,7 +9,8 @@ import java.util.*
 import javax.persistence.*
 
 @Entity
-class TicketPurchased {
+class TravelcardPurchased {
+
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     var sub: Long = 0L
@@ -18,17 +19,20 @@ class TicketPurchased {
     var zid: String = ""
     var validFrom: LocalDateTime = LocalDateTime.now()
     var type: String = ""
+    var remainingUsages = 0 //la travelcard è come un ticket che può essere usato tot volte
     @ManyToOne
     @JoinColumn(name = "userDetails")
     var userDetails: UserDetailsImpl? = null
 
-    constructor(iat: LocalDateTime, zid: String, userDetailsImpl: UserDetailsImpl, validFrom: LocalDateTime, type: String) {
+
+    constructor(iat: LocalDateTime, zid: String, userDetailsImpl: UserDetailsImpl, validFrom: LocalDateTime, type: String, remainingUsages: Int) {
         this.iat = iat
         this.exp = iat.plusHours(1)
         this.zid = zid
         this.userDetails = userDetailsImpl
         this.validFrom = validFrom
         this.type = type
+        this.remainingUsages = remainingUsages
     }
 
     fun toJws(): String {
@@ -37,15 +41,17 @@ class TicketPurchased {
         val accessKey = "30poSilNi15HCiEauzNN7V0aB30poSilNi15HCiEauzNN7V0aB30poSilNi15HCiE"
         val key = Keys.hmacShaKeyFor(Encoders.BASE64.encode(accessKey.toByteArray()).toByteArray())
         val jwt = Jwts.builder()
-                .setSubject(sub.toString())
-                .setIssuedAt(iatDate)
-                .setExpiration(expDate)
-                .claim("zid", zid)
-                .claim("validFrom", validFrom.toString())
-                .claim("type", type)
-                .signWith(key)
-                .compact()
+            .setSubject(sub.toString())
+            .setIssuedAt(iatDate)
+            .setExpiration(expDate)
+            .claim("zid", zid)
+            .claim("validFrom", validFrom.toString())
+            .claim("type", type)
+            .claim("remainingUses",remainingUsages)
+            .signWith(key)
+            .compact()
         return jwt.toString()
     }
+
 
 }

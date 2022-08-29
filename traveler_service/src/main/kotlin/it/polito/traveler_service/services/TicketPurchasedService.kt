@@ -22,7 +22,6 @@ class TicketPurchasedService {
 
     @Autowired
     lateinit var ticketPurchasedRepository: TicketPurchasedRepository
-
     @Autowired
     lateinit var userDetailsRepository: UserDetailsRepository
 

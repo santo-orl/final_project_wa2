@@ -1,15 +1,13 @@
 package it.polito.traveler_service.controllers
 
-import it.polito.traveler_service.dtos.CreateTicketsDTO
-import it.polito.traveler_service.dtos.TicketPurchasedDTO
-import it.polito.traveler_service.dtos.TransitDTO
-import it.polito.traveler_service.dtos.UserDetailsDTO
+import it.polito.traveler_service.dtos.*
 import it.polito.traveler_service.entities.UserDetailsImpl
 import it.polito.traveler_service.exceptions.TicketNotFoundException
 import it.polito.traveler_service.exceptions.UnauthorizedTicketAccessException
 import it.polito.traveler_service.exceptions.UserNotFoundException
 import it.polito.traveler_service.services.TicketPurchasedService
 import it.polito.traveler_service.services.TransitService
+import it.polito.traveler_service.services.TravelcardPurchasedService
 import it.polito.traveler_service.services.UserDetailsServiceImpl
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
@@ -26,12 +24,12 @@ class UserDetailsController {
 
     @Autowired
     lateinit var userDetailsServiceImpl: UserDetailsServiceImpl
-
     @Autowired
     lateinit var ticketPurchasedService: TicketPurchasedService
-
     @Autowired
     lateinit var transitService: TransitService
+    @Autowired
+    lateinit var travelcardPurchasedService: TravelcardPurchasedService
 
     @GetMapping("/my/profile")
     fun getUserDetailsInfo(@RequestHeader("authorization") jwt: String): ResponseEntity<UserDetailsDTO> {
@@ -94,6 +92,20 @@ class UserDetailsController {
             return ResponseEntity(HttpStatus.NOT_FOUND)
         }
         return ResponseEntity(tmp, HttpStatus.OK)
+    }
+
+    @GetMapping("/my/travelcards", produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun getAllTravelcards(): ResponseEntity<List<TravelcardPurchasedDTO>> {
+        var tmp: List<TravelcardPurchasedDTO>
+        try {
+            val principal = SecurityContextHolder.getContext().authentication.principal;
+            principal as UserDetailsImpl
+            var idU = principal.id
+            tmp = travelcardPurchasedService.getAllTravelcards(idU)
+        } catch (e: Exception) {
+            return ResponseEntity(HttpStatus.NOT_FOUND)
+        }
+        return ResponseEntity(tmp, HttpStatus.OK)
 
     }
 
@@ -114,6 +126,26 @@ class UserDetailsController {
         }
         //ritorno il jws codificato in base64
         ret = Base64.getEncoder().encodeToString(ticket.jws.toByteArray())
+        return ResponseEntity(ret, HttpStatus.OK)
+    }
+
+    @GetMapping("/my/travelcards/qr/{travelcardId}", produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun getTravelcardsAsQR(@PathVariable travelcardId: Long): ResponseEntity<String> {
+        val ret: String
+        var travelcard: TravelcardPurchasedDTO
+        val principal = SecurityContextHolder.getContext().authentication.principal;
+        principal as UserDetailsImpl
+        //prendo la travelcard, al suo interno ha già il jws
+        try {
+            travelcard = travelcardPurchasedService.getTravelcardById(travelcardId, principal.userr)
+        } catch (e: UnauthorizedTicketAccessException) {
+            //se un utente richiede il QR di una travelcard non sua
+            return ResponseEntity("This user can't access this travelcard",HttpStatus.UNAUTHORIZED)
+        }catch(e: TicketNotFoundException){
+            return ResponseEntity("Travelcard not found",HttpStatus.NOT_FOUND)
+        }
+        //ritorno il jws codificato in base64
+        ret = Base64.getEncoder().encodeToString(travelcard.jws.toByteArray())
         return ResponseEntity(ret, HttpStatus.OK)
     }
 
@@ -169,6 +201,15 @@ class UserDetailsController {
             return ResponseEntity(HttpStatus.NOT_FOUND)
         }
         return ResponseEntity(tickets, HttpStatus.OK)
+    }
+
+    @GetMapping("/admin/traveler/{userID}/travelcards", produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun getUserTravelcards(@PathVariable userID: Long): ResponseEntity<List<TravelcardPurchasedDTO>> {
+        var travelcards: List<TravelcardPurchasedDTO> = travelcardPurchasedService.getAllTravelcards(userID)
+        if (travelcards.isEmpty()) {
+            return ResponseEntity(HttpStatus.NOT_FOUND)
+        }
+        return ResponseEntity(travelcards, HttpStatus.OK)
     }
 
     @GetMapping("/admin/traveler/transits/{username}", produces = [MediaType.APPLICATION_JSON_VALUE])

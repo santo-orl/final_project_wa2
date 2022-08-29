@@ -10,7 +10,9 @@ import org.springframework.kafka.core.KafkaAdmin
 @Configuration
 class KafkaConfig(
     @Value("\${topics.ticket-purchased-topic.name}")
-    private val topic: String
+    private val ticketTopic: String,
+    @Value("\${topics.travelcard-purchased-topic.name}")
+    private val travelcardTopic: String
 ) {
     private val servers: String = "localhost:29092"
     @Bean
@@ -23,7 +25,16 @@ class KafkaConfig(
     @Bean
     fun createTicketPurchasedTopic(): NewTopic {
         return NewTopic(
-            topic,
+            ticketTopic,
+            1,
+            1
+        )
+    }
+
+    @Bean
+    fun createTravlecardPurchasedTopic(): NewTopic {
+        return NewTopic(
+            travelcardTopic,
             1,
             1
         )
