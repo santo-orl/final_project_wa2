@@ -79,6 +79,22 @@ I microservizi comunicano fra loro tramite **Kafka**. In particolare:
   * ticket_catalogue_service GET /admin/orders
 * amministratore loggato può consultare l'elenco degli ordini di uno specifico utente
   * ticket_catalogue_service GET /admin/orders/{user-id}
+  
+### Ticket e travelcard
+
+Le **travelcard** sono abbonamenti con le seguenti proprietà (oltre all'id) (in ticket_catalogue_service):
+* type: {WEEK, MONTH, YEAR}
+* price: Float
+* minAge: Int
+* maxAge: Int
+* zid: String
+Quando la travelcard viene acquistata si crea la TravelcardPurchased in traveler_service e ha i seguenti campi (oltre all'id):
+* type: {WEEK, MONTH, YEAR}
+* zid: String
+* validFrom: LocalDateTime
+* validTo: LocalDateTime
+* userDetails: UserDetailsImpl
+Il periodo di validità è dato da validFrom e validTo: questi campi vengono riempiti al momento dell'acquisto (inserimento in traveler_service) e in base al type. Un utente può usare una travelcard quante volte vuole all'interno del periodo di validità. La travelcard verrà rimossa in automatico dalle TravelcardPurchased alla scadenza del periodo di validità.
 
 ### Funzionamento dei QR
 
