@@ -14,44 +14,39 @@ class TravelcardPurchased {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     var sub: Long = 0L
-    var iat: LocalDateTime = LocalDateTime.now()
-    var exp: LocalDateTime = LocalDateTime.now()
-    var zid: String = ""
+    var type: TravelcardType
+    var zid: String
     var validFrom: LocalDateTime = LocalDateTime.now()
-    var type: String = ""
-    var remainingUsages = 0 //la travelcard è come un ticket che può essere usato tot volte
+    var validTo: LocalDateTime = LocalDateTime.now()
     @ManyToOne
     @JoinColumn(name = "userDetails")
     var userDetails: UserDetailsImpl? = null
 
 
-    constructor(iat: LocalDateTime, zid: String, userDetailsImpl: UserDetailsImpl, validFrom: LocalDateTime, type: String, remainingUsages: Int) {
-        this.iat = iat
-        this.exp = iat.plusHours(1)
-        this.zid = zid
-        this.userDetails = userDetailsImpl
-        this.validFrom = validFrom
-        this.type = type
-        this.remainingUsages = remainingUsages
+    constructor(type: TravelcardType, zid: String, validFrom: LocalDateTime, validTo: LocalDateTime, userDetails: UserDetailsImpl){
+        this.type=type
+        this.zid=zid
+        this.validFrom=validFrom
+        this.validTo=validTo
+        this.userDetails=userDetails
     }
 
     fun toJws(): String {
-        val iatDate = Date.from(iat.atZone(ZoneId.systemDefault()).toInstant())
-        val expDate = Date.from(exp.atZone(ZoneId.systemDefault()).toInstant())
         val accessKey = "30poSilNi15HCiEauzNN7V0aB30poSilNi15HCiEauzNN7V0aB30poSilNi15HCiE"
         val key = Keys.hmacShaKeyFor(Encoders.BASE64.encode(accessKey.toByteArray()).toByteArray())
         val jwt = Jwts.builder()
             .setSubject(sub.toString())
-            .setIssuedAt(iatDate)
-            .setExpiration(expDate)
             .claim("zid", zid)
             .claim("validFrom", validFrom.toString())
+            .claim("validTo", validTo.toString())
             .claim("type", type)
-            .claim("remainingUses",remainingUsages)
             .signWith(key)
             .compact()
         return jwt.toString()
     }
 
+    enum class TravelcardType{
+        WEEK,MONTH,YEAR
+    }
 
 }

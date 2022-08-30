@@ -27,10 +27,8 @@ class TicketCatController {
 
     @Autowired
     lateinit var ticketCatService: TicketCatService
-
     @Autowired
     lateinit var travelcardService: TravelcardService
-
     @Autowired
     lateinit var orderService: OrderService
 

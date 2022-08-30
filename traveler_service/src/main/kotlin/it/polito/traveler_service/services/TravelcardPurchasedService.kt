@@ -10,9 +10,12 @@ import it.polito.traveler_service.exceptions.UnauthorizedTicketAccessException
 import it.polito.traveler_service.repositories.TravelcardPurchasedRepository
 import it.polito.traveler_service.repositories.UserDetailsRepository
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
+import java.util.concurrent.TimeUnit
 
 @Service
 class TravelcardPurchasedService {
@@ -43,17 +46,15 @@ class TravelcardPurchasedService {
         return travelcard.toDTO()
     }
 
-    fun createTravelcard(zones: String, id: Long, validFrom: String, type: String, remainingUsages: Int): TravelcardPurchasedDTO {
-        var userr = userDetailsRepository.findById(id).get()
-        var travelcard = TravelcardPurchased(
-            LocalDateTime.now(),
-            zones,
-            userr,
-            LocalDateTime.parse(validFrom, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")),
-            type,
-            remainingUsages
-        )
-        travelcardPurchasedRepository.save(travelcard)
+    fun createTravelcard(userId: Long,type: TravelcardPurchased.TravelcardType, zones: String): TravelcardPurchasedDTO {
+        var userr = userDetailsRepository.findById(userId).get()
+        //imposto il periodo di validità a partire da oggi e fino a una data che dipende dal type
+        var validTo: LocalDateTime = when(type){
+            TravelcardPurchased.TravelcardType.WEEK -> LocalDateTime.now().plus(1,ChronoUnit.WEEKS)
+            TravelcardPurchased.TravelcardType.MONTH -> LocalDateTime.now().plus(1,ChronoUnit.MONTHS)
+            TravelcardPurchased.TravelcardType.YEAR -> LocalDateTime.now().plus(1,ChronoUnit.YEARS)
+        }
+        var travelcard = travelcardPurchasedRepository.save(TravelcardPurchased(type,zones, LocalDateTime.now(),validTo,userr))
         return travelcard.toDTO()
     }
 
@@ -67,25 +68,18 @@ class TravelcardPurchasedService {
         travelcardPurchasedRepository.delete(travelcard)
     }
 
-    fun decreaseUsages(travelcardId: Long){
-        var travelcard: TravelcardPurchased
-        try {
-            travelcard = travelcardPurchasedRepository.findById(travelcardId).get()
-        } catch (e: NoSuchElementException) {
-            throw TicketNotFoundException("Travelcard not found")
-        }
-        if(travelcard.remainingUsages <= 0) throw IllegalArgumentException("This travelcard has no remaining usages")
-        travelcardPurchasedRepository.decreaseRemainingUsages(travelcardId)
+    fun isExpired(travelcardId: Long): Boolean{
+        val travelcardPurchased = travelcardPurchasedRepository.findById(travelcardId).get()
+        return LocalDateTime.now().isAfter(travelcardPurchased.validTo)
     }
 
-    fun hasRemainingUsages(travelcardId: Long): Boolean{
-        var travelcard: TravelcardPurchased
-        try {
-            travelcard = travelcardPurchasedRepository.findById(travelcardId).get()
-        } catch (e: NoSuchElementException) {
-            throw TicketNotFoundException("Travelcard not found")
-        }
-        return travelcard.remainingUsages!=0
+    //ogni giorno a mezzanotte elimina le travelcard scadute
+    @Scheduled(cron = "0 0 0 * * *")
+    fun removeExpiredTravelcards(){
+        var travelcards = travelcardPurchasedRepository.findAll()
+        for(travelcard in travelcards)
+            if(isExpired(travelcard.sub))
+                travelcardPurchasedRepository.delete(travelcard)
     }
 
 }

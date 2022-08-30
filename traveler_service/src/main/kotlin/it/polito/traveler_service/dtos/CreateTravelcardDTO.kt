@@ -1,10 +1,10 @@
 package it.polito.traveler_service.dtos
 
+import it.polito.traveler_service.entities.TravelcardPurchased
+
 data class CreateTravelcardDTO(
     val cmd: String, //inutile?
+    val type: TravelcardPurchased.TravelcardType,
     val zones: String,
-    val validFrom: String,
-    val type: String,
-    val username: String,
-    val remainingUsages: Int
+    val username: String
 )

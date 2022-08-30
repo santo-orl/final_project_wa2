@@ -45,11 +45,9 @@ class KafkaListenerService {
             ObjectMapper().readValue(createTravelcardPurchasedString, CreateTravelcardDTO::class.java)
         val user = userDetailsRepository.findUserDetailsByUserr(createTravelcardPurchased.username).get(0)
             var travelcard = travelcardPurchasedService.createTravelcard(
-                createTravelcardPurchased.zones,
                 user.id,
-                createTravelcardPurchased.validFrom,
                 createTravelcardPurchased.type,
-                createTravelcardPurchased.remainingUsages
+                createTravelcardPurchased.zones
             )
     }
 

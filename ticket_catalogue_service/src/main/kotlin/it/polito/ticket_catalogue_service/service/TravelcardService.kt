@@ -41,9 +41,7 @@ class TravelcardService {
                 newTravelcardDTO.price,
                 newTravelcardDTO.minAge,
                 newTravelcardDTO.maxAge,
-                newTravelcardDTO.zid,
-                newTravelcardDTO.validFrom,
-                newTravelcardDTO.maxUsages
+                newTravelcardDTO.zid
             )
         ).toDTO()
     }
@@ -65,9 +63,7 @@ class TravelcardService {
                 newTravelcard.price,
                 newTravelcard.minAge,
                 newTravelcard.maxAge,
-                newTravelcard.zid,
-                newTravelcard.validFrom,
-                newTravelcard.maxUsages
+                newTravelcard.zid
             )).toDTO()
     }
 

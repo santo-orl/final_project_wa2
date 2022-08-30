@@ -6,11 +6,13 @@ import org.springframework.data.relational.core.mapping.Table
 @Table("travelcards")
 data class Travelcard(
     @Id val travelcardId: Long?,
-    val travelcardType: String,
+    val travelcardType: TravelcardType,
     val price: Float,
     val minAge: Int?,
     val maxAge: Int?,
-    val zid: String,
-    val validFrom: String,
-    val maxUsages: Int
+    val zid: String
 )
+
+enum class TravelcardType{
+    WEEK,MONTH,YEAR
+}

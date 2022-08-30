@@ -135,9 +135,12 @@ class UserDetailsController {
         var travelcard: TravelcardPurchasedDTO
         val principal = SecurityContextHolder.getContext().authentication.principal;
         principal as UserDetailsImpl
-        //prendo la travelcard, al suo interno ha già il jws
         try {
+            //prendo la travelcard, al suo interno ha già il jws
             travelcard = travelcardPurchasedService.getTravelcardById(travelcardId, principal.userr)
+            //controllo che la travelcard sia valida
+            if(travelcardPurchasedService.isExpired(travelcard.sub))
+                return ResponseEntity("This travelcard is not valid", HttpStatus.UNAUTHORIZED)
         } catch (e: UnauthorizedTicketAccessException) {
             //se un utente richiede il QR di una travelcard non sua
             return ResponseEntity("This user can't access this travelcard",HttpStatus.UNAUTHORIZED)

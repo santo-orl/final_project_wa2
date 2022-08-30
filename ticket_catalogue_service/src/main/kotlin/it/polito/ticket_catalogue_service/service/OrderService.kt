@@ -83,7 +83,7 @@ class OrderService {
 
     suspend fun sendPurchasedTravelcardToTraveler(travelcardId:Long,jwt:String,username: String){
         val travelcard = travelcardRepository.findById(travelcardId)
-        val createTravelcardDTO = CreateTravelcardDTO("create",travelcard!!.zid,travelcard.validFrom,travelcard.travelcardType,username,travelcard.maxUsages)
+        val createTravelcardDTO = CreateTravelcardDTO("create",travelcard!!.travelcardType,travelcard!!.zid,username)
         kafkaTravelcardPurchasedTemplate.send(travelcardPurchasedTopic, createTravelcardDTO)
     }
 

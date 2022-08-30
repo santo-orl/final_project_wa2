@@ -6,15 +6,13 @@ import java.time.LocalDateTime
 
 data class TravelcardPurchasedDTO (
     val sub: Long,
-    val iat: LocalDateTime,
-    val exp: LocalDateTime,
-    val zid: String,
-    val validFrom: LocalDateTime,
-    val type: String,
-    val remainingUsages: Int,
+    var type: TravelcardPurchased.TravelcardType,
+    var zid: String,
+    var validFrom: LocalDateTime,
+    var validTo: LocalDateTime,
     val jws: String
 )
 
 fun TravelcardPurchased.toDTO(): TravelcardPurchasedDTO {
-    return TravelcardPurchasedDTO(this.sub, this.iat, this.exp, this.zid,this.validFrom,this.type,this.remainingUsages,this.toJws())
+    return TravelcardPurchasedDTO(this.sub, this.type, this.zid, this.validFrom,this.validTo,this.toJws())
 }
