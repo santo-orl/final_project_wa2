@@ -10,7 +10,9 @@ import org.springframework.kafka.core.KafkaAdmin
 @Configuration
 class KafkaConfig(
     @Value("\${topics.payment-request-topic.name}")
-    private val topic: String
+    private val topicRequest: String,
+    @Value("\${topics.payment-response-topic.name}")
+    private val topicResponse: String
 ) {
     private val servers: String = "localhost:29092"
     @Bean
@@ -23,7 +25,7 @@ class KafkaConfig(
     @Bean
     fun createPaymentRequestTopic(): NewTopic {
         return NewTopic(
-            topic,
+            topicRequest,
             1,
             1
         )
@@ -32,7 +34,7 @@ class KafkaConfig(
     @Bean
     fun createPaymentResponseTopic(): NewTopic {
         return NewTopic(
-            "PaymentResponseTopic",
+            topicResponse,
             1,
             1
         )
