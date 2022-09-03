@@ -1,6 +1,7 @@
 package it.polito.login_service.controllers
 
 import it.polito.login_service.services.EmailService
+import kotlinx.coroutines.FlowPreview
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.mail.SimpleMailMessage
 import org.springframework.mail.javamail.JavaMailSender
@@ -16,6 +17,7 @@ class EmailController {
 
     //funzione creata se si fa una post a questo indirizzo
     //usata solo per vedere se il blocco "invio mail" funzionava
+    @FlowPreview
     @PostMapping("/mail/send")
     fun sendEmail(@RequestBody mail: EmailService.Email): Unit {
         val message = SimpleMailMessage()
