@@ -10,9 +10,9 @@ import org.springframework.stereotype.Repository
 import java.util.UUID
 
 @Repository
-interface ActivationRepository: CrudRepository<Activation, UUID> {
+interface ActivationRepository: CoroutineCrudRepository<Activation, UUID> {
 
     @Query("SELECT a FROM Activation a WHERE a.user.userrname = ?1")
-    fun findActivationByUsername(username: String?): List<Activation>
+    fun findActivationByUsername(username: String?): Flow<Activation>
 
 }

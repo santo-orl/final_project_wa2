@@ -4,6 +4,9 @@ import it.polito.login_service.entities.User
 import it.polito.login_service.dtos.UserDTO
 import it.polito.login_service.dtos.toDTO
 import it.polito.login_service.repositories.UserRepository
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.runBlocking
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
@@ -16,12 +19,12 @@ class UserDetailsServiceImpl : UserDetailsService {
     lateinit var userRepository: UserRepository
 
 
-    fun getUserDetails(username: String): UserDTO? {
+    suspend fun getUserDetails(username: String): UserDTO? {
         var ret: UserDTO? = null
         try {
-            ret= userRepository.findUserByUsername(username).get(0).toDTO()
+            ret = userRepository.findUserByUsername(username).first().toDTO()
         }catch(e: IndexOutOfBoundsException){
-            println(userRepository.findUserByUsername(username).size)
+            println(userRepository.findUserByUsername(username).toList().size)
         }
         return ret
     }
@@ -39,15 +42,19 @@ class UserDetailsServiceImpl : UserDetailsService {
 
 
     override fun loadUserByUsername(username: String?): User {
-        return userRepository.findUserByUsername(username).get(0)
+        var user: User = User()
+        runBlocking {
+            user = userRepository.findUserByUsername(username).first()
+        }
+        return user
     }
 /*
     fun getTravelers(): List<String>{
         return userRepository.findAllTravelers()
     }*/
 
-    fun getUserById(uId : Long): UserDTO{
-        return userRepository.findById(uId).get().toDTO()
+    suspend fun getUserById(uId : Long): UserDTO{
+        return userRepository.findById(uId)!!.toDTO()
     }
 
 }

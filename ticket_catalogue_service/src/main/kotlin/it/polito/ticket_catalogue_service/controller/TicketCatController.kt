@@ -92,10 +92,7 @@ class TicketCatController {
     }
 
     @PostMapping("/admin/tickets", produces = [MediaType.APPLICATION_NDJSON_VALUE])
-    suspend fun addTicket(
-        @RequestBody addTicketRequest: TicketDTO,
-        @RequestHeader("authorization") jwt: String
-    ): ResponseEntity<TicketDTO> {
+    suspend fun addTicket(@RequestBody addTicketRequest: TicketDTO, @RequestHeader("authorization") jwt: String): ResponseEntity<TicketDTO> {
         return ResponseEntity(ticketCatService.addNewTicket(addTicketRequest), HttpStatus.CREATED)
     }
 

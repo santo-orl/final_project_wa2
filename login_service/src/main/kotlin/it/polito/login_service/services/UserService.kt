@@ -12,6 +12,8 @@ import it.polito.login_service.entities.User
 import it.polito.login_service.exceptions.*
 import it.polito.login_service.repositories.ActivationRepository
 import it.polito.login_service.repositories.UserRepository
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.toList
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.mail.SimpleMailMessage
 import org.springframework.mail.javamail.JavaMailSender
@@ -27,7 +29,6 @@ import javax.transaction.Transactional
 @Transactional
 class UserService(var activationRepository: ActivationRepository,
                   var userRepository: UserRepository,
-                  var emailService: EmailService,
                   val bCryptPasswordEncoder: BCryptPasswordEncoder) {
 
 
@@ -35,7 +36,7 @@ class UserService(var activationRepository: ActivationRepository,
     lateinit var emailSender: JavaMailSender
 
     //used in /user/register controller
-    fun registerUser(userDTO: UserDTO, role: Role): UUID {
+    suspend fun registerUser(userDTO: UserDTO, role: Role): UUID {
         val username = userDTO.username
         val password = userDTO.password
         val email = userDTO.email
@@ -44,10 +45,10 @@ class UserService(var activationRepository: ActivationRepository,
         if (username === "" || password === "" || email === "") {
             throw BadCredentialsException("Empty parameters")
         }
-        if (userRepository.findUserByUsername(username).isNotEmpty()) {
+        if (userRepository.findUserByUsername(username).toList().isNotEmpty()) {
             throw BadCredentialsException("Username already exists")
         }
-        if (userRepository.findUserByEmail(email).isNotEmpty()) {
+        if (userRepository.findUserByEmail(email).toList().isNotEmpty()) {
             throw BadCredentialsException("Email already used")
         }
         if ((password.length < 8) ||
@@ -91,16 +92,18 @@ class UserService(var activationRepository: ActivationRepository,
 
 
     //used in /user/validate controller
-    fun validateUser(activationDTO: ActivationDTO): UserDTO {
+    suspend fun validateUser(activationDTO: ActivationDTO): UserDTO {
         var activationID = activationDTO.id
         var activationCode = activationDTO.activationCode
         var activation: Activation = Activation()
 
         //trovo activation corrispondente al randomID (potrebbe non esistere)
         try {
-            activation = activationRepository.findById(activationID).get()
+            activation = activationRepository.findById(activationID)!!
 
         } catch (e: IllegalArgumentException) { //if activationID does not exist
+            throw ActivationIdException("Invalid activation ID")
+        }catch(e: NullPointerException){
             throw ActivationIdException("Invalid activation ID")
         }
         //se è passata la data di scadenza, rimuovo il record da Activation e ritorno 404 dal controller
@@ -112,7 +115,7 @@ class UserService(var activationRepository: ActivationRepository,
         if (!activationCode.equals(activation.activationCode)) {
             activation.attemptCounter--
             //se attemptCounter è 0 rimuovo il record in Activation e in User
-            if (activation.attemptCounter === 0) {
+            if (activation.attemptCounter == 0) {
                 userRepository.delete(activation.user)
                 activationRepository.delete(activation)
             }
@@ -120,7 +123,7 @@ class UserService(var activationRepository: ActivationRepository,
         }
 
         //setto a "active" lo status dello user corrispondente a questa activation (chiave esterna)
-        var user: User = activation.user
+        val user: User = activation.user
         user.status = "active"
         activationRepository.delete(activation)
 
@@ -129,8 +132,8 @@ class UserService(var activationRepository: ActivationRepository,
     }
 
     //login
-    fun logUser(username:String,password:String):Role{
-        val user = userRepository.findUserByUsername(username).get(0)
+    suspend fun logUser(username:String,password:String):Role{
+        val user = userRepository.findUserByUsername(username).first()
         if(!bCryptPasswordEncoder.matches(password,user.password)){
             throw BadLoginException("Bad login :( wrong user or psw :'( ")
         }
@@ -159,9 +162,9 @@ class UserService(var activationRepository: ActivationRepository,
 
     @Scheduled(fixedRate =60000)
     //function for periodic check on expired registration data each minute
-    fun checkExpRegData() {
+    suspend fun checkExpRegData() {
         println("Checking on expired registration data . . . ")
-        var activationList = activationRepository.findAll()
+        var activationList = activationRepository.findAll().toList()
         for (activation in activationList)
             if (Calendar.getInstance().time.after(activation.activationDeadline)) {
                 println("Expired registration data found . . . ")

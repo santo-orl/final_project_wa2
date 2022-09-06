@@ -19,7 +19,7 @@ class EmailController {
     //usata solo per vedere se il blocco "invio mail" funzionava
     @FlowPreview
     @PostMapping("/mail/send")
-    fun sendEmail(@RequestBody mail: EmailService.Email): Unit {
+    suspend fun sendEmail(@RequestBody mail: EmailService.Email) {
         val message = SimpleMailMessage()
         message.setFrom("finalprojectwa2@libero.it")
         message.setTo("email@prova.it")

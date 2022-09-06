@@ -22,7 +22,6 @@ import java.util.*
 
 
 @RestController
-
 class UserController {
 
     @Autowired
@@ -33,8 +32,7 @@ class UserController {
 
     @FlowPreview
     @PostMapping("/user/register", produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun registration(@RequestBody user: UserDTO): ResponseEntity<String> {
-
+    suspend fun registration(@RequestBody user: UserDTO): ResponseEntity<String> {
         var id: UUID
         try {
             id = userService.registerUser(user,Role.CUSTOMER)
@@ -45,12 +43,11 @@ class UserController {
         }
         val email = user.email
         return ResponseEntity("{\"provisional_id\":\"$id\",\"email\":\"$email\"}", HttpStatus.ACCEPTED)
-
     }
 
 
     @PostMapping("/user/validate", produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun validation(@RequestBody activation: ActivationDTO): ResponseEntity<String> {
+    suspend fun validation(@RequestBody activation: ActivationDTO): ResponseEntity<String> {
         var user: UserDTO
         try {
             user = userService.validateUser(activation)
@@ -76,7 +73,7 @@ class UserController {
 
 
     @PostMapping("/user/login", produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun logUser(@RequestBody requester: UserLoginDTO): ResponseEntity<String> {
+    suspend fun logUser(@RequestBody requester: UserLoginDTO): ResponseEntity<String> {
         val username = requester.username
         val password = requester.password
         var role: Role
@@ -97,7 +94,7 @@ class UserController {
     }
 
     @PostMapping("/admin/register", produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun registrationAdmin(@RequestBody user: UserDTO): ResponseEntity<String> {
+    suspend fun registrationAdmin(@RequestBody user: UserDTO): ResponseEntity<String> {
         var id: UUID
         try {
             id = userService.registerUser(user,Role.ADMIN)
