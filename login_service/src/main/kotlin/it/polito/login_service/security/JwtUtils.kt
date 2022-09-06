@@ -7,7 +7,10 @@ import io.jsonwebtoken.io.Encoders
 import io.jsonwebtoken.security.Keys
 import it.polito.login_service.dtos.UserDTO
 import it.polito.login_service.dtos.toDTO
+import it.polito.login_service.entities.User
 import it.polito.login_service.repositories.UserRepository
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
@@ -34,10 +37,10 @@ class JwtUtils {
         try {
             //check signature
             jws = Jwts
-                    .parserBuilder()
-                    .setSigningKey(key)
-                    .build()
-                    .parseClaimsJws(authToken)
+                .parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(authToken)
 
         } catch (e: RuntimeException) {
             println(e.toString())
@@ -57,13 +60,15 @@ class JwtUtils {
         //jws sicuramente valido perché è passato da validateJwt
         val key = Keys.hmacShaKeyFor(Encoders.BASE64.encode(jwtValidationKey.toByteArray()).toByteArray())
         var jws = Jwts
-                .parserBuilder()
-                .setSigningKey(key)
-                .build()
-                .parseClaimsJws(authToken)
+            .parserBuilder()
+            .setSigningKey(key)
+            .build()
+            .parseClaimsJws(authToken)
         val username = jws.body["sub"].toString()
-
-        val u = userRepository.findUserByUsername(username).get(0)
+        var u: User
+        runBlocking {
+            u = userRepository.findUserByUsername(username).first()
+        }
 
         return u.toDTO()
     }

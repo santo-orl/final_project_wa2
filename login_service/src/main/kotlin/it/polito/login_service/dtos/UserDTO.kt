@@ -11,5 +11,5 @@ data class UserDTO(
 )
 
 fun User.toDTO(): UserDTO{
-        return UserDTO(username,password,email,id,status)
+        return UserDTO(this.userrname,this.passsword,email,id,status)
 }

@@ -2,29 +2,22 @@ package it.polito.login_service.entities
 
 import java.util.Date
 import java.util.UUID
-import javax.persistence.*
+import org.springframework.data.annotation.Id
+import org.springframework.data.relational.core.mapping.Table
 
-@Entity
-class Activation: EntityBase<UUID> {
-
-    //random id used during registration
-    @Id
-    var id: UUID = UUID.randomUUID()
-
-    @OneToOne
-    var user: User = User()
-
-    var activationCode: String = ""
-    @Temporal(TemporalType.TIMESTAMP)
-    var activationDeadline: Date = Date()
+@Table("activation")
+data class Activation(
+    @Id var id: UUID = UUID.randomUUID(),
+    var user: User, //TODO mettere il tipo o la chiave esterna (Long)?
+    var activationCode: String,
+    var activationDeadline: Date,
     var attemptCounter: Int = 5
-
-    constructor()
-    constructor(id: UUID, user: User, activationCode: String, activationDeadline: String, attemptCounter: Int)
-    constructor(user: User, activationCode: String, activationDeadline: Date){
-        this.user=user
-        this.activationCode=activationCode
-        this.activationDeadline=activationDeadline
-    }
-
+) {
+    constructor(): this(UUID.randomUUID(),User(),"",Date(),5)
+    constructor(user: User, activationCode: String, activationDeadline: Date)
+        : this(UUID.randomUUID(),user,activationCode, activationDeadline,5)
 }
+
+
+
+

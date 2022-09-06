@@ -1,10 +1,11 @@
 package it.polito.login_service.entities
-
+/*
 import org.springframework.data.util.ProxyUtils
 import javax.persistence.MappedSuperclass
 import java.io.Serializable
 import javax.persistence.GeneratedValue
 import javax.persistence.Id
+
 
 @MappedSuperclass
 abstract class EntityBase<T: Serializable> {
@@ -36,3 +37,5 @@ abstract class EntityBase<T: Serializable> {
     }
 
 }
+
+ */

@@ -22,11 +22,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.stereotype.Service
 import java.util.*
 import java.util.regex.Pattern
-import javax.transaction.Transactional
+
 
 
 @Service
-@Transactional
+
 class UserService(var activationRepository: ActivationRepository,
                   var userRepository: UserRepository,
                   val bCryptPasswordEncoder: BCryptPasswordEncoder) {
@@ -134,7 +134,7 @@ class UserService(var activationRepository: ActivationRepository,
     //login
     suspend fun logUser(username:String,password:String):Role{
         val user = userRepository.findUserByUsername(username).first()
-        if(!bCryptPasswordEncoder.matches(password,user.password)){
+        if(!bCryptPasswordEncoder.matches(password,user.passsword)){
             throw BadLoginException("Bad login :( wrong user or psw :'( ")
         }
         /*if(password != user.password){

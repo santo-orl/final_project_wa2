@@ -13,7 +13,7 @@ import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.stereotype.Service
 
 @Service
-class UserDetailsServiceImpl : UserDetailsService {
+class UserDetailsServiceImpl  {
 
     @Autowired
     lateinit var userRepository: UserRepository
@@ -40,7 +40,7 @@ class UserDetailsServiceImpl : UserDetailsService {
         userDetailsRepository.save(userDetails)
     }*/
 
-
+/*
     override fun loadUserByUsername(username: String?): User {
         var user: User = User()
         runBlocking {
@@ -48,6 +48,8 @@ class UserDetailsServiceImpl : UserDetailsService {
         }
         return user
     }
+
+ */
 /*
     fun getTravelers(): List<String>{
         return userRepository.findAllTravelers()

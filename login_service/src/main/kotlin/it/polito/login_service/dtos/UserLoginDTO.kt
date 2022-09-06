@@ -8,5 +8,5 @@ data class UserLoginDTO (
 )
 
 fun User.toUserLoginDTO(): UserLoginDTO{
-    return UserLoginDTO(username,password)
+    return UserLoginDTO(this.userrname,this.passsword)
 }
