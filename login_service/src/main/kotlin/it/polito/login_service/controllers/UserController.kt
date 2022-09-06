@@ -30,7 +30,7 @@ class UserController {
     @GetMapping("/hello")
     fun hello() = "hello"
 
-    @FlowPreview
+
     @PostMapping("/user/register", produces = [MediaType.APPLICATION_JSON_VALUE])
     suspend fun registration(@RequestBody user: UserDTO): ResponseEntity<String> {
         var id: UUID

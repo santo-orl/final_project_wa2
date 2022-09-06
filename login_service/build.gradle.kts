@@ -25,6 +25,7 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
+    implementation("org.springframework.boot:spring-boot-starter-webflux")
     implementation("junit:junit:4.13.2")
     implementation("com.github.vladimir-bukhtoyarov:bucket4j-core:7.4.0")
     implementation("org.springframework.boot:spring-boot-starter-security")
