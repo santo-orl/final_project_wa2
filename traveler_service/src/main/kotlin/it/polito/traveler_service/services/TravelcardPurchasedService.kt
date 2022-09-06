@@ -9,6 +9,9 @@ import it.polito.traveler_service.exceptions.TicketNotFoundException
 import it.polito.traveler_service.exceptions.UnauthorizedTicketAccessException
 import it.polito.traveler_service.repositories.TravelcardPurchasedRepository
 import it.polito.traveler_service.repositories.UserDetailsRepository
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.toList
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
@@ -25,20 +28,20 @@ class TravelcardPurchasedService {
     @Autowired
     lateinit var userDetailsRepository: UserDetailsRepository
 
-    fun getAllTravelcards(userId: Long): List<TravelcardPurchasedDTO> {
+    suspend fun getAllTravelcards(userId: Long): Flow<TravelcardPurchasedDTO> {
         var list: ArrayList<TravelcardPurchasedDTO> = ArrayList()
-        var ret = travelcardPurchasedRepository.findAllTravelcards(userId)
+        var ret = travelcardPurchasedRepository.findAllTravelcards(userId).toList()
         for (travelcardPurchased in ret) {
             list.add(travelcardPurchased.toDTO())
         }
-        return list
+        return list.asFlow()
     }
 
-    fun getTravelcardById(travelcardId: Long, username: String): TravelcardPurchasedDTO {
+    suspend fun getTravelcardById(travelcardId: Long, username: String): TravelcardPurchasedDTO {
         var travelcard: TravelcardPurchased
         try {
-            travelcard = travelcardPurchasedRepository.findById(travelcardId).get()
-        } catch (e: NoSuchElementException) {
+            travelcard = travelcardPurchasedRepository.findById(travelcardId)!!
+        } catch (e: NullPointerException) {
             throw TicketNotFoundException("Travelcard not found")
         }
         if (!travelcard.userDetails?.userr.equals(username))
@@ -46,8 +49,8 @@ class TravelcardPurchasedService {
         return travelcard.toDTO()
     }
 
-    fun createTravelcard(userId: Long,type: TravelcardPurchased.TravelcardType, zones: String): TravelcardPurchasedDTO {
-        var userr = userDetailsRepository.findById(userId).get()
+    suspend fun createTravelcard(userId: Long,type: TravelcardPurchased.TravelcardType, zones: String): TravelcardPurchasedDTO {
+        var userr = userDetailsRepository.findById(userId)!!  //bisogna controllare l'eccezione
         //imposto il periodo di validità a partire da oggi e fino a una data che dipende dal type
         var validTo: LocalDateTime = when(type){
             TravelcardPurchased.TravelcardType.WEEK -> LocalDateTime.now().plus(1,ChronoUnit.WEEKS)
@@ -58,25 +61,25 @@ class TravelcardPurchasedService {
         return travelcard.toDTO()
     }
 
-    fun removeTravelcard(sub: Long) {
+    suspend fun removeTravelcard(sub: Long) {
         var travelcard: TravelcardPurchased
         try {
-            travelcard = travelcardPurchasedRepository.findById(sub).get()
-        } catch (e: NoSuchElementException) {
+            travelcard = travelcardPurchasedRepository.findById(sub)!!
+        } catch (e: NullPointerException) {
             throw TicketNotFoundException("travelcard not found")
         }
         travelcardPurchasedRepository.delete(travelcard)
     }
 
-    fun isExpired(travelcardId: Long): Boolean{
-        val travelcardPurchased = travelcardPurchasedRepository.findById(travelcardId).get()
+    suspend fun isExpired(travelcardId: Long): Boolean{
+        val travelcardPurchased = travelcardPurchasedRepository.findById(travelcardId)!! //bisogna controllare l'eccezione
         return LocalDateTime.now().isAfter(travelcardPurchased.validTo)
     }
 
     //ogni giorno a mezzanotte elimina le travelcard scadute
     @Scheduled(cron = "0 0 0 * * *")
-    fun removeExpiredTravelcards(){
-        var travelcards = travelcardPurchasedRepository.findAll()
+    suspend fun removeExpiredTravelcards(){
+        var travelcards = travelcardPurchasedRepository.findAll().toList()
         for(travelcard in travelcards)
             if(isExpired(travelcard.sub))
                 travelcardPurchasedRepository.delete(travelcard)

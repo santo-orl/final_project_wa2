@@ -10,10 +10,14 @@ import it.polito.traveler_service.exceptions.TicketNotFoundException
 import it.polito.traveler_service.exceptions.UnauthorizedTicketAccessException
 import it.polito.traveler_service.repositories.TicketPurchasedRepository
 import it.polito.traveler_service.repositories.UserDetailsRepository
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.asFlow
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.toList
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -26,17 +30,17 @@ class TicketPurchasedService {
     lateinit var userDetailsRepository: UserDetailsRepository
 
 
-    fun getAllTickets(userId: Long): List<TicketPurchasedDTO> {
+    suspend fun getAllTickets(userId: Long): Flow<TicketPurchasedDTO> {
         var list: ArrayList<TicketPurchasedDTO> = ArrayList()
-        var ret = ticketPurchasedRepository.findAllTickets(userId)
+        var ret = ticketPurchasedRepository.findAllTickets(userId).toList()
         for (ticketPurchased in ret) {
             list.add(ticketPurchased.toDTO())
         }
-        return list
+        return list.asFlow()
     }
 
-    fun createTicket(zones: String, id: Long, validFrom: String, type: String): TicketPurchasedDTO {
-        var userr = userDetailsRepository.findById(id).get()
+    suspend fun createTicket(zones: String, id: Long, validFrom: String, type: String): TicketPurchasedDTO {
+        var userr = userDetailsRepository.findById(id)!! //.first(), bisogna controllare l'eccezione
         var ticket = TicketPurchased(
             LocalDateTime.now(),
             zones,
@@ -48,21 +52,21 @@ class TicketPurchasedService {
         return ticket.toDTO()
     }
 
-    fun removeTicket(sub: Long) {
+    suspend fun removeTicket(sub: Long) {
         var ticket: TicketPurchased
         try {
-            ticket = ticketPurchasedRepository.findById(sub).get()
-        } catch (e: NoSuchElementException) {
+            ticket = ticketPurchasedRepository.findById(sub)!!
+        } catch (e: NullPointerException) {
             throw TicketNotFoundException("ticket not found")
         }
         ticketPurchasedRepository.delete(ticket)
     }
 
-    fun getTicketById(ticketId: Long, username: String): TicketPurchasedDTO {
+    suspend fun getTicketById(ticketId: Long, username: String): TicketPurchasedDTO {
         var ticket: TicketPurchased
         try {
-            ticket = ticketPurchasedRepository.findById(ticketId).get()
-        } catch (e: NoSuchElementException) {
+            ticket = ticketPurchasedRepository.findById(ticketId)!!
+        } catch (e: NullPointerException) {
             throw TicketNotFoundException("Ticket not found")
         }
         if (!ticket.userDetails?.userr.equals(username))

@@ -8,6 +8,8 @@ import it.polito.traveler_service.entities.UserDetailsImpl
 import it.polito.traveler_service.exceptions.UserNotFoundException
 import it.polito.traveler_service.repositories.TransitRepository
 import it.polito.traveler_service.repositories.UserDetailsRepository
+import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.runBlocking
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
@@ -24,17 +26,17 @@ class UserDetailsServiceImpl : UserDetailsService {
     lateinit var transitRepository: TransitRepository
 
 
-    fun getUserDetails(username: String): UserDetailsDTO {
+    suspend fun getUserDetails(username: String): UserDetailsDTO {
         var ret: UserDetailsDTO
         try {
-            ret = userDetailsRepository.findUserDetailsByUserr(username).get(0).toDTO()
+            ret = userDetailsRepository.findUserDetailsByUserr(username).first().toDTO()
         } catch (e: IndexOutOfBoundsException) {
             throw UserNotFoundException("User not found")
         }
         return ret
     }
 
-    fun insertTraveler(username: String, userDTO: UserDetailsDTO) {
+    suspend fun insertTraveler(username: String, userDTO: UserDetailsDTO) {
         //TODO check correttezza parametri
         var userDetails = UserDetailsImpl()
         userDetails.name = userDTO.name
@@ -45,11 +47,16 @@ class UserDetailsServiceImpl : UserDetailsService {
         userDetailsRepository.save(userDetails)
     }
 
-    fun updateTraveler(username: String, userDTO: UserDetailsDTO) {
+    suspend fun updateTraveler(username: String, userDTO: UserDetailsDTO) {
         //TODO check correttezza parametri
-        var userDetails = userDetailsRepository.findUserDetailsByUserr(username).getOrNull(0)
-        if (userDetails == null)
+        var userDetails: UserDetailsImpl
+        try{
+            userDetails = userDetailsRepository.findUserDetailsByUserr(username).first()
+        }
+        catch(e: NoSuchElementException){
             throw UserNotFoundException("User not found")
+        }
+
         userDetails.name = userDTO.name
         userDetails.address = userDTO.address
         userDetails.dateOfBirth = userDTO.dateOfBirth
@@ -59,25 +66,29 @@ class UserDetailsServiceImpl : UserDetailsService {
 
 
     override fun loadUserByUsername(username: String?): UserDetails {
-        return userDetailsRepository.findUserDetailsByUserr(username).get(0)
+        var userDetails: UserDetailsImpl
+        runBlocking(){
+            userDetails = userDetailsRepository.findUserDetailsByUserr(username).first()
+        }
+        return userDetails
     }
 
-    fun getTravelers(): List<String> {
+    fun getTravelers(): Flow<String> {
         return userDetailsRepository.findAllTravelers()
     }
 
-    fun getUserById(uId: Long): UserDetailsDTO {
+    suspend fun getUserById(uId: Long): UserDetailsDTO {
         try {
-            return userDetailsRepository.findById(uId).get().toDTO()
-        } catch (e: NoSuchElementException) {
+            return userDetailsRepository.findById(uId)!!.toDTO()  //.get().toDTO()
+        } catch (e: NullPointerException) {
             throw UserNotFoundException("User not found")
         }
     }
 
-    fun getUserTransits(username: String, from: String, to: String): List<TransitDTO> {
-        val user = userDetailsRepository.findUserDetailsByUserr(username).getOrNull(0)
+    suspend fun getUserTransits(username: String, from: String, to: String): Flow<TransitDTO> {
+        val user = userDetailsRepository.findUserDetailsByUserr(username).toList().getOrNull(0)
         if(user==null) throw UserNotFoundException("User not found")
-        return user.transitList!!.filter { transit ->
+        return user.transitList!!.asFlow().filter { transit ->
             transit.date.isAfter(LocalDateTime.parse(from)) && transit.date.isBefore(
                 LocalDateTime.parse(to)
             )
@@ -85,8 +96,8 @@ class UserDetailsServiceImpl : UserDetailsService {
             .map { transit -> transit.toDTO() }
     }
 
-    fun addTransit(username: String, date: LocalDateTime) {
-        var user = userDetailsRepository.findUserDetailsByUserr(username).getOrNull(0)
+    suspend fun addTransit(username: String, date: LocalDateTime) {
+        var user = userDetailsRepository.findUserDetailsByUserr(username).toList().getOrNull(0)
         if (user == null) throw UserNotFoundException("user not found")
         val transit = Transit(date, user)
         transitRepository.save(transit)

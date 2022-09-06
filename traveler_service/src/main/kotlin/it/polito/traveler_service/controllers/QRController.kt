@@ -34,12 +34,12 @@ class QRController {
     lateinit var travelcardPurchasedService: TravelcardPurchasedService
 
     @GetMapping("/qr/validation")
-    fun getValidationKey(@RequestHeader("authorization") jwt: String): ResponseEntity<String> {
+    suspend fun getValidationKey(@RequestHeader("authorization") jwt: String): ResponseEntity<String> {
         return ResponseEntity(jwtValidationKey, HttpStatus.OK)
     }
 
     @PostMapping("/qr/ticket-validated")
-    fun ticketValidated(
+    suspend fun ticketValidated(
         @RequestHeader("authorization") jwt: String,
         @RequestBody ticketValidated: TicketValidatedDTO
     ): ResponseEntity<String> {
@@ -59,7 +59,7 @@ class QRController {
     }
 
     @PostMapping("/qr/travelcard-validated")
-    fun travelcardValidated(
+    suspend fun travelcardValidated(
         @RequestHeader("authorization") jwt: String,
         @RequestBody travelcardValidated: TravelcardValidatedDTO
     ): ResponseEntity<String> {

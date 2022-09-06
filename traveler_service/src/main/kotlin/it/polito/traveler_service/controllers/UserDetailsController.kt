@@ -9,6 +9,9 @@ import it.polito.traveler_service.services.TicketPurchasedService
 import it.polito.traveler_service.services.TransitService
 import it.polito.traveler_service.services.TravelcardPurchasedService
 import it.polito.traveler_service.services.UserDetailsServiceImpl
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.toList
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
@@ -32,7 +35,7 @@ class UserDetailsController {
     lateinit var travelcardPurchasedService: TravelcardPurchasedService
 
     @GetMapping("/my/profile")
-    fun getUserDetailsInfo(@RequestHeader("authorization") jwt: String): ResponseEntity<UserDetailsDTO> {
+    suspend fun getUserDetailsInfo(@RequestHeader("authorization") jwt: String): ResponseEntity<UserDetailsDTO> {
         //prendo il principal
         val principal = SecurityContextHolder.getContext().authentication.principal;
         //lo casto a UserDetailsImpl altrimenti è Any
@@ -49,7 +52,7 @@ class UserDetailsController {
     }
 
     @PostMapping("/my/profile")
-    fun insertTravelerInfo(
+    suspend fun insertTravelerInfo(
         @RequestHeader("authorization") jwt: String,
         @RequestBody traveler: UserDetailsDTO
     ): ResponseEntity<String> {
@@ -62,7 +65,7 @@ class UserDetailsController {
     }
 
     @PutMapping("/my/profile")
-    fun updateTravelerInfo(
+    suspend fun updateTravelerInfo(
         @RequestHeader("authorization") jwt: String,
         @RequestBody traveler: UserDetailsDTO
     ): ResponseEntity<String> {
@@ -81,8 +84,8 @@ class UserDetailsController {
 
     //GET /my/tickets
     @GetMapping("/my/tickets", produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun getAllTickets(): ResponseEntity<List<TicketPurchasedDTO>> {
-        var tmp: List<TicketPurchasedDTO>
+    suspend fun getAllTickets(): ResponseEntity<Flow<TicketPurchasedDTO>> {
+        var tmp: Flow<TicketPurchasedDTO>
         try {
             val principal = SecurityContextHolder.getContext().authentication.principal;
             principal as UserDetailsImpl
@@ -95,8 +98,8 @@ class UserDetailsController {
     }
 
     @GetMapping("/my/travelcards", produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun getAllTravelcards(): ResponseEntity<List<TravelcardPurchasedDTO>> {
-        var tmp: List<TravelcardPurchasedDTO>
+    suspend fun getAllTravelcards(): ResponseEntity<Flow<TravelcardPurchasedDTO>> {
+        var tmp: Flow<TravelcardPurchasedDTO>
         try {
             val principal = SecurityContextHolder.getContext().authentication.principal;
             principal as UserDetailsImpl
@@ -110,7 +113,7 @@ class UserDetailsController {
     }
 
     @GetMapping("/my/tickets/qr/{ticketId}", produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun getTicketAsQR(@PathVariable ticketId: Long): ResponseEntity<String> {
+    suspend fun getTicketAsQR(@PathVariable ticketId: Long): ResponseEntity<String> {
         val ret: String
         var ticket: TicketPurchasedDTO
         val principal = SecurityContextHolder.getContext().authentication.principal;
@@ -130,7 +133,7 @@ class UserDetailsController {
     }
 
     @GetMapping("/my/travelcards/qr/{travelcardId}", produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun getTravelcardsAsQR(@PathVariable travelcardId: Long): ResponseEntity<String> {
+    suspend fun getTravelcardsAsQR(@PathVariable travelcardId: Long): ResponseEntity<String> {
         val ret: String
         var travelcard: TravelcardPurchasedDTO
         val principal = SecurityContextHolder.getContext().authentication.principal;
@@ -154,8 +157,9 @@ class UserDetailsController {
 
     //TODO questa non si usa più perché è stata sostituita dalla comunicazione con kafka
     //TODO se createTicketPurchased in TicketPurchasedService funziona, eliminare questa funzione
-    @PostMapping("/my/tickets")        //genera i ticket
-    fun generateTickets(@RequestBody createTickets: CreateTicketsDTO): ResponseEntity<List<TicketPurchasedDTO>> {
+    @PostMapping("/my/tickets")
+    suspend        //genera i ticket
+    fun generateTickets(@RequestBody createTickets: CreateTicketsDTO): ResponseEntity<Flow<TicketPurchasedDTO>> {
         var ticketsList: ArrayList<TicketPurchasedDTO> = ArrayList()
         try {
             val principal = SecurityContextHolder.getContext().authentication.principal;
@@ -174,19 +178,19 @@ class UserDetailsController {
             println(e.toString())
             return ResponseEntity(HttpStatus.BAD_REQUEST)
         }
-        return ResponseEntity(ticketsList, HttpStatus.CREATED)
+        return ResponseEntity(ticketsList.asFlow(), HttpStatus.CREATED)
     }
 
     //GET /admin/travelers  only available for ADMIN
     @GetMapping("/admin/travelers", produces = [MediaType.APPLICATION_JSON_VALUE]) //returns a json list
-    fun getAllTravelers(): ResponseEntity<List<String>> {
-        var travelers: List<String> = userDetailsServiceImpl.getTravelers()
+    fun getAllTravelers(): ResponseEntity<Flow<String>> {
+        var travelers: Flow<String> = userDetailsServiceImpl.getTravelers()
         return ResponseEntity(travelers, HttpStatus.OK)
     }
 
     //GET /admin/traveler/{userID}/profile only available for ADMIN
     @GetMapping("/admin/traveler/{userID}/profile", produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun getUserById(@PathVariable userID: Long): ResponseEntity<UserDetailsDTO> {
+    suspend fun getUserById(@PathVariable userID: Long): ResponseEntity<UserDetailsDTO> {
         lateinit var usr: UserDetailsDTO
         try {
             usr = userDetailsServiceImpl.getUserById(userID)
@@ -198,30 +202,30 @@ class UserDetailsController {
 
     //GET /admin/traveler/{userID}/tickets  only available for ADMIN
     @GetMapping("/admin/traveler/{userID}/tickets", produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun getUserTickets(@PathVariable userID: Long): ResponseEntity<List<TicketPurchasedDTO>> {
-        var tickets: List<TicketPurchasedDTO> = ticketPurchasedService.getAllTickets(userID)
-        if (tickets.isEmpty()) {
+    suspend fun getUserTickets(@PathVariable userID: Long): ResponseEntity<Flow<TicketPurchasedDTO>> {
+        var tickets: Flow<TicketPurchasedDTO> = ticketPurchasedService.getAllTickets(userID)
+        if (tickets.toList().isEmpty()) {
             return ResponseEntity(HttpStatus.NOT_FOUND)
         }
         return ResponseEntity(tickets, HttpStatus.OK)
     }
 
     @GetMapping("/admin/traveler/{userID}/travelcards", produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun getUserTravelcards(@PathVariable userID: Long): ResponseEntity<List<TravelcardPurchasedDTO>> {
-        var travelcards: List<TravelcardPurchasedDTO> = travelcardPurchasedService.getAllTravelcards(userID)
-        if (travelcards.isEmpty()) {
+    suspend fun getUserTravelcards(@PathVariable userID: Long): ResponseEntity<Flow<TravelcardPurchasedDTO>> {
+        var travelcards: Flow<TravelcardPurchasedDTO> = travelcardPurchasedService.getAllTravelcards(userID)
+        if (travelcards.toList().isEmpty()) {
             return ResponseEntity(HttpStatus.NOT_FOUND)
         }
         return ResponseEntity(travelcards, HttpStatus.OK)
     }
 
     @GetMapping("/admin/traveler/transits/{username}", produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun getUserTransitsInRange(
+    suspend fun getUserTransitsInRange(
         @PathVariable username: String,
         @RequestParam("from") from: String,
         @RequestParam("to") to: String
-    ): ResponseEntity<List<TransitDTO>> {
-        var transits: List<TransitDTO>
+    ): ResponseEntity<Flow<TransitDTO>> {
+        var transits: Flow<TransitDTO>
         try {
             transits = userDetailsServiceImpl.getUserTransits(username, from, to)
         }catch(e: UserNotFoundException){
@@ -234,7 +238,7 @@ class UserDetailsController {
     fun getTransitsInRange(
         @RequestParam("from") from: String,
         @RequestParam("to") to: String
-    ): ResponseEntity<List<TransitDTO>> {
+    ): ResponseEntity<Flow<TransitDTO>> {
         var transits = transitService.getInRange(from, to)
         return ResponseEntity(transits, HttpStatus.OK)
     }
