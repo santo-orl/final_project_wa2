@@ -1,5 +1,6 @@
 package it.polito.ticket_catalogue_service.unitTest
 
+import it.polito.ticket_catalogue_service.dtos.TicketDTO
 import it.polito.ticket_catalogue_service.repository.OrderRepository
 import it.polito.ticket_catalogue_service.repository.TicketCatRepository
 import it.polito.ticket_catalogue_service.service.OrderService
@@ -27,6 +28,24 @@ class TicketUnitTest {
             ticketCatRepository = Mockito.mock(TicketCatRepository::class.java)
         }
 
+        //TODO: isValid ????
+
+        @Test
+        suspend fun checkAddTicket(){
+            ticketCatService.addNewTicket(
+                TicketDTO("DAILY",5f, 18, 25, "A", "07-09-2022"))
+
+            var ret = ticketCatRepository.findById(0L)
+
+            assert(!ret!!.equals(null))   //da controllare!!!!
+        }
+
+        //TODO
+        @Test
+        suspend fun checkUpdateTicket(){
+
+        }
+
         @Test
         suspend fun checkGetAllTickets() {
             var ret = ticketCatService.getTickets()
@@ -40,6 +59,8 @@ class TicketUnitTest {
             assert(ret == null)
         }
 
-        //vedere come testare askForPayment, COME SI FA ??????!!!
+        //TODO: vedere come testare askForPayment, COME SI FA ??????!!!
+
+        //TODO: testare getAllTravelCards????
     }
 }
