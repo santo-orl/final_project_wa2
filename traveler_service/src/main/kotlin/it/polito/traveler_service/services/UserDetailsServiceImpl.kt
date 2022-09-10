@@ -38,17 +38,33 @@ class UserDetailsServiceImpl : UserDetailsService {
 
     suspend fun insertTraveler(username: String, userDTO: UserDetailsDTO) {
         //TODO check correttezza parametri
-        var userDetails = UserDetailsImpl()
-        userDetails.name = userDTO.name
-        userDetails.address = userDTO.address
-        userDetails.dateOfBirth = userDTO.dateOfBirth
-        userDetails.telephoneNumber = userDTO.telephoneNumber
-        userDetails.userr = username
-        userDetailsRepository.save(userDetails)
+        if(checkTraveler(username,userDTO)) {
+            var userDetails = UserDetailsImpl()
+            userDetails.name = userDTO.name
+            userDetails.address = userDTO.address
+            userDetails.dateOfBirth = userDTO.dateOfBirth
+            userDetails.telephoneNumber = userDTO.telephoneNumber
+            userDetails.userr = username
+            userDetailsRepository.save(userDetails)
+        }
+        else{
+            throw UserNotFoundException("problems in user")
+        }
+    }
+
+    fun checkTraveler(username: String, userDTO: UserDetailsDTO):Boolean{
+        if(username=="" || userDTO.address=="" || userDTO.name==""|| userDTO.userr=="" ||
+            userDTO.dateOfBirth=="" || userDTO.telephoneNumber == ""){
+            return false;
+        }
+        return true;
     }
 
     suspend fun updateTraveler(username: String, userDTO: UserDetailsDTO) {
         //TODO check correttezza parametri
+        if(!checkTraveler(username,userDTO)){
+            throw UserNotFoundException("traveler not good ")
+        }
         var userDetails: UserDetailsImpl
         try{
             userDetails = userDetailsRepository.findUserDetailsByUserr(username).first()
