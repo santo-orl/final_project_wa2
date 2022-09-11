@@ -44,7 +44,13 @@ class UserDetailsServiceImpl : UserDetailsService {
         userDetails.userr = username
         userDetailsRepository.save(userDetails)
     }
-
+    /*fun checkTraveler(username: String, userDTO: UserDetailsDTO):Boolean{
+        if(username=="" || userDTO.address=="" || userDTO.name==""|| userDTO.userr=="" ||
+            userDTO.dateOfBirth=="" || userDTO.telephoneNumber == ""){
+            return false;
+        }
+        return true;
+    }*/
     fun updateTraveler(username: String, userDTO: UserDetailsDTO) {
         //TODO check correttezza parametri
         var userDetails = userDetailsRepository.findUserDetailsByUserr(username).getOrNull(0)

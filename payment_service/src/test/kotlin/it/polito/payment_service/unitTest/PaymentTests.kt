@@ -2,6 +2,7 @@ package it.polito.payment_service.unitTest
 
 import it.polito.payment_service.repositories.TransactionRepository
 import it.polito.payment_service.services.TransactionService
+import kotlinx.coroutines.flow.toCollection
 import kotlinx.coroutines.flow.toList
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
@@ -11,6 +12,7 @@ import org.junit.runner.RunWith
 import org.mockito.Mockito
 import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.test.context.junit4.SpringRunner
+import java.time.LocalDateTime
 
 class PaymentTests {
 
@@ -41,7 +43,15 @@ class PaymentTests {
             }
         }
 
+        @Test
+        fun checkUserTransactionInTimeRange(from: LocalDateTime, to: LocalDateTime){
+            assert(from.isBefore(to))
+        }
 
+        @Test
+        fun checkTransactionInTimeRange(from: LocalDateTime, to: LocalDateTime){
+            assert(to.isAfter(from))
+        }
 
     }
 }

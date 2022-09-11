@@ -91,33 +91,21 @@ class TravelCardUnitTest {
             assert(false)
         }
 
-        //TODO
         @Test
         suspend fun checkUpdateTravelCard(){
-
+            //travelCard tmp
+            val tmp = travelCardService.addNewTravelcard(
+                TravelcardDTO(TravelcardType.WEEK, 5f, 1, 25, "A")
+            )
+            val tmp2 = TravelcardDTO(TravelcardType.WEEK, 5f, 10, 25, "A")
+            //travelCard da controllare
+            travelCardRepository.findById(0L)
+            //provo aggiornamento
+            travelCardService.updateTravelcard(0L,tmp2)
+            //controllo che l'update sia andata bene
+            assert(travelCardRepository.findById(0L)!!.equals(tmp2))
 
         }
-
-        /* //per l'update
-        @Test
-        void test() {
-              // Arrange
-               ArgumentCaptor<Entity> entityArgumentCaptor = ArgumentCaptor.forClass(Entity.class);
-                InputDto inputDto = prepareTestInput();
-
-               // Act
-                ResponseDto responseDto = service.update(inputDto);
-                verify(repositoryMock, times(1)).save(entityArgumentCaptor.capture());
-
-                // Assert
-                Entity savedEntity = argumentCaptor.getValue();
-                assertEquals(input.getVariable1(), savedEntity.getVariable1());
-                // .....
-                // compare ResponseDto and InputDto too
-}
-         */
-
-
 
     }
 

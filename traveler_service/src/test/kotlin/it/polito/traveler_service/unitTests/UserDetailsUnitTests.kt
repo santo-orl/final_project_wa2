@@ -1,8 +1,11 @@
 package it.polito.traveler_service.unitTests
 
 import it.polito.traveler_service.dtos.TicketPurchasedDTO
+import it.polito.traveler_service.dtos.UserDetailsDTO
 import it.polito.traveler_service.repositories.TicketPurchasedRepository
+import it.polito.traveler_service.repositories.UserDetailsRepository
 import it.polito.traveler_service.services.TicketPurchasedService
+import it.polito.traveler_service.services.UserDetailsServiceImpl
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -20,11 +23,15 @@ class UserDetailsUnitTests {
         lateinit var ticketPurchasedService : TicketPurchasedService
         lateinit var ticketPurchasedRepository: TicketPurchasedRepository
         lateinit var ticketPurchasedDTO: TicketPurchasedDTO
+        lateinit var userDetailsRepository: UserDetailsRepository
+        lateinit var userDetailsServiceImpl: UserDetailsServiceImpl
 
         init{
             ticketPurchasedService = Mockito.mock(TicketPurchasedService::class.java)
             ticketPurchasedRepository = Mockito.mock(TicketPurchasedRepository::class.java)
             ticketPurchasedDTO = Mockito.mock(TicketPurchasedDTO::class.java)
+            userDetailsRepository = Mockito.mock(UserDetailsRepository::class.java)
+            userDetailsServiceImpl = Mockito.mock(UserDetailsServiceImpl::class.java)
         }
 
 
@@ -73,6 +80,21 @@ class UserDetailsUnitTests {
             }
         }
 
+        @Test
+        fun checkUpdateTraveler(){
+            //aggiungo traveler temporaneo
+            val tmp = userDetailsServiceImpl.insertTraveler("username",
+                UserDetailsDTO("name","address","dateOfBirth","234567890","userr")
+            )
+            //creo traveler da controllare con quello aggiornato
+            val tmp2 = UserDetailsDTO("name2","address2","dateOfBirth","234567890","userr")
+            //prendo il traveler aggiunto
+            userDetailsRepository.findUserDetailsByUserr("username")
+            //provo aggiornamento
+            userDetailsServiceImpl.updateTraveler("username",tmp2)
+            //controllo che l'update sia andata bene
+            assert(userDetailsRepository.findUserDetailsByUserr("username")!!.equals(tmp2))
+        }
 
     }
 }
