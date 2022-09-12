@@ -10,7 +10,7 @@ import it.polito.ticket_catalogue_service.service.OrderService
 import it.polito.ticket_catalogue_service.service.TicketCatService
 import it.polito.ticket_catalogue_service.service.TravelcardService
 import kotlinx.coroutines.flow.toList
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.runner.RunWith
 import org.mockito.Mockito

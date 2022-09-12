@@ -32,6 +32,8 @@ dependencies {
     implementation("io.jsonwebtoken:jjwt-jackson:0.11.2")
     implementation("io.r2dbc:r2dbc-postgresql:0.8.12.RELEASE")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation ("org.testcontainers:junit-jupiter:1.16.3")
+    testImplementation("org.testcontainers:postgresql:1.16.3")
     testImplementation("io.projectreactor:reactor-test")
     testImplementation("org.springframework.kafka:spring-kafka-test")
     testImplementation("org.springframework.security:spring-security-test")

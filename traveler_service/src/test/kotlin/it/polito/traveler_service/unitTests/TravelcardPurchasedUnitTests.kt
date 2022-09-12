@@ -4,7 +4,7 @@ import it.polito.traveler_service.entities.TravelcardPurchased
 import it.polito.traveler_service.repositories.TravelcardPurchasedRepository
 import it.polito.traveler_service.services.TravelcardPurchasedService
 import org.junit.Assert
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.runner.RunWith

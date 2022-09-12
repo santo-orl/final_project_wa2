@@ -31,6 +31,7 @@ dependencies {
     implementation("io.jsonwebtoken:jjwt-jackson:0.11.2")
     runtimeOnly ("org.postgresql:postgresql")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.mockito:mockito-inline:2.13.0")
     implementation("org.springframework.kafka:spring-kafka")
 }
 

@@ -2,7 +2,7 @@ package it.polito.traveler_service.unitTests
 
 import it.polito.traveler_service.repositories.TransitRepository
 import it.polito.traveler_service.services.TransitService
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.runner.RunWith
 import org.mockito.Mockito

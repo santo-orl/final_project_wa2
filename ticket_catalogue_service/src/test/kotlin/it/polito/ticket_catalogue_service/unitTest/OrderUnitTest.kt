@@ -4,7 +4,7 @@ import it.polito.ticket_catalogue_service.exceptions.NullOrderException
 import it.polito.ticket_catalogue_service.repository.OrderRepository
 import it.polito.ticket_catalogue_service.service.OrderService
 import kotlinx.coroutines.flow.toList
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.runner.RunWith

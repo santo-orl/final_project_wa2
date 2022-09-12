@@ -45,7 +45,7 @@ class UserDetailsUnitTests {
 
         @Test
         //suppone non sia presente il tipo di ticket che sto cercando
-        fun checkGetsAllTicketsNone(){
+        fun checkGetsAllTicketsNone(){   //questo funziona
             //suppongo id 0 non sia presente
             var ret = ticketPurchasedService.getAllTickets(0)
             assert(ret.isEmpty())
