@@ -25,8 +25,8 @@ CREATE TABLE IF NOT EXISTS "travelcards"
     price INTEGER,
     min_age INTEGER,
     max_age INTEGER,
-    zid VARCHAR(255),
-    );
+    zid VARCHAR(255)
+);
 
 
 
