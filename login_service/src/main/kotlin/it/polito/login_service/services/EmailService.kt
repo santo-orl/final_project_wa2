@@ -1,5 +1,7 @@
 package it.polito.login_service.services
 
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.context.annotation.Bean
 import org.springframework.mail.javamail.JavaMailSender
 import org.springframework.mail.javamail.JavaMailSenderImpl
 import org.springframework.mail.javamail.MimeMessageHelper
@@ -17,8 +19,12 @@ class EmailService {
         val withAttachment: Boolean
     )
 
+    @Autowired
+    lateinit var emailSender: JavaMailSender
 
-    var emailSender : JavaMailSender = JavaMailSenderImpl()
+    //var emailSender : JavaMailSender = JavaMailSenderImpl()
+    @Bean
+    fun emailSender() : JavaMailSender = JavaMailSenderImpl()
 
     fun sendMail(email: Email) {
         val msg = createSimpleMessage(email)

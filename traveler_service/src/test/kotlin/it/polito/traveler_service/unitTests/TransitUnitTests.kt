@@ -20,7 +20,7 @@ class TransitUnitTests {
         lateinit var transitRepository: TransitRepository
 
         init{
-            transitService = Mockito.mock(TransitService::class.java)
+            transitService = TransitService()
             transitRepository = Mockito.mock(TransitRepository::class.java)
         }
 

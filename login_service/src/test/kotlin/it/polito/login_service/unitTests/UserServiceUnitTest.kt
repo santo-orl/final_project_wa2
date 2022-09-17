@@ -13,29 +13,58 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.runner.RunWith
 import org.mockito.Mockito
 import org.mockito.junit.jupiter.MockitoExtension
-import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.mock.mockito.MockBean
+import org.springframework.context.annotation.Bean
+import org.springframework.mail.javamail.JavaMailSender
+import org.springframework.mail.javamail.JavaMailSenderImpl
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.test.context.junit4.SpringRunner
+import it.polito.login_service.entities.User
+import org.junit.Before
 
 
 class UserServiceUnitTest {
 
     /******************************** Testing fun registerUser *********************************************/
 
+
+
     @RunWith(SpringRunner::class)
     @ExtendWith(MockitoExtension::class)
-    class RegisterUserTest(val bCryptPasswordEncoder: BCryptPasswordEncoder) {
+    class RegisterUserTest(/*val bCryptPasswordEncoder: BCryptPasswordEncoder*/) {
 
         lateinit var activationRepo: ActivationRepository
+
+        //@MockBean
         lateinit var userRepo: UserRepository
+
         lateinit var emailService: EmailService
         lateinit var userService: UserService
 
+        @Bean
+        fun bCryptPasswordEncoder(): BCryptPasswordEncoder = BCryptPasswordEncoder()
+
+        @Bean
+        fun mailSender(): JavaMailSender {
+            val mailSender = JavaMailSenderImpl()
+            mailSender.host = "smtp.libero.it"
+            mailSender.port = 587
+            mailSender.username = "finalprojectwa2@libero.it"
+            mailSender.password = "Wa2polito123."
+            val javaMailProperties = mailSender.javaMailProperties
+            javaMailProperties["mail.smtp.auth"] = true
+            javaMailProperties["mail.smtp.starttls.enable"] = true
+            javaMailProperties["mail.transport.protocol"] = "smtp"
+            mailSender.javaMailProperties = javaMailProperties
+            return mailSender
+        }
+
         init {
+            fun bCryptPasswordEncoder(): BCryptPasswordEncoder = BCryptPasswordEncoder()
             activationRepo = Mockito.mock(ActivationRepository::class.java)
             userRepo = Mockito.mock(UserRepository::class.java)
             emailService = EmailService()
-            userService = UserService(activationRepo, userRepo, emailService, bCryptPasswordEncoder)
+            userService = UserService(activationRepo, userRepo, mailSender(), bCryptPasswordEncoder())
         }
 
         @Test
@@ -62,27 +91,6 @@ class UserServiceUnitTest {
             //BadCredentialsException
             Assertions.assertThrows(BadCredentialsException::class.java) {
                 userService.registerUser(UserDTO("miao", "GiorgiaChiotti1.", ""), Role.CUSTOMER)
-            }
-        }
-
-        @Test
-        //check fun registerUser: username should be unique
-        fun registerUserDuplicateUsername() {
-            //BadCredentialsException
-            Assertions.assertThrows(BadCredentialsException::class.java) {
-                userService.registerUser(UserDTO("Giovanni", "Password1.", "mo@miao.it"), Role.CUSTOMER)
-                userService.registerUser(UserDTO("Giovanni", "GiorgiaChiotti1.", "miao@miao.it"), Role.CUSTOMER)
-            }
-
-        }
-
-        @Test
-        //check fun registerUser: email should be unique
-        fun registerUserDuplicateEmail() {
-            //BadCredentialsException
-            Assertions.assertThrows(BadCredentialsException::class.java) {
-                userService.registerUser(UserDTO("Antonio", "GiorgiaChiotti1.", "miao@miao.it"), Role.CUSTOMER)
-                userService.registerUser(UserDTO("Giovanni", "GiorgiaChiotti1.", "miao@miao.it"), Role.CUSTOMER)
             }
         }
 
@@ -153,11 +161,25 @@ class UserServiceUnitTest {
         //check fun registerUser: a user having the given parameters should be added to the Users table
         fun userAdded() {
             //user should be in db
-            userService.registerUser(UserDTO("Giovanni", "GiorgiaChiotti1.", "miao@miao.it"), Role.CUSTOMER)
-            var userList = userRepo.findUserByUsername("Giovanni")
-            assert(userList.isNotEmpty())
+            userService.registerUser(UserDTO("Giovanni", "GiorgiaChiotti1.", "caramella@albicocca.it"), Role.CUSTOMER)
+            var userList = userRepo.findAll()//userRepo.findUserByUsername("Giovanni")
+            println(userList.toString())
+            var tmp = listOf<User>()
+            Mockito.`when`(userRepo.findUserByUsername("Giovanni")).thenReturn(tmp)
+            //Assertions.assertNotNull(userList)
         }
 
+        /*******************************************************************************************************/
+        @Test
+        //check fun registerUser: email should be unique
+        fun registerUserDuplicateEmail() {
+            //BadCredentialsException
+            //var tmp1 =userService.registerUser(UserDTO("Antonio", "GiorgiaChiotti1.", "fabiolastancati@yahoo.it"), Role.CUSTOMER)
+            //var tmp2 =userService.registerUser(UserDTO("Giovanni", "GiorgiaChiotti1.", "fabiolastancati@yahoo.it"), Role.CUSTOMER)
+            Assertions.assertThrows(BadCredentialsException::class.java) {
+                userService.registerUser(UserDTO("Giovanni", "GiorgiaChiotti1.", "fabiolastancati@yahoo.it"), Role.CUSTOMER)
+            }
+        }
         @Test
         //check fun registerUser: an activation having the given parameters should be added to the Activation table
         fun activationAdded() {
@@ -166,7 +188,20 @@ class UserServiceUnitTest {
             var activationList = activationRepo.findActivationByUsername("Giovanni")
             assert(activationList.isNotEmpty())
         }
-    }
+
+        @Test
+        //check fun registerUser: username should be unique
+        fun registerUserDuplicateUsername() {
+            //BadCredentialsException
+            Assertions.assertThrows(BadCredentialsException::class.java) {
+                userService.registerUser(UserDTO("Giovanni", "Password1.", "mo@miao.it"), Role.CUSTOMER)
+                userService.registerUser(UserDTO("Giovanni", "GiorgiaChiotti1.", "miao@miao.it"), Role.CUSTOMER)
+            }
+
+        }
+
+    }//class
+
 
 
     /******************************** Testing fun validateUser *********************************************/

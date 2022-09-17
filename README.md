@@ -3,56 +3,56 @@ Web Applications II final project
 
 ### Microservizi
 
-L'applicazione è composta da 4 microservizi: 
-* **login_service**: gestisce la registrazione di nuovi utenti (da confermare con email) e il login. Per quest'ultimo ritorna un jwt da allegare nell'header Bearer per le richieste agli altri microservizi.
-* **traveler_service**: permette di ottenere e modificare info sui traveler, di ottenere info sui ticket/travelcard e di aggiungere ticket/travelcard alla lista di quelli comprati da un certo traveler. Inoltre contiene i path per le cose dei qr reader
-* **ticket_catalogue_service**: permette di ottenere e modificare la lista di tipi di ticket/travelcard disponibili, la lista di ordini effettuati ed espone l'endpoint per l'acquisto di ticket
-* **payment_service**: effettua le richieste di pagamento e fornisce la lista di transazioni effettuate
+The application is made of four microservices:
+* **login_service**: it manages the registration of new users(to be confirmed through email) and the login. For the login, it returns a JWT to be attached in the Bearer header for requests to the other microservices.
+* **traveler_service**: it allows to obtain and modify info on travelers, to obtain infor on ticket/travelcard and to add ticket/travelcard to the list  of the ones bought by a certain traveler. Furthermore it contains paths for stuffs related to QR reader.
+* **ticket_catalogue_service**: it allows to obtain and modify the list of types of available ticket/travelcard, the list of orders done and exposes the endpoint for the shop of tickets
+* **payment_service**: it makes payment requests and it gives the list of completed transactions 
 
-I microservizi espongono **api** a cui utenti (traveler, admin, qr reader) possono fare richieste.
-I microservizi comunicano fra loro tramite **Kafka**. In particolare:
-* **ticket_catalogue_service** comunica con **payment_service** tramite il topic PaymentRequestTopic per mandare richieste di pagamento
-* **payment_service** comunica con **ticket_catalogue_service** tramite il topic PaymentResponseTopic per mandare l'esito del pagamento
-* **ticket_catalogue_service** comunica con **traveler_service** tramite il topic TicketPurchasedTopic per dirgli - in seguito a un pagamento avvenuto con successo - di aggiungere ticket alla tabella dei ticket acquistati
-* **ticket_catalogue_service** comunica con **traveler_service** tramite il topic TravelcardPurchasedTopic per dirgli - in seguito a un pagamento avvenuto con successo - di aggiungere travelcard alla tabella delle travelcard acquistate
+Microservices expose **api** to which users (traveler, admin, qr reader) can make requests.
+Microservices communicate each other through **Kafka**. Specifically:
+* **ticket_catalogue_service** communicates with **payment_service** through topic PaymentRequestTopic for sending payment requests
+* **payment_service** communicates with **ticket_catalogue_service** through topic PaymentResponseTopic for sending the result of the payment
+* **ticket_catalogue_service** communicates with **traveler_service** through topic TicketPurchasedTopic for saying - after a successful payment - to add tickets to the table of ticket purchased
+* **ticket_catalogue_service** communicates with **traveler_service** through topic TravelcardPurchasedTopic for saying - after a successful payment - to add travelcards to the table of travelcard purchased
 
 ### Servizi richiesti
 
-* traveler deve registrarsi con email e password
+* traveler must register with username and password
   * login_service POST /user/register
   * login_service POST /user/login
-* traveler loggato deve gestire il suo profilo
+* logged traveler must handle his profile
   * traveler_service GET /my/profile
   * traveler_service POST /my/profile
-* traveler loggato deve comprare tickets
+* logged traveler must buy tickets
   * ticket_catalogue_service POST /shop/tickets/{ticket-id}
-* traveler loggato deve comprare travel cards
+* logged traveler myst buy travelcards
   * ticket_catalogue_service POST /shop/travelcards/{travelcard-id}
-* traveler loggato deve consultare la lista degli acquisti
+* logged traveler must check shop list 
   * ticket_catalogue_service GET /orders
-* traveler loggato deve scaricare singoli documenti di viaggio sottoforma di QR che rappresenta un JWS
+* logged traveler must download single travel documents through the QR which represents a JWS
   * traveler_service GET /my/tickets/qr/{ticketId}
-* QR readers devono autenticarsi come sistemi embedded
+* QR readers must authenticate themselves as embedded systems
   * login_service POST /user/login
-* QR readers loggati devono ottenere il segreto per validare il JWS
+* QR logged readers must obtain the secret to validate the JWS
   * traveler_service GET /qr/validation
-* QR readers loggati devono validare il JWS e dare info su transit count
+* QR logged readers must validate the JWS and give info on transit count
   * traveler_service POST /qr/ticket-validated
-* amministratore loggato deve registrare altri amministratori
+* logged admin must register other admins
   * login_service POST /admin/register
-* amministratore loggato può creare tipi di tickets
+* logged admin can create types of tickets
   * ticket_catalogue_service POST /admin/tickets
-* amministratore loggato può modificare proprietà dei tipi di tickets
+* logged admin can modify the property of types of tickets
   * ticket_catalogue_service PUT /admin/tickets/{ticket-id}
-* amministratore loggato può eliminare tipi di tickets
+* logged admin can delete the types of tickets
   * ticket_catalogue_service DELETE /admin/tickets/{ticket-id}
-* amministratore loggato può creare tipi di travel cards
+* logged admin can create types of travelcards 
   * ticket_catalogue_service POST /admin/travelcards
-* amministratore loggato può modificare proprietà dei tipi di travel cards
+* logged admin can modify properties of types of travelcards
   * ticket_catalogue_service PUT /admin/travelcards/{travelcard-id}
-* amministratore loggato può eliminare tipi di travel cards
+* logged admin can delete types of travelcards
   * ticket_catalogue_service DELETE /admin/travelcards/{travelcard-id}
-* amministratore loggato può accedere a report di acquisti relativi a singoli utenti relativi a periodi di tempo selezionabili
+* logged admin can see the report of acquisti relativi a singoli utenti relativi a periodi di tempo selezionabili
   * payment_service GET /admin/transactions/user/range/?from=xxx&to=yyy
 * amministratore loggato può accedere a report di acquisti totali relativi a periodi di tempo selezionabili
   * payment_service GET /admin/transactions/range/?from=xxx&to=yyy

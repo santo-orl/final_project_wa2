@@ -22,33 +22,14 @@ class TicketPurchasedUnitTests {
 
         lateinit var ticketPurchasedService : TicketPurchasedService
         lateinit var ticketPurchasedRepository: TicketPurchasedRepository
-        lateinit var ticketPurchasedDTO: TicketPurchasedDTO
         lateinit var userDetailsRepository: UserDetailsRepository
         lateinit var userDetailsServiceImpl: UserDetailsServiceImpl
 
         init{
-            ticketPurchasedService = Mockito.mock(TicketPurchasedService::class.java)
+            ticketPurchasedService = TicketPurchasedService()
             ticketPurchasedRepository = Mockito.mock(TicketPurchasedRepository::class.java)
-            ticketPurchasedDTO = Mockito.mock(TicketPurchasedDTO::class.java)
             userDetailsRepository = Mockito.mock(UserDetailsRepository::class.java)
-            userDetailsServiceImpl = Mockito.mock(UserDetailsServiceImpl::class.java)
-        }
-
-
-        @Test
-        //suppone sia presente il tipo di ticket che voglio controllare
-        fun checkGetsAllTickets(){
-            //suppongo id 0 sia presente
-            var ret = ticketPurchasedService.getAllTickets(0)
-            assert(ret.isNotEmpty())
-        }
-
-        @Test
-        //suppone non sia presente il tipo di ticket che sto cercando
-        fun checkGetsAllTicketsNone(){
-            //suppongo id 0 non sia presente
-            var ret = ticketPurchasedService.getAllTickets(0)
-            assert(ret.isEmpty())
+            userDetailsServiceImpl = UserDetailsServiceImpl()
         }
 
         @Test
@@ -81,6 +62,21 @@ class TicketPurchasedUnitTests {
         }
 
 
+/********************************/
+@Test
+//suppone sia presente il tipo di ticket che voglio controllare
+fun checkGetsAllTickets(){
+    //suppongo id 0 sia presente
+    var ret = ticketPurchasedService.getAllTickets(0)
+    assert(ret.isNotEmpty())
+}
 
+        @Test
+        //suppone non sia presente il tipo di ticket che sto cercando
+        fun checkGetsAllTicketsNone(){
+            //suppongo id 0 non sia presente
+            var ret = ticketPurchasedService.getAllTickets(0)
+            assert(ret.isEmpty())
+        }
     }
 }
