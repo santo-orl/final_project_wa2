@@ -13,8 +13,10 @@ import it.polito.login_service.exceptions.*
 import it.polito.login_service.repositories.ActivationRepository
 import it.polito.login_service.repositories.UserRepository
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.context.annotation.Bean
 import org.springframework.mail.SimpleMailMessage
 import org.springframework.mail.javamail.JavaMailSender
+import org.springframework.mail.javamail.JavaMailSenderImpl
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.stereotype.Service
@@ -27,12 +29,12 @@ import javax.transaction.Transactional
 @Transactional
 class UserService(var activationRepository: ActivationRepository,
                   var userRepository: UserRepository,
-                  var emailService: EmailService,
+                  val emailSender: JavaMailSender,
                   val bCryptPasswordEncoder: BCryptPasswordEncoder) {
 
 
-    @Autowired
-    lateinit var emailSender: JavaMailSender
+   /* @Autowired
+    lateinit var emailSender: JavaMailSender*/
 
     //used in /user/register controller
     fun registerUser(userDTO: UserDTO, role: Role): UUID {
@@ -67,15 +69,14 @@ class UserService(var activationRepository: ActivationRepository,
 
         //create user and save into db with hashed psw
         var user: User = User(username, pswHash/*password*/, email, "inactive",role)
-        user = userRepository.save(user)
-
+        /*user = */userRepository.save(user)
         //create activation and save into db
         val activationCode: String = Math.random().toString()
         val c: Calendar = Calendar.getInstance()
         c.add(Calendar.DATE, 7) //activation date will be 7 days from today
         val d: Date = c.time
         var activation: Activation = Activation(user, activationCode, d)
-        activation = activationRepository.save(activation)
+        /*activation = */activationRepository.save(activation)
 
         //send email containing the activation code
         val message = SimpleMailMessage()

@@ -22,34 +22,16 @@ class UserDetailsUnitTests {
 
         lateinit var ticketPurchasedService : TicketPurchasedService
         lateinit var ticketPurchasedRepository: TicketPurchasedRepository
-        lateinit var ticketPurchasedDTO: TicketPurchasedDTO
         lateinit var userDetailsRepository: UserDetailsRepository
         lateinit var userDetailsServiceImpl: UserDetailsServiceImpl
 
         init{
-            ticketPurchasedService = Mockito.mock(TicketPurchasedService::class.java)
+            ticketPurchasedService = TicketPurchasedService()
             ticketPurchasedRepository = Mockito.mock(TicketPurchasedRepository::class.java)
-            ticketPurchasedDTO = Mockito.mock(TicketPurchasedDTO::class.java)
             userDetailsRepository = Mockito.mock(UserDetailsRepository::class.java)
-            userDetailsServiceImpl = Mockito.mock(UserDetailsServiceImpl::class.java)
+            userDetailsServiceImpl = UserDetailsServiceImpl()
         }
 
-
-        @Test
-        //suppone sia presente il tipo di ticket che voglio controllare
-        fun checkGetsAllTickets(){
-            //suppongo id 0 sia presente
-            var ret = ticketPurchasedService.getAllTickets(0)
-            assert(ret.isNotEmpty())
-        }
-
-        @Test
-        //suppone non sia presente il tipo di ticket che sto cercando
-        fun checkGetsAllTicketsNone(){   //questo funziona
-            //suppongo id 0 non sia presente
-            var ret = ticketPurchasedService.getAllTickets(0)
-            assert(ret.isEmpty())
-        }
 
         @Test
         fun checkZoneInvalidCreateTicket(){
@@ -78,6 +60,24 @@ class UserDetailsUnitTests {
             Assertions.assertThrows(Exception::class.java){
                 ticketPurchasedService.createTicket("1",1,"2022-08-09 10:08","")
             }
+        }
+
+        /***********************/
+
+        @Test
+        //suppone sia presente il tipo di ticket che voglio controllare
+        fun checkGetsAllTickets(){
+            //suppongo id 0 sia presente
+            var ret = ticketPurchasedService.getAllTickets(0)
+            assert(ret.isNotEmpty())
+        }
+
+        @Test
+        //suppone non sia presente il tipo di ticket che sto cercando
+        fun checkGetsAllTicketsNone(){   //questo funziona
+            //suppongo id 0 non sia presente
+            var ret = ticketPurchasedService.getAllTickets(0)
+            assert(ret.isEmpty())
         }
 
         @Test

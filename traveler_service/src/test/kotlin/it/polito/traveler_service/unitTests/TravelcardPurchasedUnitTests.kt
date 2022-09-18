@@ -2,6 +2,7 @@ package it.polito.traveler_service.unitTests
 
 import it.polito.traveler_service.entities.TravelcardPurchased
 import it.polito.traveler_service.repositories.TravelcardPurchasedRepository
+import it.polito.traveler_service.repositories.UserDetailsRepository
 import it.polito.traveler_service.services.TravelcardPurchasedService
 import org.junit.Assert
 import org.junit.jupiter.api.Test
@@ -20,10 +21,12 @@ class TravelcardPurchasedUnitTests {
 
         lateinit var travelcardPurchasedService: TravelcardPurchasedService
         lateinit var travelcardPurchasedRepository: TravelcardPurchasedRepository
+        lateinit var userDetailsRepository: UserDetailsRepository
 
         init{
-            travelcardPurchasedService = Mockito.mock(TravelcardPurchasedService::class.java)
+            travelcardPurchasedService = TravelcardPurchasedService()
             travelcardPurchasedRepository = Mockito.mock(TravelcardPurchasedRepository::class.java)
+            userDetailsRepository = Mockito.mock(UserDetailsRepository::class.java)
         }
 
         @Test
@@ -40,16 +43,17 @@ class TravelcardPurchasedUnitTests {
         }
 
         @Test
-        suspend fun checkAddTravelCard(){
+        fun checkAddTravelCard(){
             travelcardPurchasedService.createTravelcard(0L,TravelcardPurchased.TravelcardType.WEEK,"A")
             val travelCard = travelcardPurchasedRepository.findById(0L)
             assert(!travelCard!!.equals(null))
         }
 
         @Test
-        suspend fun checkRemoveTravelCard(){
+        fun checkRemoveTravelCard(){
+            travelcardPurchasedService.createTravelcard(0L,TravelcardPurchased.TravelcardType.WEEK,"A")
             var ret = travelcardPurchasedService.removeTravelcard(0L)
-            assert(false)
+            assert(travelcardPurchasedRepository.findAllTravelcards(0L).isEmpty())
         }
 
     }

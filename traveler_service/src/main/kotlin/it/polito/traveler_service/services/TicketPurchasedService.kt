@@ -36,6 +36,8 @@ class TicketPurchasedService {
     }
 
     fun createTicket(zones: String, id: Long, validFrom: String, type: String): TicketPurchasedDTO {
+        println("MIAO")
+        if(zones==""){println("miao");throw Exception()}
         var userr = userDetailsRepository.findById(id).get()
         var ticket = TicketPurchased(
             LocalDateTime.now(),

@@ -13,6 +13,9 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.runner.RunWith
 import org.mockito.Mockito
 import org.mockito.junit.jupiter.MockitoExtension
+import org.springframework.context.annotation.Bean
+import org.springframework.mail.javamail.JavaMailSender
+import org.springframework.mail.javamail.JavaMailSenderImpl
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.test.context.junit4.SpringRunner
 
@@ -20,18 +23,33 @@ class AdminServiceUnitTest {
 
     @RunWith(SpringRunner::class)
     @ExtendWith(MockitoExtension::class)
-    class RegisterAdminTest(val bCryptPasswordEncoder: BCryptPasswordEncoder){
+    class RegisterAdminTest(){
 
         lateinit var activationRepo: ActivationRepository
         lateinit var userRepo: UserRepository
         lateinit var emailService: EmailService
         lateinit var userService: UserService
-
+        @Bean
+        fun emailSender(): JavaMailSender {
+            val mailSender = JavaMailSenderImpl()
+            mailSender.host = "smtp.libero.it"
+            mailSender.port = 587
+            mailSender.username = "finalprojectwa2@libero.it"
+            mailSender.password = "Wa2polito123."
+            val javaMailProperties = mailSender.javaMailProperties
+            javaMailProperties["mail.smtp.auth"] = true
+            javaMailProperties["mail.smtp.starttls.enable"] = true
+            javaMailProperties["mail.transport.protocol"] = "smtp"
+            mailSender.javaMailProperties = javaMailProperties
+            return mailSender
+        }
+        @Bean
+        fun bCryptPasswordEncoder(): BCryptPasswordEncoder = BCryptPasswordEncoder()
         init {
             activationRepo = Mockito.mock(ActivationRepository::class.java)
             userRepo = Mockito.mock(UserRepository::class.java)
             emailService = EmailService()
-            userService = UserService(activationRepo, userRepo, emailService, bCryptPasswordEncoder)
+            userService = UserService(activationRepo, userRepo, emailSender(), bCryptPasswordEncoder())
         }
 
         @Test
@@ -61,26 +79,6 @@ class AdminServiceUnitTest {
             }
         }
 
-        @Test
-        //check fun registerUser: username should be unique
-        fun registerAdminDuplicateUsername() {
-            //BadCredentialsException
-            Assertions.assertThrows(BadCredentialsException::class.java) {
-                userService.registerUser(UserDTO("Giovanni", "Password1.", "mo@miao.it"), Role.ADMIN)
-                userService.registerUser(UserDTO("Giovanni", "GiorgiaChiotti1.", "miao@miao.it"), Role.ADMIN)
-            }
-
-        }
-
-        @Test
-        //check fun registerUser: email should be unique
-        fun registerAdminDuplicateEmail() {
-            //BadCredentialsException
-            Assertions.assertThrows(BadCredentialsException::class.java) {
-                userService.registerUser(UserDTO("Antonio", "GiorgiaChiotti1.", "miao@miao.it"), Role.ADMIN)
-                userService.registerUser(UserDTO("Giovanni", "GiorgiaChiotti1.", "miao@miao.it"), Role.ADMIN)
-            }
-        }
 
         @Test
         //check fun registerUser: password shouldn't have empty spaces
@@ -145,6 +143,30 @@ class AdminServiceUnitTest {
             }
         }
 
+
+
+
+        /**********************************/
+
+        @Test
+        //check fun registerUser: email should be unique
+        fun registerAdminDuplicateEmail() {
+            //BadCredentialsException
+            Assertions.assertThrows(BadCredentialsException::class.java) {
+                userService.registerUser(UserDTO("Antonio", "GiorgiaChiotti1.", "miao@miao.it"), Role.ADMIN)
+                userService.registerUser(UserDTO("Giovanni", "GiorgiaChiotti1.", "miao@miao.it"), Role.ADMIN)
+            }
+        }
+
+        @Test
+        //check fun registerUser: an activation having the given parameters should be added to the Activation table
+        fun activationAdded() {
+            //activation should be in db
+            userService.registerUser(UserDTO("Giovanni", "GiorgiaChiotti1.", "miao@miao.it"), Role.ADMIN)
+            var activationList = activationRepo.findActivationByUsername("Giovanni")
+            assert(activationList.isNotEmpty())
+        }
+
         @Test
         //check fun registerUser: a user having the given parameters should be added to the Users table
         fun adminAdded() {
@@ -155,12 +177,14 @@ class AdminServiceUnitTest {
         }
 
         @Test
-        //check fun registerUser: an activation having the given parameters should be added to the Activation table
-        fun activationAdded() {
-            //activation should be in db
-            userService.registerUser(UserDTO("Giovanni", "GiorgiaChiotti1.", "miao@miao.it"), Role.ADMIN)
-            var activationList = activationRepo.findActivationByUsername("Giovanni")
-            assert(activationList.isNotEmpty())
+        //check fun registerUser: username should be unique
+        fun registerAdminDuplicateUsername() {
+            //BadCredentialsException
+            Assertions.assertThrows(BadCredentialsException::class.java) {
+                userService.registerUser(UserDTO("Giovanni", "Password1.", "mo@miao.it"), Role.ADMIN)
+                userService.registerUser(UserDTO("Giovanni", "GiorgiaChiotti1.", "miao@miao.it"), Role.ADMIN)
+            }
+
         }
     }
 }
