@@ -1,5 +1,10 @@
 CREATE TABLE IF NOT EXISTS "transactions"
 (
     transaction_id serial PRIMARY KEY,
-    user_id VARCHAR(255)
+    order_id BIGINT,
+    user_id VARCHAR(255),
+    order_status VARCHAR(255),
+    total_cost FLOAT,
+    date DATE
+
 );

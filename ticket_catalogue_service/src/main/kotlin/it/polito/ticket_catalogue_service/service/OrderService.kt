@@ -64,8 +64,11 @@ class OrderService {
 
     suspend fun createOrder(username: String,nTickets: Int, ticketId: Long): Long? {
         if(ticketRepository.findById(ticketId)==null) throw TicketNotFoundException("Ticket not found")
-        val order = orderRepository.save(Order(null, username, "PENDING",nTickets,ticketId,OrderType.TICKET))
-        return order.id
+        //val order = orderRepository.save(Order(null, username, "PENDING",nTickets,ticketId,OrderType.TICKET))
+        val order = Order(null, username, "PENDING",nTickets,ticketId,OrderType.TICKET)
+        println(order.type)
+        val o = orderRepository.save(order)
+        return o.id
     }
 
     suspend fun createTravelcardOrder(username: String, travelcardId: Long): Long? {

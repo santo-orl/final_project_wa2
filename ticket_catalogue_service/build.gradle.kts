@@ -36,6 +36,7 @@ dependencies {
     testImplementation("org.testcontainers:postgresql:1.16.3")
     testImplementation("io.projectreactor:reactor-test")
     testImplementation("org.springframework.kafka:spring-kafka-test")
+    testImplementation("org.mockito:mockito-inline:2.13.0")
     testImplementation("org.springframework.security:spring-security-test")
 }
 

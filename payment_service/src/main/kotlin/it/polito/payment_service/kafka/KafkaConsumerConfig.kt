@@ -1,5 +1,6 @@
 package it.polito.payment_service.kafka
 
+import it.polito.payment_service.dtos.PaymentRequestDTO
 import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.common.serialization.StringDeserializer
 import org.springframework.context.annotation.Bean
@@ -18,7 +19,7 @@ class KafkaConsumerConfig(
 ) {
     private val servers: String = "localhost:29092"
     @Bean
-    fun consumerFactory(): ConsumerFactory<String?, Any?> {
+    fun consumerFactory(): ConsumerFactory<String?, PaymentRequestDTO?> {
         val props: MutableMap<String, Any> = HashMap()
         props[ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG] = servers
         props[ConsumerConfig.GROUP_ID_CONFIG] = "ppr"
@@ -29,8 +30,8 @@ class KafkaConsumerConfig(
     }
 
     @Bean
-    fun kafkaListenerContainerFactory(): ConcurrentKafkaListenerContainerFactory<String, Any>? {
-        val factory = ConcurrentKafkaListenerContainerFactory<String, Any>()
+    fun kafkaListenerContainerFactory(): ConcurrentKafkaListenerContainerFactory<String, PaymentRequestDTO>? {
+        val factory = ConcurrentKafkaListenerContainerFactory<String, PaymentRequestDTO>()
         factory.consumerFactory = consumerFactory()
         factory.containerProperties.ackMode = ContainerProperties.AckMode.MANUAL_IMMEDIATE
         factory.containerProperties.isSyncCommits = true;

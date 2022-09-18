@@ -1,5 +1,6 @@
 package it.polito.payment_service.kafka
 
+import it.polito.payment_service.dtos.PaymentOutcomeDTO
 import org.apache.kafka.clients.producer.ProducerConfig
 import org.apache.kafka.common.serialization.StringSerializer
 import org.springframework.context.annotation.Bean
@@ -14,7 +15,7 @@ class KafkaProducerConfig(
 ) {
     private val servers: String = "localhost:29092"
     @Bean
-    fun producerFactory(): ProducerFactory<String, Any> {
+    fun producerFactory(): ProducerFactory<String, PaymentOutcomeDTO> {
         val configProps: MutableMap<String, Any> = HashMap()
         configProps[ProducerConfig.BOOTSTRAP_SERVERS_CONFIG] = servers
         configProps[ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG] = StringSerializer::class.java
@@ -23,7 +24,7 @@ class KafkaProducerConfig(
     }
 
     @Bean
-    fun kafkaTemplate(): KafkaTemplate<String, Any> {
+    fun kafkaTemplate(): KafkaTemplate<String, PaymentOutcomeDTO> {
         return KafkaTemplate(producerFactory())
     }
 }

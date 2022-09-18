@@ -7,6 +7,7 @@ import it.polito.payment_service.entities.Transaction
 import it.polito.payment_service.repositories.TransactionRepository
 import kotlinx.coroutines.runBlocking
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.stereotype.Service
@@ -17,21 +18,22 @@ class KafkaListenerService {
     @Autowired
     lateinit var transactionRepository: TransactionRepository
     @Autowired
-    lateinit var kafkaTemplate: KafkaTemplate<String, Any>
+    lateinit var kafkaTemplate: KafkaTemplate<String, PaymentOutcomeDTO>
 
-    var paymentResponseTopicName: String = "localhost:29092"
+    @Value("\$topics.payment-response-topic.name")
+    lateinit var paymentResponseTopicName: String
+    //TODO: capire perchè resta null e sistemarlo in riga 35
 
-    @KafkaListener(topics = ["PaymentRequestTopic"], groupId = "group-id")
-    fun consume(payment: String) {
-        lateinit var paymentRequestDTO : PaymentRequestDTO
+    @KafkaListener(topics = ["PaymentRequestTopic"], containerFactory = "kafkaListenerContainerFactory")
+    fun consume(payment: PaymentRequestDTO) {
+        //println(payment)
         try {
-            paymentRequestDTO = ObjectMapper().readValue(payment, PaymentRequestDTO::class.java)
-            val transaction = Transaction(null, paymentRequestDTO.orderId, paymentRequestDTO.username, "COMPLETED", paymentRequestDTO.totalCost)
+            val transaction = Transaction(null, payment.orderId, payment.username, "COMPLETED", payment.totalCost)
             runBlocking {
                 transactionRepository.save(transaction)
             }
             //esito positivo dell'operazione
-            kafkaTemplate.send(paymentResponseTopicName, PaymentOutcomeDTO(paymentRequestDTO.orderId,true,paymentRequestDTO.jwt))
+            kafkaTemplate.send("PaymentRespTopic", PaymentOutcomeDTO(payment.orderId,true,payment.jwt))
         }catch(e: Exception){
             println("Skipped dirty data in topic")
         }

@@ -15,7 +15,8 @@ CREATE TABLE IF NOT EXISTS "orders"
     user_id VARCHAR(255),
     status VARCHAR(255),
     n_tickets INTEGER,
-    ticket_id BIGINT
+    ticket_id BIGINT,
+    type  VARCHAR(255)
 );
 
 CREATE TABLE IF NOT EXISTS "travelcards"

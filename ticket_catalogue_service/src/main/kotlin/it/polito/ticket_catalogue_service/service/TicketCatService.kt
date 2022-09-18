@@ -6,19 +6,21 @@ import it.polito.ticket_catalogue_service.entities.Travelcard
 import it.polito.ticket_catalogue_service.exceptions.InvalidTicketException
 import it.polito.ticket_catalogue_service.exceptions.NullTicketException
 import it.polito.ticket_catalogue_service.exceptions.TicketNotFoundException
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.stereotype.Service
 import it.polito.ticket_catalogue_service.repository.TicketCatRepository
 import it.polito.ticket_catalogue_service.repository.TravelcardRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.runBlocking
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.kafka.core.KafkaTemplate
+import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.awaitBody
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
+
 
 @Service
 class TicketCatService {
@@ -74,7 +76,9 @@ class TicketCatService {
                 totalPrice = request.nTickets * ticket.price
             }
             //mando le info per il pagamento a PaymentService con Kafka
+        println(request.expDate)
         val paymentRequest = PaymentRequestDTO(request.cardHolder,request.creditCardNumber.toString(),request.expDate,request.cvv.toString(),orderId, totalPrice,username,jwt)
+        println(paymentRequest)
         runBlocking { //TODO si può togliere runBlocking?
             kafkaPaymentTemplate.send(paymentRequestTopic, paymentRequest)
         }
@@ -82,7 +86,9 @@ class TicketCatService {
     }
 
     fun ageInRange(dateOfBirth: String, minAge: Int?, maxAge: Int?): Boolean {
-        val birthDate = LocalDate.parse(dateOfBirth)
+
+        val formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy")
+        val birthDate = LocalDate.parse(dateOfBirth, formatter)
         val now = LocalDate.now()
         val age = ChronoUnit.YEARS.between(birthDate, now)
 

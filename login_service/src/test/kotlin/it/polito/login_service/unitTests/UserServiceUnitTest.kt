@@ -31,6 +31,8 @@ class UserServiceUnitTest {
         lateinit var emailService: EmailService
         lateinit var userService: UserService
 
+
+
         init {
             activationRepo = Mockito.mock(ActivationRepository::class.java)
             userRepo = Mockito.mock(UserRepository::class.java)

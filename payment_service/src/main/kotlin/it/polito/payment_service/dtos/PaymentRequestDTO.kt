@@ -8,7 +8,7 @@ data class PaymentRequestDTO (
     @JsonProperty("creditCardNumber")
     val creditCardNumber: String,
     @JsonProperty("expDate")
-    val expirationDate: String,
+    val expDate: String,
     @JsonProperty("cvv")
     val cvv: String,
     @JsonProperty("orderId")
