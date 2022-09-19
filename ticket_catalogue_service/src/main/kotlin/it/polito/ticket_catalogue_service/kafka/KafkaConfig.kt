@@ -36,7 +36,7 @@ class KafkaConfig(
     @Bean
     fun createPaymentResponseTopic(): NewTopic {
         return NewTopic(
-            "PaymentResponseTopic",
+            "PaymentRespTopic",
             1,
             1
         )

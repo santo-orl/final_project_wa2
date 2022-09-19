@@ -14,9 +14,9 @@ interface OrderRepository: CoroutineCrudRepository<Order, Long> {
 
     @Query("""
         UPDATE orders
-        SET status = ?2
-        WHERE id = ?1
+        SET status = :orderStatus
+        WHERE id = :orderId
     """)
-    fun updateOrderStatus(orderId:Long, orderStatus:String)
+    suspend fun updateOrderStatus(orderId:Long, orderStatus:String)
 
 }

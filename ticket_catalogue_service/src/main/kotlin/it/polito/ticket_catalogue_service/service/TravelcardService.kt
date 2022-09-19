@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service
 class TravelcardService {
 
     @Autowired
-    lateinit var kafkaPaymentTemplate: KafkaTemplate<String, Any>
+    lateinit var kafkaPaymentTemplate: KafkaTemplate<String, PaymentRequestDTO>
 
     @Value("\${topics.payment-request-topic.name}")
     lateinit var paymentRequestTopic: String

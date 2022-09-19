@@ -31,11 +31,11 @@ class OrderService {
     @Autowired
     lateinit var ticketRepository: TicketCatRepository
     @Autowired
-    lateinit var kafkaTicketPurchasedTemplate: KafkaTemplate<String, Any>
+    lateinit var kafkaTicketPurchasedTemplate: KafkaTemplate<String, CreateTicketsDTO>
     @Autowired
     lateinit var travelcardRepository: TravelcardRepository
     @Autowired
-    lateinit var kafkaTravelcardPurchasedTemplate: KafkaTemplate<String, Any>
+    lateinit var kafkaTravelcardPurchasedTemplate: KafkaTemplate<String, CreateTravelcardDTO>
 
     @Value("\${topics.ticket-purchased-topic.name}")
     lateinit var ticketPurchasedTopic: String

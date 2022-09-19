@@ -29,7 +29,7 @@ class TicketCatService {
     lateinit var ticketCatRepository: TicketCatRepository
 
     @Autowired
-    lateinit var kafkaPaymentTemplate: KafkaTemplate<String, Any>
+    lateinit var kafkaPaymentTemplate: KafkaTemplate<String, PaymentRequestDTO>
 
     @Autowired
     lateinit var travelcardRepository: TravelcardRepository
