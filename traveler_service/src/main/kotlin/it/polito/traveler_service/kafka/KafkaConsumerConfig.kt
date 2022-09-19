@@ -36,7 +36,7 @@ class KafkaConsumerConfig(
         props[ConsumerConfig.GROUP_ID_CONFIG] = ticketGroupId!!
         props[ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG] = StringDeserializer::class.java
         props[ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG] = CreateTicketsDTODeserializer::class.java
-        props[ConsumerConfig.AUTO_OFFSET_RESET_CONFIG] = "earliest"
+        props[ConsumerConfig.AUTO_OFFSET_RESET_CONFIG] = "latest"
         return DefaultKafkaConsumerFactory(props)
     }
 
@@ -59,7 +59,7 @@ class KafkaConsumerConfig(
         props[ConsumerConfig.GROUP_ID_CONFIG] = travelcardGroupId!!
         props[ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG] = StringDeserializer::class.java
         props[ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG] = CreateTravelcardDTODeserializer::class.java
-        props[ConsumerConfig.AUTO_OFFSET_RESET_CONFIG] = "earliest"
+        props[ConsumerConfig.AUTO_OFFSET_RESET_CONFIG] = "latest"
         return DefaultKafkaConsumerFactory(props)
     }
 

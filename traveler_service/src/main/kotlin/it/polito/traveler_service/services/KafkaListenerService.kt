@@ -20,11 +20,9 @@ class KafkaListenerService {
 
     //riceve da ticket_purchased_service la richiesta di aggiungere al db dei ticket purchased
     //uno o più ticket il cui acquisto è andato a buon fine
-    @KafkaListener(topics = ["TicketPurchasedTopic"], groupId = "\${ticket.topic.group.id}",containerFactory = "ticketKafkaListenerContainerFactory")
-    suspend fun createTicketPurchased(createTicketPurchasedString: String) {
-        //TODO gestione errori
-        val createTicketsPurchased: CreateTicketsDTO =
-            ObjectMapper().readValue(createTicketPurchasedString, CreateTicketsDTO::class.java)
+    @KafkaListener(topics = ["TicketPurchasedTopic"], containerFactory = "ticketKafkaListenerContainerFactory")
+    fun createTicketPurchased(createTicketsPurchased: CreateTicketsDTO) {
+
         val user = userDetailsRepository.findUserDetailsByUserr(createTicketsPurchased.username).get(0)
         for (i in 0 until createTicketsPurchased.quantity) {
             var ticket = ticketPurchasedService.createTicket(
@@ -39,10 +37,8 @@ class KafkaListenerService {
     //riceve da ticket_purchased_service la richiesta di aggiungere al db delle travelcard purchased
     //una travelcard il cui acquisto è andato a buon fine
     @KafkaListener(topics = ["TravelcardPurchasedTopic"], groupId = "\${travelcard.topic.group.id}",containerFactory = "travelcardKafkaListenerContainerFactory")
-    suspend fun createTravelcardPurchased(createTravelcardPurchasedString: String) {
-        //TODO gestione errori
-        val createTravelcardPurchased: CreateTravelcardDTO =
-            ObjectMapper().readValue(createTravelcardPurchasedString, CreateTravelcardDTO::class.java)
+    fun createTravelcardPurchased(createTravelcardPurchased: CreateTravelcardDTO) {
+
         val user = userDetailsRepository.findUserDetailsByUserr(createTravelcardPurchased.username).get(0)
             var travelcard = travelcardPurchasedService.createTravelcard(
                 user.id,

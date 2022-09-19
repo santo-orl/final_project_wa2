@@ -2,13 +2,9 @@ package it.polito.traveler_service.entities
 
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
-import javax.persistence.Entity
-import javax.persistence.GeneratedValue
-import javax.persistence.GenerationType
-import javax.persistence.Id
-import javax.persistence.OneToMany
 import org.springframework.security.core.userdetails.UserDetails
 import java.time.LocalDateTime
+import javax.persistence.*
 
 @Entity
 class UserDetailsImpl : UserDetails {
@@ -23,11 +19,11 @@ class UserDetailsImpl : UserDetails {
     var telephoneNumber: String = ""
     var role: String = ""
 
-    @OneToMany(mappedBy = "userDetails")
+    @OneToMany(mappedBy = "userDetails", cascade=[CascadeType.ALL])
     var ticketList: List<TicketPurchased>? = null
-    @OneToMany(mappedBy = "userDetails")
+    @OneToMany(mappedBy = "userDetails", cascade=[CascadeType.ALL])
     var travelcardList: List<TravelcardPurchased>? = null
-    @OneToMany(mappedBy = "userDetails")
+    @OneToMany(mappedBy = "userDetails", cascade=[CascadeType.ALL])
     var transitList: List<Transit>? = null
 
     //specifico quali siano le authorities dell'userr

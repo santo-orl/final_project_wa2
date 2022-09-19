@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -36,16 +37,18 @@ class TicketPurchasedService {
     }
 
     fun createTicket(zones: String, id: Long, validFrom: String, type: String): TicketPurchasedDTO {
-        println("MIAO")
-        if(zones==""){println("miao");throw Exception()}
+        val formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy")
+        val date = LocalDate.parse(validFrom, formatter).atStartOfDay()
+        if(zones==""){throw Exception()}
         var userr = userDetailsRepository.findById(id).get()
         var ticket = TicketPurchased(
             LocalDateTime.now(),
             zones,
             userr,
-            LocalDateTime.parse(validFrom, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")),
+            date,
             type
         )
+        println(ticket.type)
         ticketPurchasedRepository.save(ticket)
         return ticket.toDTO()
     }
