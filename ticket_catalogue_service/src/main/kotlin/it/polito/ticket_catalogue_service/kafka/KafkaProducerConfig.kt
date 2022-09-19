@@ -1,5 +1,8 @@
 package it.polito.ticket_catalogue_service.kafka
 
+import it.polito.ticket_catalogue_service.dtos.CreateTicketsDTO
+import it.polito.ticket_catalogue_service.dtos.CreateTravelcardDTO
+import it.polito.ticket_catalogue_service.dtos.PaymentRequestDTO
 import org.apache.kafka.clients.producer.ProducerConfig
 import org.apache.kafka.common.serialization.StringSerializer
 import org.springframework.beans.factory.annotation.Value
@@ -17,7 +20,7 @@ class KafkaProducerConfig(
 
     //per il payment
     @Bean
-    fun paymentRequestProducerFactory(): ProducerFactory<String, Any> {
+    fun paymentRequestProducerFactory(): ProducerFactory<String, PaymentRequestDTO> {
         val configProps: MutableMap<String, Any> = HashMap()
         configProps[ProducerConfig.BOOTSTRAP_SERVERS_CONFIG] = servers
         configProps[ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG] = StringSerializer::class.java
@@ -26,14 +29,14 @@ class KafkaProducerConfig(
     }
 
     @Bean
-    fun kafkaPaymentTemplate(): KafkaTemplate<String, Any> {
+    fun kafkaPaymentTemplate(): KafkaTemplate<String, PaymentRequestDTO> {
         return KafkaTemplate(paymentRequestProducerFactory())
     }
 
     //per il ticketPurchased
 
     @Bean
-    fun ticketPurchasedProducerFactory(): ProducerFactory<String, Any> {
+    fun ticketPurchasedProducerFactory(): ProducerFactory<String, CreateTicketsDTO> {
         val configProps: MutableMap<String, Any> = HashMap()
         configProps[ProducerConfig.BOOTSTRAP_SERVERS_CONFIG] = servers
         configProps[ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG] = StringSerializer::class.java
@@ -42,14 +45,14 @@ class KafkaProducerConfig(
     }
 
     @Bean
-    fun kafkaTicketPurchasedTemplate(): KafkaTemplate<String, Any> {
+    fun kafkaTicketPurchasedTemplate(): KafkaTemplate<String, CreateTicketsDTO> {
         return KafkaTemplate(ticketPurchasedProducerFactory())
     }
 
     //per la travelcard purchased
 
     @Bean
-    fun travelcardPurchasedProducerFactory(): ProducerFactory<String, Any> {
+    fun travelcardPurchasedProducerFactory(): ProducerFactory<String, CreateTravelcardDTO> {
         val configProps: MutableMap<String, Any> = HashMap()
         configProps[ProducerConfig.BOOTSTRAP_SERVERS_CONFIG] = servers
         configProps[ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG] = StringSerializer::class.java
@@ -58,7 +61,7 @@ class KafkaProducerConfig(
     }
 
     @Bean
-    fun kafkaTravelcardPurchasedTemplate(): KafkaTemplate<String, Any> {
+    fun kafkaTravelcardPurchasedTemplate(): KafkaTemplate<String, CreateTravelcardDTO> {
         return KafkaTemplate(travelcardPurchasedProducerFactory())
     }
 

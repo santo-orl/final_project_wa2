@@ -27,13 +27,16 @@ class TicketCatService {
 
     @Autowired
     lateinit var ticketCatRepository: TicketCatRepository
+
     @Autowired
     lateinit var kafkaPaymentTemplate: KafkaTemplate<String, Any>
+
     @Autowired
     lateinit var travelcardRepository: TravelcardRepository
 
     @Value("\${travelerServiceUrl}")
     lateinit var travelerServiceUrl: String
+
     @Value("\${topics.payment-request-topic.name}")
     lateinit var paymentRequestTopic: String
 
@@ -69,16 +72,23 @@ class TicketCatService {
         }
     }//isValid
 
-    suspend fun askForPayment(request: ShopRequestDTO,orderId:Long,username:String,jwt:String) {
-            val ticket = ticketCatRepository.findById(request.ticketId)
-            var totalPrice=0F
-            if (ticket != null) {
-                totalPrice = request.nTickets * ticket.price
-            }
-            //mando le info per il pagamento a PaymentService con Kafka
-        println(request.expDate)
-        val paymentRequest = PaymentRequestDTO(request.cardHolder,request.creditCardNumber.toString(),request.expDate,request.cvv.toString(),orderId, totalPrice,username,jwt)
-        println(paymentRequest)
+    suspend fun askForPayment(request: ShopRequestDTO, orderId: Long, username: String, jwt: String) {
+        val ticket = ticketCatRepository.findById(request.ticketId)
+        var totalPrice = 0F
+        if (ticket != null) {
+            totalPrice = request.nTickets * ticket.price
+        }
+        //mando le info per il pagamento a PaymentService con Kafka
+        val paymentRequest = PaymentRequestDTO(
+            request.cardHolder,
+            request.creditCardNumber.toString(),
+            request.expDate,
+            request.cvv.toString(),
+            orderId,
+            totalPrice,
+            username,
+            jwt
+        )
         runBlocking { //TODO si può togliere runBlocking?
             kafkaPaymentTemplate.send(paymentRequestTopic, paymentRequest)
         }
@@ -119,15 +129,15 @@ class TicketCatService {
         return ticketCatRepository.getTickets()
     }
 
-    suspend fun removeTicket(ticketId: Long){
+    suspend fun removeTicket(ticketId: Long) {
         val ticket = ticketCatRepository.findById(ticketId)
-        if(ticket != null)
+        if (ticket != null)
             ticketCatRepository.delete(ticket)
     }
 
-    suspend fun updateTicket(ticketId: Long, newTicket: TicketDTO): TicketDTO{
+    suspend fun updateTicket(ticketId: Long, newTicket: TicketDTO): TicketDTO {
         val ticket = ticketCatRepository.findById(ticketId)
-        if(ticket==null) throw TicketNotFoundException("Ticket with id $ticketId does not exist")
+        if (ticket == null) throw TicketNotFoundException("Ticket with id $ticketId does not exist")
         ticketCatRepository.delete(ticket)
         return ticketCatRepository.save(
             Ticket(
@@ -138,7 +148,8 @@ class TicketCatService {
                 newTicket.maxAge,
                 newTicket.zid,
                 newTicket.validFrom
-        )).toDTO()
+            )
+        ).toDTO()
     }
 
     fun getTravelcards(): Flow<Travelcard> {

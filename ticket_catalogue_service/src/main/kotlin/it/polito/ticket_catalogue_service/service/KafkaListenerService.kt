@@ -18,8 +18,7 @@ class KafkaListenerService {
     lateinit var orderService: OrderService
 
     @KafkaListener(topics = ["PaymentResponseTopic"], groupId = "group-id")
-    suspend fun updateOrderByPaymentOutcome(paymentOutcome: String) {
-        val paymentOutcome = ObjectMapper().readValue(paymentOutcome, PaymentOutcomeDTO::class.java)
+    suspend fun updateOrderByPaymentOutcome(paymentOutcome: PaymentOutcomeDTO) {
         if (paymentOutcome.outcome) {
             //PaymentService dice che il pagamento è andato a buon fine
             orderRepository.updateOrderStatus(paymentOutcome.orderId, "COMPLETED")

@@ -1,5 +1,6 @@
 package it.polito.ticket_catalogue_service.kafka
 
+import it.polito.ticket_catalogue_service.dtos.PaymentOutcomeDTO
 import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.common.serialization.StringDeserializer
 import org.springframework.beans.factory.annotation.Value
@@ -19,7 +20,7 @@ class KafkaConsumerConfig(
 ) {
     private val servers: String = "localhost:29092"
     @Bean
-    fun consumerFactory(): ConsumerFactory<String?, Any?> {
+    fun consumerFactory(): ConsumerFactory<String?, PaymentOutcomeDTO?> {
         val props: MutableMap<String, Any> = HashMap()
         props[ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG] = servers
         props[ConsumerConfig.GROUP_ID_CONFIG] = "ppr"
@@ -30,8 +31,8 @@ class KafkaConsumerConfig(
     }
 
     @Bean
-    fun kafkaListenerContainerFactory(): ConcurrentKafkaListenerContainerFactory<String, Any>? {
-        val factory = ConcurrentKafkaListenerContainerFactory<String, Any>()
+    fun kafkaListenerContainerFactory(): ConcurrentKafkaListenerContainerFactory<String, PaymentOutcomeDTO>? {
+        val factory = ConcurrentKafkaListenerContainerFactory<String, PaymentOutcomeDTO>()
         factory.consumerFactory = consumerFactory()
         factory.containerProperties.ackMode = ContainerProperties.AckMode.MANUAL_IMMEDIATE
         factory.containerProperties.isSyncCommits = true;
