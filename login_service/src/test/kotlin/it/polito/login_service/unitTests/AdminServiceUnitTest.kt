@@ -2,6 +2,7 @@ package it.polito.login_service.unitTests
 
 import it.polito.login_service.dtos.UserDTO
 import it.polito.login_service.entities.Role
+import it.polito.login_service.entities.User
 import it.polito.login_service.exceptions.BadCredentialsException
 import it.polito.login_service.repositories.ActivationRepository
 import it.polito.login_service.repositories.UserRepository
@@ -13,12 +14,14 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.runner.RunWith
 import org.mockito.Mockito
 import org.mockito.junit.jupiter.MockitoExtension
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Bean
 import org.springframework.mail.javamail.JavaMailSender
 import org.springframework.mail.javamail.JavaMailSenderImpl
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.test.context.junit4.SpringRunner
-
+import javax.annotation.Resource
+import javax.transaction.Transactional
 class AdminServiceUnitTest {
 
     @RunWith(SpringRunner::class)
@@ -29,6 +32,7 @@ class AdminServiceUnitTest {
         lateinit var userRepo: UserRepository
         lateinit var emailService: EmailService
         lateinit var userService: UserService
+
         @Bean
         fun emailSender(): JavaMailSender {
             val mailSender = JavaMailSenderImpl()
@@ -152,10 +156,17 @@ class AdminServiceUnitTest {
         //check fun registerUser: email should be unique
         fun registerAdminDuplicateEmail() {
             //BadCredentialsException
-            Assertions.assertThrows(BadCredentialsException::class.java) {
-                userService.registerUser(UserDTO("Antonio", "GiorgiaChiotti1.", "miao@miao.it"), Role.ADMIN)
-                userService.registerUser(UserDTO("Giovanni", "GiorgiaChiotti1.", "miao@miao.it"), Role.ADMIN)
-            }
+            //userService.registerUser(UserDTO("Antonio", "GiorgiaChiotti1.", "miao@miao.it"), Role.ADMIN)
+            userRepo.save(User(0,"miao","Miao123","cacca@cacca.it","INACTIVE"))
+            var t = userRepo.findUserByUsername("miao")
+            println(t)
+        /*  Assertions.assertThrows(BadCredentialsException::class.java) {
+                       userRepo.save(User(1, "bau", "Miao123", "cacca@cacca.it", "INACTIVE"))
+                   }
+                       Assertions.assertThrows(BadCredentialsException::class.java) {
+                           userService.registerUser(UserDTO("Antonio", "GiorgiaChiotti1.", "miao@miao.it"), Role.ADMIN)
+                           userService.registerUser(UserDTO("Giovanni", "GiorgiaChiotti1.", "miao@miao.it"), Role.ADMIN)
+                       }*/
         }
 
         @Test

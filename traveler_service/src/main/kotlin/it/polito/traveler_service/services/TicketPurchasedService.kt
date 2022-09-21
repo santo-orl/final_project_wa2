@@ -19,12 +19,12 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 @Service
-class TicketPurchasedService {
+class TicketPurchasedService(var ticketPurchasedRepository: TicketPurchasedRepository, var userDetailsRepository: UserDetailsRepository) {
 
-    @Autowired
-    lateinit var ticketPurchasedRepository: TicketPurchasedRepository
-    @Autowired
-    lateinit var userDetailsRepository: UserDetailsRepository
+    /*@Autowired
+    lateinit var ticketPurchasedRepository: TicketPurchasedRepository*/
+    /*@Autowired
+    lateinit var userDetailsRepository: UserDetailsRepository*/
 
 
     fun getAllTickets(userId: Long): List<TicketPurchasedDTO> {
@@ -37,9 +37,10 @@ class TicketPurchasedService {
     }
 
     fun createTicket(zones: String, id: Long, validFrom: String, type: String): TicketPurchasedDTO {
-        val formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy")
+        val formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
         val date = LocalDate.parse(validFrom, formatter).atStartOfDay()
         if(zones==""){throw Exception()}
+        println(id)
         var userr = userDetailsRepository.findById(id).get()
         var ticket = TicketPurchased(
             LocalDateTime.now(),

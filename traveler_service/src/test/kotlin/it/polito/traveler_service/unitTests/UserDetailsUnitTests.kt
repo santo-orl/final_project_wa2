@@ -12,6 +12,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.runner.RunWith
 import org.mockito.Mockito
 import org.mockito.junit.jupiter.MockitoExtension
+import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.context.junit4.SpringRunner
 
 class UserDetailsUnitTests {
@@ -26,7 +27,7 @@ class UserDetailsUnitTests {
         lateinit var userDetailsServiceImpl: UserDetailsServiceImpl
 
         init{
-            ticketPurchasedService = TicketPurchasedService()
+            ticketPurchasedService = TicketPurchasedService(ticketPurchasedRepository, userDetailsRepository)
             ticketPurchasedRepository = Mockito.mock(TicketPurchasedRepository::class.java)
             userDetailsRepository = Mockito.mock(UserDetailsRepository::class.java)
             userDetailsServiceImpl = UserDetailsServiceImpl()

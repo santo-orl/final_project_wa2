@@ -4,15 +4,22 @@ import it.polito.traveler_service.entities.TravelcardPurchased
 import it.polito.traveler_service.repositories.TravelcardPurchasedRepository
 import it.polito.traveler_service.repositories.UserDetailsRepository
 import it.polito.traveler_service.services.TravelcardPurchasedService
-import org.junit.Assert
-import org.junit.jupiter.api.Test
+import org.hibernate.cfg.Environment
 import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.runner.RunWith
 import org.mockito.Mockito
 import org.mockito.junit.jupiter.MockitoExtension
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
+import org.springframework.context.annotation.Bean
+import org.springframework.jdbc.datasource.DriverManagerDataSource
 import org.springframework.test.context.junit4.SpringRunner
+import javax.sql.DataSource
 
+@DataJpaTest
 class TravelcardPurchasedUnitTests {
 
     @RunWith(SpringRunner::class)
@@ -21,12 +28,12 @@ class TravelcardPurchasedUnitTests {
 
         lateinit var travelcardPurchasedService: TravelcardPurchasedService
         lateinit var travelcardPurchasedRepository: TravelcardPurchasedRepository
-        lateinit var userDetailsRepository: UserDetailsRepository
+        lateinit var userDetailsRepo: UserDetailsRepository
 
         init{
             travelcardPurchasedService = TravelcardPurchasedService()
             travelcardPurchasedRepository = Mockito.mock(TravelcardPurchasedRepository::class.java)
-            userDetailsRepository = Mockito.mock(UserDetailsRepository::class.java)
+            userDetailsRepo = Mockito.mock(UserDetailsRepository::class.java)
         }
 
         @Test

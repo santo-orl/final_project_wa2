@@ -4,6 +4,7 @@ import it.polito.traveler_service.entities.TicketPurchased
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.CrudRepository
 import org.springframework.stereotype.Repository
+import javax.transaction.Transactional
 
 @Repository
 interface TicketPurchasedRepository: CrudRepository<TicketPurchased, Long> {
