@@ -18,8 +18,10 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Bean
 import org.springframework.mail.javamail.JavaMailSender
 import org.springframework.mail.javamail.JavaMailSenderImpl
+import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.test.context.junit4.SpringRunner
+import java.util.stream.DoubleStream.builder
 import javax.annotation.Resource
 import javax.transaction.Transactional
 class AdminServiceUnitTest {
@@ -29,6 +31,8 @@ class AdminServiceUnitTest {
     class RegisterAdminTest(){
 
         lateinit var activationRepo: ActivationRepository
+
+        @Autowired
         lateinit var userRepo: UserRepository
         lateinit var emailService: EmailService
         lateinit var userService: UserService
