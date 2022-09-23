@@ -90,7 +90,9 @@ class OrderService {
         kafkaTravelcardPurchasedTemplate.send(travelcardPurchasedTopic, createTravelcardDTO)
     }
 
-
+    suspend fun deleteOrder(orderId: Long){
+        orderRepository.deleteById(orderId)
+    }
 
 
 }

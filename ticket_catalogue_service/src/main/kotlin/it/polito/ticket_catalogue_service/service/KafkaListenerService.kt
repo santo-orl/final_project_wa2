@@ -20,12 +20,17 @@ class KafkaListenerService {
 
     @KafkaListener(topics = ["PaymentRespTopic"], containerFactory = "kafkaListenerContainerFactory")
     fun updateOrderByPaymentOutcome(paymentOutcome: PaymentOutcomeDTO) {
-        if (paymentOutcome.outcome) {
+        if(paymentOutcome.error){
+            //c'è stato un errore in payment_service, quindi tolgo l'ordine dal db
+            runBlocking {
+                orderService.deleteOrder(paymentOutcome.orderId)
+            }
+        }
+        else if (paymentOutcome.outcome) {
             println(paymentOutcome)
             //PaymentService dice che il pagamento è andato a buon fine
             runBlocking {
                 orderRepository.updateOrderStatus(paymentOutcome.orderId, "COMPLETED")
-                println(paymentOutcome.orderId)
                 val order = orderRepository.findById(paymentOutcome.orderId)
                 if(order.type==OrderType.TICKET)
                 //chiamata a traveler_service per inserire nel db il ticketpurchased
@@ -34,7 +39,6 @@ class KafkaListenerService {
                 //chiamata a traveler_service per inserire nel db la travelcardpurchased
                     orderService.sendPurchasedTravelcardToTraveler(order.ticketId,paymentOutcome.jwt,order.userId)
             }
-
         } else {
             runBlocking {
                 orderRepository.updateOrderStatus(paymentOutcome.orderId, "CANCELED")

@@ -22,10 +22,9 @@ class KafkaListenerService {
     //uno o più ticket il cui acquisto è andato a buon fine
     @KafkaListener(topics = ["TicketPurchasedTopic"], containerFactory = "ticketKafkaListenerContainerFactory")
     fun createTicketPurchased(createTicketsPurchased: CreateTicketsDTO) {
-
         val user = userDetailsRepository.findUserDetailsByUserr(createTicketsPurchased.username).get(0)
         for (i in 0 until createTicketsPurchased.quantity) {
-            var ticket = ticketPurchasedService.createTicket(
+            ticketPurchasedService.createTicket(
                 createTicketsPurchased.zones,
                 user.id,
                 createTicketsPurchased.validFrom,
@@ -38,9 +37,8 @@ class KafkaListenerService {
     //una travelcard il cui acquisto è andato a buon fine
     @KafkaListener(topics = ["TravelcardPurchasedTopic"], groupId = "\${travelcard.topic.group.id}",containerFactory = "travelcardKafkaListenerContainerFactory")
     fun createTravelcardPurchased(createTravelcardPurchased: CreateTravelcardDTO) {
-
         val user = userDetailsRepository.findUserDetailsByUserr(createTravelcardPurchased.username).get(0)
-            var travelcard = travelcardPurchasedService.createTravelcard(
+            travelcardPurchasedService.createTravelcard(
                 user.id,
                 createTravelcardPurchased.type,
                 createTravelcardPurchased.zones

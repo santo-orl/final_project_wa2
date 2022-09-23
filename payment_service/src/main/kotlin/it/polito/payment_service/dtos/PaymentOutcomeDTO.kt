@@ -7,6 +7,8 @@ data class PaymentOutcomeDTO (
     val orderId: Long,
     @JsonProperty("outcome")
     val outcome: Boolean,
+    @JsonProperty("error")
+    val error: Boolean,
     @JsonProperty("jwt")
     val jwt:String
 )
