@@ -26,7 +26,7 @@ class KafkaConsumerConfig(
         props[ConsumerConfig.GROUP_ID_CONFIG] = "ppr"
         props[ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG] = StringDeserializer::class.java
         props[ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG] = ProductDeserializer::class.java
-        props[ConsumerConfig.AUTO_OFFSET_RESET_CONFIG] = "earliest"
+        props[ConsumerConfig.AUTO_OFFSET_RESET_CONFIG] = "latest"
         return DefaultKafkaConsumerFactory(props)
     }
 
