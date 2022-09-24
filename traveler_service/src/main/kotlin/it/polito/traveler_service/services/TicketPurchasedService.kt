@@ -5,6 +5,7 @@ import it.polito.traveler_service.dtos.CreateTicketsDTO
 import it.polito.traveler_service.dtos.TicketPurchasedDTO
 import it.polito.traveler_service.dtos.toDTO
 import it.polito.traveler_service.entities.TicketPurchased
+import it.polito.traveler_service.entities.TravelcardPurchased
 import it.polito.traveler_service.entities.UserDetailsImpl
 import it.polito.traveler_service.exceptions.TicketNotFoundException
 import it.polito.traveler_service.exceptions.UnauthorizedTicketAccessException
@@ -37,20 +38,11 @@ class TicketPurchasedService(var ticketPurchasedRepository: TicketPurchasedRepos
     }
 
     fun createTicket(zones: String, id: Long, validFrom: String, type: String): TicketPurchasedDTO {
-        val formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
+        val formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy")
         val date = LocalDate.parse(validFrom, formatter).atStartOfDay()
         if(zones==""){throw Exception()}
-        println(id)
         var userr = userDetailsRepository.findById(id).get()
-        var ticket = TicketPurchased(
-            LocalDateTime.now(),
-            zones,
-            userr,
-            date,
-            type
-        )
-        println(ticket.type)
-        ticketPurchasedRepository.save(ticket)
+        var ticket = ticketPurchasedRepository.save(TicketPurchased(LocalDateTime.now(), zones, userr, date, type))
         return ticket.toDTO()
     }
 
