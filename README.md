@@ -25,9 +25,9 @@ I microservizi comunicano fra loro tramite **Kafka**. In particolare:
   * traveler_service GET /my/profile
   * traveler_service POST /my/profile
 * traveler loggato deve comprare tickets
-  * ticket_catalogue_service POST /shop/tickets/{ticket-id}
+  * ticket_catalogue_service POST /shop/tickets
 * traveler loggato deve comprare travel cards
-  * ticket_catalogue_service POST /shop/travelcards/{travelcard-id}
+  * ticket_catalogue_service POST /shop/travelcards
 * traveler loggato deve consultare la lista degli acquisti
   * ticket_catalogue_service GET /orders
 * traveler loggato deve scaricare singoli documenti di viaggio sottoforma di QR che rappresenta un JWS
