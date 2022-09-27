@@ -5,5 +5,5 @@ import java.time.LocalDateTime
 data class TravelcardValidatedDTO(
     val travelcardId: Long,
     val username: String,
-    val date: LocalDateTime
+    val date: String
 )

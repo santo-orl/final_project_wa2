@@ -12,7 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.stereotype.Service
+import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 @Service
 class UserDetailsServiceImpl : UserDetailsService {
@@ -84,16 +86,18 @@ class UserDetailsServiceImpl : UserDetailsService {
         val user = userDetailsRepository.findUserDetailsByUserr(username).getOrNull(0)
         if(user==null) throw UserNotFoundException("User not found")
         return user.transitList!!.filter { transit ->
-            transit.date.isAfter(LocalDateTime.parse(from)) && transit.date.isBefore(
-                LocalDateTime.parse(to)
+            transit.date.isAfter(LocalDate.parse(from)) && transit.date.isBefore(
+                LocalDate.parse(to)
             )
         }
             .map { transit -> transit.toDTO() }
     }
 
-    fun addTransit(username: String, date: LocalDateTime) {
+    fun addTransit(username: String, dateString: String) {
         var user = userDetailsRepository.findUserDetailsByUserr(username).getOrNull(0)
         if (user == null) throw UserNotFoundException("user not found")
+        val formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy")
+        val date = LocalDate.parse(dateString, formatter)
         val transit = Transit(date, user)
         transitRepository.save(transit)
         //TODO aggiungendo il transit alla tabella si aggiorna anche la relazione one to many lato user?
