@@ -10,7 +10,7 @@ class Transit {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     var id: Long = 0L
     var date: LocalDateTime = LocalDateTime.now()
-    @ManyToOne
+    @ManyToOne(cascade=[CascadeType.ALL])
     @JoinColumn(name = "userDetails")
     var userDetails: UserDetailsImpl? = null
 

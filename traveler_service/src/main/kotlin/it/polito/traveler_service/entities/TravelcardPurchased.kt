@@ -18,7 +18,7 @@ class TravelcardPurchased {
     var zid: String
     var validFrom: LocalDateTime = LocalDateTime.now()
     var validTo: LocalDateTime = LocalDateTime.now()
-    @ManyToOne
+    @ManyToOne(cascade=[CascadeType.ALL])
     @JoinColumn(name = "userDetails")
     var userDetails: UserDetailsImpl? = null
 

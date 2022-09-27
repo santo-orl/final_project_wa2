@@ -42,8 +42,7 @@ class TicketPurchasedService(var ticketPurchasedRepository: TicketPurchasedRepos
         val date = LocalDate.parse(validFrom, formatter).atStartOfDay()
         if(zones==""){throw Exception()}
         var userr = userDetailsRepository.findById(id).get()
-        var ticket = ticketPurchasedRepository.save(TicketPurchased(LocalDateTime.now(), zones, userr, date, type))
-        return ticket.toDTO()
+        return ticketPurchasedRepository.save(TicketPurchased(LocalDateTime.now(), zones, userr, date, type)).toDTO()
     }
 
     fun removeTicket(sub: Long) {
