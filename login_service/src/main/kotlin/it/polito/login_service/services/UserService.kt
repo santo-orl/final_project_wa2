@@ -147,6 +147,7 @@ class UserService(var activationRepository: ActivationRepository,
         val key = Keys.hmacShaKeyFor(Encoders.BASE64.encode(accessKey.toByteArray()).toByteArray())
         var roleString = ""
         if(role==Role.CUSTOMER) roleString = "CUSTOMER"
+        else if(role==Role.QR_READER) roleString = "QR_READER"
         else roleString = "ADMIN"
         val jwt = Jwts.builder()
             .setSubject(username)

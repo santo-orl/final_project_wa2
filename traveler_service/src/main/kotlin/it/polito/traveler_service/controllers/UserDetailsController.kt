@@ -110,8 +110,7 @@ class UserDetailsController {
     }
 
     @GetMapping("/my/tickets/qr/{ticketId}", produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun getTicketAsQR(@PathVariable ticketId: Long): ResponseEntity<String> {
-        val ret: String
+    fun getTicketAsQR(@PathVariable("ticketId") ticketId: Long): ResponseEntity<String> {
         var ticket: TicketPurchasedDTO
         val principal = SecurityContextHolder.getContext().authentication.principal;
         principal as UserDetailsImpl
@@ -125,12 +124,12 @@ class UserDetailsController {
             return ResponseEntity("Ticket not found",HttpStatus.NOT_FOUND)
         }
         //ritorno il jws codificato in base64
-        ret = Base64.getEncoder().encodeToString(ticket.jws.toByteArray())
+        var ret = Base64.getEncoder().encodeToString(ticket.jws.toByteArray())
         return ResponseEntity(ret, HttpStatus.OK)
     }
 
     @GetMapping("/my/travelcards/qr/{travelcardId}", produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun getTravelcardsAsQR(@PathVariable travelcardId: Long): ResponseEntity<String> {
+    fun getTravelcardsAsQR(@PathVariable("travelcardId") travelcardId: Long): ResponseEntity<String> {
         val ret: String
         var travelcard: TravelcardPurchasedDTO
         val principal = SecurityContextHolder.getContext().authentication.principal;

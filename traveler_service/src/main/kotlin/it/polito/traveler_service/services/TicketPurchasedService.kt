@@ -58,7 +58,7 @@ class TicketPurchasedService(var ticketPurchasedRepository: TicketPurchasedRepos
     fun getTicketById(ticketId: Long, username: String): TicketPurchasedDTO {
         var ticket: TicketPurchased
         try {
-            ticket = ticketPurchasedRepository.findById(ticketId).get()
+            ticket = ticketPurchasedRepository.findTicketPurchasedBySub(ticketId)
         } catch (e: NoSuchElementException) {
             throw TicketNotFoundException("Ticket not found")
         }
