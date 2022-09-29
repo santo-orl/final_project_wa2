@@ -84,10 +84,11 @@ class UserDetailsServiceImpl : UserDetailsService {
 
     fun getUserTransits(username: String, from: String, to: String): List<TransitDTO> {
         val user = userDetailsRepository.findUserDetailsByUserr(username).getOrNull(0)
+        val formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy")
         if(user==null) throw UserNotFoundException("User not found")
         return user.transitList!!.filter { transit ->
-            transit.date.isAfter(LocalDate.parse(from)) && transit.date.isBefore(
-                LocalDate.parse(to)
+            transit.date.isAfter(LocalDate.parse(from,formatter)) && transit.date.isBefore(
+                LocalDate.parse(to,formatter)
             )
         }
             .map { transit -> transit.toDTO() }

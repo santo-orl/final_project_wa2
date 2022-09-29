@@ -21,13 +21,15 @@ class LoginServiceApplication {
     @Bean
     fun mailSender(): JavaMailSender {
         val mailSender = JavaMailSenderImpl()
-        mailSender.host = "smtp.libero.it"
+        mailSender.host = "smtp.office365.com"
         mailSender.port = 587
-        mailSender.username = "finalprojectwa2@libero.it"
-        mailSender.password = "Wa2polito123."
+        mailSender.username = "orlando_santo@outlook.it"
+        mailSender.password = "or21lan10do98."
         val javaMailProperties = mailSender.javaMailProperties
+        javaMailProperties["mail.smtp.port"] = 587
         javaMailProperties["mail.smtp.auth"] = true
         javaMailProperties["mail.smtp.starttls.enable"] = true
+        javaMailProperties["mail.smtp.ssl.enable"] = true
         javaMailProperties["mail.transport.protocol"] = "smtp"
         mailSender.javaMailProperties = javaMailProperties
         return mailSender

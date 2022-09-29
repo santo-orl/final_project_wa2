@@ -19,11 +19,13 @@ class KafkaConsumerConfig(
 
 ) {
     private val servers: String = "localhost:29092"
+    @Value(value = "\${kafka.consumer.group}")
+    private val group: String? = null
     @Bean
     fun consumerFactory(): ConsumerFactory<String?, PaymentOutcomeDTO?> {
         val props: MutableMap<String, Any> = HashMap()
         props[ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG] = servers
-        props[ConsumerConfig.GROUP_ID_CONFIG] = "ppr"
+        props[ConsumerConfig.GROUP_ID_CONFIG] = group!!
         props[ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG] = StringDeserializer::class.java
         props[ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG] = ProductDeserializer::class.java
         props[ConsumerConfig.AUTO_OFFSET_RESET_CONFIG] = "latest"

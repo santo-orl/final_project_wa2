@@ -25,11 +25,13 @@ class JwtAuthenticationTokenFilter : WebFilter {
 
 
     override fun filter(exchange: ServerWebExchange, chain: WebFilterChain): Mono<Void> {
+        println("ciao")
         val jwt = parseJwt(exchange.request)
         if (jwt != null && jwtUtils.validateJwt(jwt)) { //se è valido il jwt
             //prendo lo user
             val username: String = jwtUtils.getUsername(jwt)
             //imposto le authorities con il tipo giusto
+            println(jwtUtils.getRole(jwt))
             val authorities: MutableSet<GrantedAuthority> = HashSet()
             authorities.add(SimpleGrantedAuthority(jwtUtils.getRole(jwt)))
             //lo imposto in authentication in modo da poterlo prendere poi dai controller

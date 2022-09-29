@@ -216,10 +216,11 @@ class UserDetailsController {
 
     @GetMapping("/admin/traveler/transits/{username}", produces = [MediaType.APPLICATION_JSON_VALUE])
     fun getUserTransitsInRange(
-        @PathVariable username: String,
+        @PathVariable("username") username: String,
         @RequestParam("from") from: String,
         @RequestParam("to") to: String
     ): ResponseEntity<List<TransitDTO>> {
+        println("prova")
         var transits: List<TransitDTO>
         try {
             transits = userDetailsServiceImpl.getUserTransits(username, from, to)

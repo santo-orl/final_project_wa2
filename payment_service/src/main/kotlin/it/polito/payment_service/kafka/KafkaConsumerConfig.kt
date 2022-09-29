@@ -22,7 +22,7 @@ class KafkaConsumerConfig(
     fun consumerFactory(): ConsumerFactory<String?, PaymentRequestDTO?> {
         val props: MutableMap<String, Any> = HashMap()
         props[ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG] = servers
-        props[ConsumerConfig.GROUP_ID_CONFIG] = "ppr"
+        props[ConsumerConfig.GROUP_ID_CONFIG] = "ppr2"
         props[ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG] = StringDeserializer::class.java
         props[ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG] = ProductDeserializer::class.java
         props[ConsumerConfig.AUTO_OFFSET_RESET_CONFIG] = "latest"
