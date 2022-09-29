@@ -5,6 +5,5 @@ CREATE TABLE IF NOT EXISTS "transactions"
     user_id VARCHAR(255),
     order_status VARCHAR(255),
     total_cost FLOAT,
-    date DATE
-
+    date VARCHAR(255)
 );

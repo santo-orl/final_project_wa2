@@ -109,16 +109,16 @@ class TicketCatController {
 
     @DeleteMapping("/admin/tickets/{ticketId}")
     suspend fun removeTicket(
-        @PathVariable ticketId: Long,
+        @PathVariable("ticketId") ticketId: Long,
         @RequestHeader("authorization") jwt: String
     ): ResponseEntity<Long> {
         ticketCatService.removeTicket(ticketId)
         return ResponseEntity(ticketId, HttpStatus.OK)
     }
 
-    @DeleteMapping("/admin/travelcards/{ticketId}")
+    @DeleteMapping("/admin/travelcards/{travelcardId}")
     suspend fun removeTravelcard(
-        @PathVariable travelcardId: Long,
+        @PathVariable("travelcardId") travelcardId: Long,
         @RequestHeader("authorization") jwt: String
     ): ResponseEntity<Long> {
         travelcardService.removeTravelcard(travelcardId)
@@ -127,7 +127,7 @@ class TicketCatController {
 
     @PutMapping("/admin/tickets/{ticketId}", produces = [MediaType.APPLICATION_NDJSON_VALUE])
     suspend fun updateTicket(
-        @PathVariable ticketId: Long,
+        @PathVariable("ticketId") ticketId: Long,
         @RequestBody newTicket: TicketDTO,
         @RequestHeader("authorization") jwt: String
     ): ResponseEntity<TicketDTO> {
@@ -140,7 +140,7 @@ class TicketCatController {
 
     @PutMapping("/admin/travelcards/{travelcardId}", produces = [MediaType.APPLICATION_NDJSON_VALUE])
     suspend fun updateTravelcard(
-        @PathVariable travelcardId: Long,
+        @PathVariable("travelcardId") travelcardId: Long,
         @RequestBody newTravelcard: TravelcardDTO,
         @RequestHeader("authorization") jwt: String
     ): ResponseEntity<TravelcardDTO> {

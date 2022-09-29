@@ -1,6 +1,7 @@
 package it.polito.ticket_catalogue_service.repository
 
 
+import it.polito.ticket_catalogue_service.entities.Ticket
 import it.polito.ticket_catalogue_service.entities.Travelcard
 import kotlinx.coroutines.flow.Flow
 import org.springframework.data.r2dbc.repository.Query
@@ -9,5 +10,8 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface TravelcardRepository: CoroutineCrudRepository<Travelcard, Long> {
+
+    @Query("SELECT * FROM tickets WHERE ticket_id= :ticketId")
+    suspend fun findTicketByTicketId(ticketId: Long): Travelcard
 
 }

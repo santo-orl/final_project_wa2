@@ -16,4 +16,8 @@ interface TicketCatRepository: CoroutineCrudRepository<Ticket,Long> {
     """)
     fun getTickets(): Flow<Ticket>
 
+
+    @Query("SELECT * FROM tickets WHERE ticket_id= :ticketId")
+    suspend fun findTicketByTicketId(ticketId: Long): Ticket
+
 }

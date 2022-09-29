@@ -9,6 +9,7 @@ import it.polito.payment_service.repositories.TransactionRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
+import java.time.LocalDate
 import java.time.LocalDateTime
 
 @Service
@@ -26,15 +27,15 @@ class TransactionService {
         return transactionRepository.findByUserId(userId).map { transaction -> transaction.toDTO() }
     }
 
-    fun getUserTransactionsInTimeRange(userId: String, from: LocalDateTime, to: LocalDateTime): Flow<TransactionDTO> {
+    fun getUserTransactionsInTimeRange(userId: String, from: LocalDate, to: LocalDate): Flow<TransactionDTO> {
         return transactionRepository.findByUserId(userId)
-            .filter { transaction -> transaction.date.isAfter(from) && transaction.date.isBefore(to) }
+            .filter { transaction -> transaction.getDateAsLocalDate().isAfter(from) && transaction.getDateAsLocalDate().isBefore(to) }
             .map { transaction -> transaction.toDTO() }
     }
 
-    fun getTransactionsInTimeRange(from: LocalDateTime, to: LocalDateTime): Flow<TransactionDTO> {
+    fun getTransactionsInTimeRange(from: LocalDate, to: LocalDate): Flow<TransactionDTO> {
         return transactionRepository.findAll()
-            .filter { transaction -> transaction.date.isAfter(from) && transaction.date.isBefore(to) }
+            .filter { transaction -> transaction.getDateAsLocalDate().isAfter(from) && transaction.getDateAsLocalDate().isBefore(to) }
             .map { transaction -> transaction.toDTO() }
     }
 

@@ -79,8 +79,9 @@ class OrderService {
 
     //TODO inizialmente faceva una richiesta http, ora usa kafka, vedere se funziona
     suspend fun sendPurchasedTicketsToTraveler(nTickets: Int,ticketId:Long,jwt:String, username: String){
-        val ticket = ticketRepository.findById(ticketId)
-        val createTicketsDTO = CreateTicketsDTO("create",nTickets,ticket!!.zid,ticket.validFrom,ticket.ticketType,username)
+        val ticket = ticketRepository.findTicketByTicketId(ticketId)
+        if(ticket==null) throw TicketNotFoundException("Ticket id not found")
+        val createTicketsDTO = CreateTicketsDTO("create",nTickets,ticket.zid,ticket.validFrom,ticket.ticketType,username)
         kafkaTicketPurchasedTemplate.send(ticketPurchasedTopic, createTicketsDTO)
     }
 

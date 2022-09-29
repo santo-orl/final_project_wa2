@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.Flow
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.RequestParam
 import java.security.Principal
+import java.time.LocalDate
 import java.time.LocalDateTime
 
 @RestController
@@ -34,14 +35,14 @@ class TransactionController {
 
     @GetMapping("/admin/transactions/user/range", produces = [MediaType.APPLICATION_NDJSON_VALUE])
     fun getUserTransactionsInTimeRange(@RequestHeader("authorization") jwt: String, princ:Principal, @RequestParam("from") from: String,@RequestParam("to") to: String): ResponseEntity<Flow<TransactionDTO>>{
-        val transactions = transactionService.getUserTransactionsInTimeRange(princ.name, LocalDateTime.parse(from),
-            LocalDateTime.parse(to))
+        val transactions = transactionService.getUserTransactionsInTimeRange(princ.name, LocalDate.parse(from),
+            LocalDate.parse(to))
         return ResponseEntity.ok(transactions)
     }
 
     @GetMapping("/admin/transactions/range", produces = [MediaType.APPLICATION_NDJSON_VALUE])
     fun getTransactionsInRange(@RequestHeader("authorization") jwt: String, @RequestParam("from") from: String,@RequestParam("to") to: String): ResponseEntity<Flow<TransactionDTO>>{
-        val transactions = transactionService.getTransactionsInTimeRange(LocalDateTime.parse(from),LocalDateTime.parse(to))
+        val transactions = transactionService.getTransactionsInTimeRange(LocalDate.parse(from),LocalDate.parse(to))
         return ResponseEntity.ok(transactions)
     }
 
