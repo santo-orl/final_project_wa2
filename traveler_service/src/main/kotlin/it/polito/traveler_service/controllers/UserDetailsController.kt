@@ -220,7 +220,6 @@ class UserDetailsController {
         @RequestParam("from") from: String,
         @RequestParam("to") to: String
     ): ResponseEntity<List<TransitDTO>> {
-        println("prova")
         var transits: List<TransitDTO>
         try {
             transits = userDetailsServiceImpl.getUserTransits(username, from, to)
@@ -235,6 +234,7 @@ class UserDetailsController {
         @RequestParam("from") from: String,
         @RequestParam("to") to: String
     ): ResponseEntity<List<TransitDTO>> {
+        println("ciao")
         var transits = transitService.getInRange(from, to)
         return ResponseEntity(transits, HttpStatus.OK)
     }
