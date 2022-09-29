@@ -37,7 +37,6 @@ class UserDetailsServiceImpl : UserDetailsService {
     }
 
     fun insertTraveler(username: String, userDTO: UserDetailsDTO) {
-        //TODO check correttezza parametri
         var userDetails = UserDetailsImpl()
         userDetails.name = userDTO.name
         userDetails.address = userDTO.address
@@ -46,15 +45,8 @@ class UserDetailsServiceImpl : UserDetailsService {
         userDetails.userr = username
         userDetailsRepository.save(userDetails)
     }
-    /*fun checkTraveler(username: String, userDTO: UserDetailsDTO):Boolean{
-        if(username=="" || userDTO.address=="" || userDTO.name==""|| userDTO.userr=="" ||
-            userDTO.dateOfBirth=="" || userDTO.telephoneNumber == ""){
-            return false;
-        }
-        return true;
-    }*/
+
     fun updateTraveler(username: String, userDTO: UserDetailsDTO) {
-        //TODO check correttezza parametri
         var userDetails = userDetailsRepository.findUserDetailsByUserr(username).getOrNull(0)
         if (userDetails == null)
             throw UserNotFoundException("User not found")
@@ -101,7 +93,6 @@ class UserDetailsServiceImpl : UserDetailsService {
         val date = LocalDate.parse(dateString, formatter)
         val transit = Transit(date, user)
         transitRepository.save(transit)
-        //TODO aggiungendo il transit alla tabella si aggiorna anche la relazione one to many lato user?
     }
 
 }

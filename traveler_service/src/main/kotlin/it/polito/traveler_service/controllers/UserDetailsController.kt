@@ -151,31 +151,6 @@ class UserDetailsController {
         return ResponseEntity(ret, HttpStatus.OK)
     }
 
-    //TODO questa non si usa più perché è stata sostituita dalla comunicazione con kafka
-    //TODO se createTicketPurchased in TicketPurchasedService funziona, eliminare questa funzione
-    @PostMapping("/my/tickets")        //genera i ticket
-    fun generateTickets(@RequestBody createTickets: CreateTicketsDTO): ResponseEntity<List<TicketPurchasedDTO>> {
-        var ticketsList: ArrayList<TicketPurchasedDTO> = ArrayList()
-        try {
-            val principal = SecurityContextHolder.getContext().authentication.principal;
-            principal as UserDetailsImpl
-            var idU = principal.id
-            for (i in 0 until createTickets.quantity) {
-                var ticket = ticketPurchasedService.createTicket(
-                    createTickets.zones,
-                    idU,
-                    createTickets.validFrom,
-                    createTickets.type
-                )
-                ticketsList.add(ticket)
-            }
-        } catch (e: Exception) {
-            println(e.toString())
-            return ResponseEntity(HttpStatus.BAD_REQUEST)
-        }
-        return ResponseEntity(ticketsList, HttpStatus.CREATED)
-    }
-
     //GET /admin/travelers  only available for ADMIN
     @GetMapping("/admin/travelers", produces = [MediaType.APPLICATION_JSON_VALUE]) //returns a json list
     fun getAllTravelers(): ResponseEntity<List<String>> {

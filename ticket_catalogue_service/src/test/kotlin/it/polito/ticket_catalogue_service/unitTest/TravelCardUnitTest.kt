@@ -29,9 +29,6 @@ class TravelCardUnitTest {
             travelCardRepository = Mockito.mock(TravelcardRepository::class.java)
         }
 
-        //testare askforpayment
-
-        //controllare se è stato aggiunto
         @Test
         suspend fun checkAddTravelCard(){
             travelCardService.addNewTravelcard(
@@ -42,7 +39,6 @@ class TravelCardUnitTest {
             assert(!travelCard!!.equals(null))
         }
 
-        //controllare se i campi sono ok
         @Test
         suspend fun checkAddTravelCardBadZone(){
             val ret = travelCardService.addNewTravelcard(
@@ -52,7 +48,6 @@ class TravelCardUnitTest {
             assert(ret.zid.isEmpty())
         }
 
-        //controllare se min e max sono numeri positivi e se min è maggiore di max
         @Test
         suspend fun checkAddTravelCardBadAge(){
             val ret = travelCardService.addNewTravelcard(

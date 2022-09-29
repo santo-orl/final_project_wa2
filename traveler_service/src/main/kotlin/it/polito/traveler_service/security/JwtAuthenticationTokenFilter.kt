@@ -30,7 +30,6 @@ class JwtAuthenticationTokenFilter : OncePerRequestFilter() {
 
     @Throws(ServletException::class, IOException::class)
     override fun doFilterInternal(request: HttpServletRequest, response: HttpServletResponse, filterChain: FilterChain) {
-        println("ciaoooooooooooooooo")
         val jwt = parseJwt(request)
         if (jwt != null && jwtUtils.validateJwt(jwt)) { //se è valido il jwt
             //se la richiesta è una post a /my/profile l'utente sta aggiungendo per la prima volta i dati

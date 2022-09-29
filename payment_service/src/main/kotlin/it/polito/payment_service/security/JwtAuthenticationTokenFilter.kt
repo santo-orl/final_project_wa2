@@ -25,7 +25,6 @@ class JwtAuthenticationTokenFilter : WebFilter {
 
 
     override fun filter(exchange: ServerWebExchange, chain: WebFilterChain): Mono<Void> {
-        println("ciao")
         val jwt = parseJwt(exchange.request)
         if (jwt != null && jwtUtils.validateJwt(jwt)) { //se è valido il jwt
             //prendo lo user

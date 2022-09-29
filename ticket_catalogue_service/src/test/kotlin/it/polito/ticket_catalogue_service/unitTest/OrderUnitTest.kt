@@ -72,13 +72,11 @@ class OrderUnitTest {
             assert(ret== 0L)
         }
 
-        //TODO: checkCreateTravelcardOrder
         @Test
         suspend fun checkCreateTravelcardOrder(){
             var ret = orderService.createTravelcardOrder("user", 0L)
             assert(ret==0L)
         }
 
-        //TODO: controllare le send??
     }
 }

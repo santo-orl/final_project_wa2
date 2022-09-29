@@ -36,7 +36,6 @@ class TicketUnitTest {
             travelCardService = Mockito.mock(TravelcardService::class.java)
         }
 
-        //TODO: isValid ????
 
         @Test
         suspend fun checkAddTicket(){
@@ -45,7 +44,7 @@ class TicketUnitTest {
 
             var ret = ticketCatRepository.findById(0L)
 
-            assert(!ret!!.equals(null))   //da controllare!!!!
+            assert(!ret!!.equals(null))
         }
 
         @Test
@@ -73,9 +72,6 @@ class TicketUnitTest {
             assert(ret == null)
         }
 
-        //TODO: vedere come testare askForPayment, COME SI FA ??????!!!
-
-        //TODO: testare getAllTravelCards????
         @Test
         suspend fun checkGetAllTravelCards(){
             travelCardService.addNewTravelcard(TravelcardDTO(TravelcardType.MONTH,0F,18,25,"A"))

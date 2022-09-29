@@ -66,7 +66,6 @@ class OrderService {
         if(ticketRepository.findById(ticketId)==null) throw TicketNotFoundException("Ticket not found")
         //val order = orderRepository.save(Order(null, username, "PENDING",nTickets,ticketId,OrderType.TICKET))
         val order = Order(null, username, "PENDING",nTickets,ticketId,OrderType.TICKET)
-        println(order.type)
         val o = orderRepository.save(order)
         return o.id
     }
@@ -77,7 +76,6 @@ class OrderService {
         return order.id
     }
 
-    //TODO inizialmente faceva una richiesta http, ora usa kafka, vedere se funziona
     suspend fun sendPurchasedTicketsToTraveler(nTickets: Int,ticketId:Long,jwt:String, username: String){
         val ticket = ticketRepository.findTicketByTicketId(ticketId)
         if(ticket==null) throw TicketNotFoundException("Ticket id not found")

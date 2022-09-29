@@ -7,7 +7,6 @@ import io.github.bucket4j.Refill
 import org.springframework.stereotype.Component
 import java.time.Duration
 
-//inizializzo il bucket
 
 @Component
 class RateLimiter {

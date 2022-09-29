@@ -43,7 +43,6 @@ class TicketCatService {
 
     var client: WebClient = WebClient.create()
 
-    //TODO la comunicazione con traveler service va fatta con kafka
     suspend fun isValid(jwt: String, ticketId: Long): Boolean {
         val ticket = ticketCatRepository.findById(ticketId)
         var userDetails: UserDetailsDTO = UserDetailsDTO(" ", " ", " ", " ", " ")
@@ -65,7 +64,7 @@ class TicketCatService {
                 return false
             }
             //controllo che l'età dell'utente rientri nelle restrizioni
-            return ageInRange(userDetails.dateOfBirth, ticket.minAge, ticket.maxAge) //TODO fare la funzione
+            return ageInRange(userDetails.dateOfBirth, ticket.minAge, ticket.maxAge)
 
         } else { //se ticket è null eccezione da catturare nel controller
             throw NullTicketException("Ticket is null")
@@ -89,7 +88,7 @@ class TicketCatService {
             username,
             jwt
         )
-        runBlocking { //TODO si può togliere runBlocking?
+        runBlocking {
             kafkaPaymentTemplate.send(paymentRequestTopic, paymentRequest)
         }
         //ricevo la risposta sul listener in KafkaListenerService

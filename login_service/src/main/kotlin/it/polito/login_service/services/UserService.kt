@@ -33,9 +33,6 @@ class UserService(var activationRepository: ActivationRepository,
                   val bCryptPasswordEncoder: BCryptPasswordEncoder) {
 
 
-   /* @Autowired
-    lateinit var emailSender: JavaMailSender*/
-
     //used in /user/register controller
     fun registerUser(userDTO: UserDTO, role: Role): UUID {
         val username = userDTO.username
@@ -80,7 +77,7 @@ class UserService(var activationRepository: ActivationRepository,
 
         //send email containing the activation code
         val message = SimpleMailMessage()
-        message.setFrom("finalprojectwa2@libero.it")
+        message.setFrom("orlando_santo@outlook.it")
         message.setTo(user.email)
         message.setSubject("RECEIVING ACTIVATION CODE")
         message.setText("activation code: "+activationCode)
@@ -135,9 +132,6 @@ class UserService(var activationRepository: ActivationRepository,
         if(!bCryptPasswordEncoder.matches(password,user.password)){
             throw BadLoginException("Bad login :( wrong user or psw :'( ")
         }
-        /*if(password != user.password){
-            throw BadLoginException("Bad login :( wrong user or psw :'( ")
-        }*/
         return user.role
     }
 

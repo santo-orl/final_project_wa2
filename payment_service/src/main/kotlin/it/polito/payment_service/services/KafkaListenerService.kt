@@ -23,7 +23,6 @@ class KafkaListenerService {
 
     @Value("\$topics.payment-response-topic.name")
     lateinit var paymentResponseTopicName: String
-    //TODO: capire perchè resta null e sistemarlo in riga 35
 
     @KafkaListener(topics = ["PaymentRequestTopic"], containerFactory = "kafkaListenerContainerFactory")
     fun consume(payment: PaymentRequestDTO) {

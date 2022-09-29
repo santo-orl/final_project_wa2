@@ -25,19 +25,12 @@ import org.junit.Before
 
 class UserServiceUnitTest {
 
-    /******************************** Testing fun registerUser *********************************************/
-
-
-
     @RunWith(SpringRunner::class)
     @ExtendWith(MockitoExtension::class)
     class RegisterUserTest(/*val bCryptPasswordEncoder: BCryptPasswordEncoder*/) {
 
         lateinit var activationRepo: ActivationRepository
-
-        //@MockBean
         lateinit var userRepo: UserRepository
-
         lateinit var emailService: EmailService
         lateinit var userService: UserService
 
@@ -169,6 +162,5 @@ class UserServiceUnitTest {
             //Assertions.assertNotNull(userList)
         }
 
-        /*******************************************************************************************************/
     }
 }

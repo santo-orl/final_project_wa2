@@ -19,11 +19,11 @@ class UserDetailsImpl : UserDetails {
     var telephoneNumber: String = ""
     var role: String = ""
 
-    @OneToMany(mappedBy = "userDetails")
+    @OneToMany(mappedBy = "userDetails",cascade=[CascadeType.ALL])
     var ticketList: List<TicketPurchased>? = null
-    @OneToMany(mappedBy = "userDetails")
+    @OneToMany(mappedBy = "userDetails",cascade=[CascadeType.ALL])
     var travelcardList: List<TravelcardPurchased>? = null
-    @OneToMany(mappedBy = "userDetails")
+    @OneToMany(mappedBy = "userDetails",cascade=[CascadeType.ALL])
     var transitList: List<Transit>? = null
 
     //specifico quali siano le authorities dell'userr

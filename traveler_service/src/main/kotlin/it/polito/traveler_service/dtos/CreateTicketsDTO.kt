@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 data class CreateTicketsDTO(
 
     @JsonProperty("cmd")
-    val cmd: String, //inutile?
+    val cmd: String,
 
     @JsonProperty("quantity")
     val quantity: Int,

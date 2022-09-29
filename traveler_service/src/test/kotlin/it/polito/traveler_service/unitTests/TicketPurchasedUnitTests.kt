@@ -32,9 +32,7 @@ class TicketPurchasedUnitTests {
         lateinit var ticketPurchasedService : TicketPurchasedService
 
         @Test
-//suppone sia presente il tipo di ticket che voglio controllare
         fun checkGetsAllTickets(){
-            //suppongo id 0 sia presente
            ticketPurchasedRepository.save(TicketPurchased(LocalDateTime.now(),"1",UserDetailsImpl(),LocalDateTime.now(),"Daily"))
         println("salvato")
         }
@@ -49,7 +47,6 @@ class TicketPurchasedUnitTests {
 
         @Test
         fun checkIdInvalidCreateTicket(){
-            //suppongo id 100 non presente
             Assertions.assertThrows(Exception::class.java){
                 ticketPurchasedService.createTicket("1",100,"2022-08-09 10:08","DAILY")
             }
@@ -70,7 +67,6 @@ class TicketPurchasedUnitTests {
         }
 
 
-/********************************/
 
     }
 

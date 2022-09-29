@@ -26,25 +26,9 @@ class UserDetailsServiceImpl : UserDetailsService {
         return ret
     }
 
-    /*fun updateTraveler(username: String, userDTO: UserDetailsDTO) {
-        val userDetails = userDetailsRepository.findUserDetailsByUserr(username).get(0)
-        //traveler dovrebbe essere managed, quindi i cambiamenti che faccio potranno passare al db
-        userDetails.name = userDTO.name
-        userDetails.address = userDTO.address
-        userDetails.dateOfBirth = userDTO.dateOfBirth
-        userDetails.telephoneNumber = userDTO.telephoneNumber
-        println(userDetails)
-        userDetailsRepository.save(userDetails)
-    }*/
-
-
     override fun loadUserByUsername(username: String?): User {
         return userRepository.findUserByUsername(username).get(0)
     }
-/*
-    fun getTravelers(): List<String>{
-        return userRepository.findAllTravelers()
-    }*/
 
     fun getUserById(uId : Long): UserDTO{
         return userRepository.findById(uId).get().toDTO()

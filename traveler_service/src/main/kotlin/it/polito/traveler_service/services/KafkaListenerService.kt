@@ -7,6 +7,7 @@ import it.polito.traveler_service.repositories.UserDetailsRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.stereotype.Service
+import javax.transaction.Transactional
 
 @Service
 class KafkaListenerService {
@@ -21,6 +22,7 @@ class KafkaListenerService {
     //riceve da ticket_purchased_service la richiesta di aggiungere al db dei ticket purchased
     //uno o più ticket il cui acquisto è andato a buon fine
     @KafkaListener(topics = ["TicketPurchasedTopic"], containerFactory = "ticketKafkaListenerContainerFactory")
+    @Transactional
     fun createTicketPurchased(createTicketsPurchased: CreateTicketsDTO) {
         val user = userDetailsRepository.findUserDetailsByUserr(createTicketsPurchased.username).get(0)
         for (i in 0 until createTicketsPurchased.quantity) {
@@ -36,6 +38,7 @@ class KafkaListenerService {
     //riceve da ticket_purchased_service la richiesta di aggiungere al db delle travelcard purchased
     //una travelcard il cui acquisto è andato a buon fine
     @KafkaListener(topics = ["TravelcardPurchasedTopic"], groupId = "\${travelcard.topic.group.id}",containerFactory = "travelcardKafkaListenerContainerFactory")
+    @Transactional
     fun createTravelcardPurchased(createTravelcardPurchased: CreateTravelcardDTO) {
         val user = userDetailsRepository.findUserDetailsByUserr(createTravelcardPurchased.username).get(0)
             travelcardPurchasedService.createTravelcard(

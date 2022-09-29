@@ -6,7 +6,7 @@ import it.polito.traveler_service.entities.TravelcardPurchased
 data class CreateTravelcardDTO(
 
     @JsonProperty("cmd")
-    val cmd: String, //inutile?
+    val cmd: String,
 
     @JsonProperty("type")
     val type: TravelcardPurchased.TravelcardType,

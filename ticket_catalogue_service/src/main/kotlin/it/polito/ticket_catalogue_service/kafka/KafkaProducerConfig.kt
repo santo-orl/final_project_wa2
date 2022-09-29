@@ -34,7 +34,6 @@ class KafkaProducerConfig(
     }
 
     //per il ticketPurchased
-
     @Bean
     fun ticketPurchasedProducerFactory(): ProducerFactory<String, CreateTicketsDTO> {
         val configProps: MutableMap<String, Any> = HashMap()

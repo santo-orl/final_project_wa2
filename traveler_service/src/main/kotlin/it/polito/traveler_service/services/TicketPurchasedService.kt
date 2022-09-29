@@ -22,12 +22,6 @@ import java.time.format.DateTimeFormatter
 @Service
 class TicketPurchasedService(var ticketPurchasedRepository: TicketPurchasedRepository, var userDetailsRepository: UserDetailsRepository) {
 
-    /*@Autowired
-    lateinit var ticketPurchasedRepository: TicketPurchasedRepository*/
-    /*@Autowired
-    lateinit var userDetailsRepository: UserDetailsRepository*/
-
-
     fun getAllTickets(userId: Long): List<TicketPurchasedDTO> {
         var list: ArrayList<TicketPurchasedDTO> = ArrayList()
         var ret = ticketPurchasedRepository.findAllTickets(userId)

@@ -29,14 +29,12 @@ class PaymentTests {
         }
 
         @Test
-        //supponendo non sia vuoto
         suspend fun checkGetAllTransactions(){
             var ret = transactionService.findAllTransactions()
             assert(ret.toList().isNotEmpty())
         }
 
         @Test
-        //caso in cui ret == null
         fun checkFindUserTransaction(){
             Assertions.assertThrows(Exception::class.java){
                 var ret = transactionService.findUserTransactions("userIDExample")

@@ -79,7 +79,6 @@ class TicketCatController {
         @RequestBody req: ShopTravelcardRequestDTO,
         princ: Principal
     ): ResponseEntity<Long?> {
-        //TODO vedere se va fatto un controllo di validità come si fa in shopTickets
         try {
             //salvo l'ordine nel db con status pending
             val orderId = orderService.createTravelcardOrder(princ.name, req.travelcardId)

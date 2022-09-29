@@ -7,10 +7,10 @@ import java.time.LocalDateTime
 @Table("orders")
 data class Order (
         @Id val id: Long?,
-        val userId: String,     // username
-        val status: String, //PENDING o COMPLETED o CANCELED
+        val userId: String,
+        val status: String,     //PENDING o COMPLETED o CANCELED
         val nTickets: Int,
-        val ticketId: Long, //"ticketId" ma va bene anche per travelcardId
+        val ticketId: Long,
         val type: OrderType
 )
 

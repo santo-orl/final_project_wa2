@@ -67,7 +67,6 @@ class JwtUtils {
             .setSigningKey(key)
             .build()
             .parseClaimsJws(authToken)
-        println("")
         return jws.body["sub"].toString()
     }
 

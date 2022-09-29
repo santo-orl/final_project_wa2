@@ -7,11 +7,6 @@ import org.junit.jupiter.api.Test
 
 class UserDTOUnitTest() {
 
-    /*  TODO
-        Invece di creare user e userDTO in ogni funzione si potrebbero
-        avere come campi della classe (tanto sono sempre uguali)
-    */
-
 
     @Test
     //check fun toDTO: user and userDTO should have the same username

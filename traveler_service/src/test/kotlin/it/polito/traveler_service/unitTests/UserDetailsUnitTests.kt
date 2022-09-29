@@ -43,7 +43,6 @@ class UserDetailsUnitTests {
 
         @Test
         fun checkIdInvalidCreateTicket() {
-            //suppongo id 100 non presente
             Assertions.assertThrows(Exception::class.java) {
                 ticketPurchasedService.createTicket("1", 100, "2022-08-09 10:08", "DAILY")
             }
@@ -63,7 +62,6 @@ class UserDetailsUnitTests {
             }
         }
 
-        /***********************/
 
     }
 }

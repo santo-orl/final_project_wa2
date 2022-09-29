@@ -43,7 +43,6 @@ class TravelcardPurchasedUnitTests {
 
         @Test
         fun checkGetTravelcardByIdNotExist(){
-            //supposing it does not exist
             Assertions.assertThrows(NoSuchElementException::class.java){
                 travelcardPurchasedService.getTravelcardById(0L,"username")
             }

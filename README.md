@@ -54,53 +54,33 @@ Microservices communicate each other through **Kafka**. Specifically:
   * ticket_catalogue_service DELETE /admin/travelcards/{travelcard-id}
 * logged admin can see the report of acquisti relativi a singoli utenti relativi a periodi di tempo selezionabili
   * payment_service GET /admin/transactions/user/range/?from=xxx&to=yyy
-* amministratore loggato può accedere a report di acquisti totali relativi a periodi di tempo selezionabili
+* logged admin can access global purchase report related to selectable time period
   * payment_service GET /admin/transactions/range/?from=xxx&to=yyy
-* amministratore loggato può accedere a report di transiti relativi a singoli utenti relativi a periodi di tempo selezionabili
+* logged admin can access transit report related to single users with respect to selectable time period
   * traveler_service GET /admin/traveler/transits/{username}?from=xxx&to=yyy
-* amministratore loggato può accedere a report di transiti totali relativi a periodi di tempo selezionabili
+* logged admin can access total transit report related to selectable time period
   * traveler_service GET /admin/transits/{username}?from=xxx&to=yyy
-
-### Servizi aggiuntivi
-
-* admin loggato può ottenere la lista di traveler
-  * traveler_service GET /admin/travelers
-* admin loggato può ottenere il profilo di un traveler dato il suo userID
-  * traveler_service GET /admin/traveler/{userID}/profile
-* admin loggato può ottenere la lista di ticket attualmente in possesso dell'utente
-  * traveler_service GET /admin/traveler/{userID}/tickets
-* traveler loggato può ottenere la lista di ticket attualmente in suo possesso
-  * traveler_service GET /my/tickets 
-* traveler loggato può ottenere il catalogo dei tipi di ticket disponibili
-  * ticket_catalogue_service GET /tickets 
-* traveler loggato può consultare un suo acquisto nello specifico
-  * ticket_catalogue_service GET /orders/{order-id}
-* amministratore loggato può consultare l'elenco degli ordini di tutti gli utenti
-  * ticket_catalogue_service GET /admin/orders
-* amministratore loggato può consultare l'elenco degli ordini di uno specifico utente
-  * ticket_catalogue_service GET /admin/orders/{user-id}
   
 ### Ticket e travelcard
 
-Le **travelcard** sono abbonamenti con le seguenti proprietà (oltre all'id) (in ticket_catalogue_service):
+ **Travelcards** are subscriptions with the following properties (apart from the id) (in ticket_catalogue_service):
 * type: {WEEK, MONTH, YEAR}
 * price: Float
 * minAge: Int
 * maxAge: Int
 * zid: String
-Quando la travelcard viene acquistata si crea la TravelcardPurchased in traveler_service e ha i seguenti campi (oltre all'id):
+When a travelcard is bought, TravelcardPurchased in traveler_service is created and it has the following fields (apart from the id):
 * type: {WEEK, MONTH, YEAR}
 * zid: String
 * validFrom: LocalDateTime
 * validTo: LocalDateTime
 * userDetails: UserDetailsImpl
-Il periodo di validità è dato da validFrom e validTo: questi campi vengono riempiti al momento dell'acquisto (inserimento in traveler_service) e in base al type. Un utente può usare una travelcard quante volte vuole all'interno del periodo di validità. La travelcard verrà rimossa in automatico dalle TravelcardPurchased alla scadenza del periodo di validità.
 
+Activity perios is made of validFrom and validTo: these fields are fulfilled at acquiring time (insert in traveler_service) and according to the type. A user can use a travelcard as much as they wants inside the period validity. The travelcard will be removed automatically from TravelcardPurchased at expiration validity time.
 ### Funzionamento dei QR
 
-* Manualmente bisogna inserire uno user con role QR_READER in login_service.
-* Il qr reader si autentica da login_service
-* Il qr reader riceve la chiave da usare per validare i jws con la chiamata GET /qr/validation a traveler_service
-* Il traveler ha i suoi ticket/travelcard purchased e può scaricarli singolarmente sotto forma di qr con una get a /my/tickets/qr/{ticketId} o a /my/travelcards/qr/{travelcardId} di traveler_service
-* Il traveler avrà quindi il suo qr sul telefono, lo passa fisicamente dal qr reader. Quest'ultimo ha il jws per validarlo, quindi eseguirà internamente la validazione. 
-* Una volta validato, il qr reader dovrà contattare traveler_service per rimuovere il ticket/travelcard purchased dalla lista dell'utente e aggiornare il rispettivo elenco dei transiti. Lo fa con una post a /qr/ticket-validated o a /qr/travelcard-validated di traveler_service
+* Manually it is required to inser a user with role QE_READER in login_service.
+* qr reader authenticates from login_service.
+* qr reader receives the key to use for validating jws through GET /qr/validation to traveler_service.
+* traveler has their ticket/travelcard purchased and they is able to download it singularly under qr code through GET to /my/tickets/qr/{ticketId} or to /my/travelcards/qr/{travelcardId} in traveler_service.* Il traveler avrà quindi il suo qr sul telefono, lo passa fisicamente dal qr reader. Quest'ultimo ha il jws per validarlo, quindi eseguirà internamente la validazione. 
+* once validated, qr reader will contact the traveler_service for removing the ticket/travelcard purchased from the user list and update their transit list. The user is able to perform this operation with a post to /qr/ticket-validated or to /qr/travelcard-validated from traveler_service.

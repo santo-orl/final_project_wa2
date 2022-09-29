@@ -27,7 +27,7 @@ class TravelcardService {
         val travelcard = travelcardRepository.findById(request.travelcardId)
         //mando le info per il pagamento a PaymentService con Kafka
         val paymentRequest = PaymentRequestDTO(request.cardHolder,request.creditCardNumber.toString(),request.expDate,request.cvv.toString(),orderId, travelcard!!.price,username,jwt)
-        runBlocking { //TODO si può togliere runBlocking?
+        runBlocking {
             kafkaPaymentTemplate.send(paymentRequestTopic, paymentRequest)
         }
         //ricevo la risposta sul listener in KafkaListenerService

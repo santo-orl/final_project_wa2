@@ -44,7 +44,6 @@ class QRController {
         @RequestBody ticketValidated: TicketValidatedDTO
     ): ResponseEntity<String> {
         //rimuovo il ticket purchased dall'elenco
-        println(ticketValidated.date)
         try {
             ticketPurchasedService.removeTicket(ticketValidated.ticketId)
         } catch (e: TicketNotFoundException) {

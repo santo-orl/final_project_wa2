@@ -18,7 +18,7 @@ class TicketPurchased {
     var zid: String = ""
     var validFrom: LocalDateTime = LocalDateTime.now()
     var type: String = ""
-    @ManyToOne(cascade=[CascadeType.ALL])
+    @ManyToOne
     @JoinColumn(name = "userDetails")
     var userDetails: UserDetailsImpl? = null
 

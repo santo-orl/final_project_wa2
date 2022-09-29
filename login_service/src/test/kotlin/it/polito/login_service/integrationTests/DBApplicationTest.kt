@@ -132,17 +132,6 @@ class DBApplicationTest {
         assert(activationList.isNotEmpty())
     }
 
-    /*@Test
-    fun validateUserActivationId() {
-
-        val baseUrl = "http://localhost:$port"
-        val request = HttpEntity(UserDTO("jimmyCuffietta","Bicicletta1.","test@test.it"))
-        requester.postForEntity<Unit>("$baseUrl/user/register", request )
-        var activationList = activationRepository.findById(UUID.randomUUID())
-        println(activationList)
-        assert(activationList.isEmpty)
-    }*/
-
     @Test
     //if activationDeadline is passed, activation record should be removed from table Activation
     fun validateUserActivationDeadlineRemove() {
