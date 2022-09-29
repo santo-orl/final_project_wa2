@@ -19,14 +19,14 @@ class UserDetailsUnitTests {
 
     @RunWith(SpringRunner::class)
     @ExtendWith(MockitoExtension::class)
-    class TicketPurchasedTest{
+    class TicketPurchasedTest {
 
-        lateinit var ticketPurchasedService : TicketPurchasedService
+        lateinit var ticketPurchasedService: TicketPurchasedService
         lateinit var ticketPurchasedRepository: TicketPurchasedRepository
         lateinit var userDetailsRepository: UserDetailsRepository
         lateinit var userDetailsServiceImpl: UserDetailsServiceImpl
 
-        init{
+        init {
             ticketPurchasedService = TicketPurchasedService(ticketPurchasedRepository, userDetailsRepository)
             ticketPurchasedRepository = Mockito.mock(TicketPurchasedRepository::class.java)
             userDetailsRepository = Mockito.mock(UserDetailsRepository::class.java)
@@ -35,67 +35,35 @@ class UserDetailsUnitTests {
 
 
         @Test
-        fun checkZoneInvalidCreateTicket(){
-            Assertions.assertThrows(Exception::class.java){
-                ticketPurchasedService.createTicket("",0,"2022-08-09 10:08","DAILY")
+        fun checkZoneInvalidCreateTicket() {
+            Assertions.assertThrows(Exception::class.java) {
+                ticketPurchasedService.createTicket("", 0, "2022-08-09 10:08", "DAILY")
             }
         }
 
         @Test
-        fun checkIdInvalidCreateTicket(){
+        fun checkIdInvalidCreateTicket() {
             //suppongo id 100 non presente
-            Assertions.assertThrows(Exception::class.java){
-                ticketPurchasedService.createTicket("1",100,"2022-08-09 10:08","DAILY")
+            Assertions.assertThrows(Exception::class.java) {
+                ticketPurchasedService.createTicket("1", 100, "2022-08-09 10:08", "DAILY")
             }
         }
 
         @Test
-        fun checkValidFromInvalidCreateTicket(){
-            Assertions.assertThrows(Exception::class.java){
-                ticketPurchasedService.createTicket("1",1,"2042-08-09 10:08","DAILY")
+        fun checkValidFromInvalidCreateTicket() {
+            Assertions.assertThrows(Exception::class.java) {
+                ticketPurchasedService.createTicket("1", 1, "2042-08-09 10:08", "DAILY")
             }
         }
 
         @Test
-        fun checkTypeInvalidCreateTicket(){
-            Assertions.assertThrows(Exception::class.java){
-                ticketPurchasedService.createTicket("1",1,"2022-08-09 10:08","")
+        fun checkTypeInvalidCreateTicket() {
+            Assertions.assertThrows(Exception::class.java) {
+                ticketPurchasedService.createTicket("1", 1, "2022-08-09 10:08", "")
             }
         }
 
         /***********************/
-
-        @Test
-        //suppone sia presente il tipo di ticket che voglio controllare
-        fun checkGetsAllTickets(){
-            //suppongo id 0 sia presente
-            var ret = ticketPurchasedService.getAllTickets(0)
-            assert(ret.isNotEmpty())
-        }
-
-        @Test
-        //suppone non sia presente il tipo di ticket che sto cercando
-        fun checkGetsAllTicketsNone(){   //questo funziona
-            //suppongo id 0 non sia presente
-            var ret = ticketPurchasedService.getAllTickets(0)
-            assert(ret.isEmpty())
-        }
-
-        @Test
-        fun checkUpdateTraveler(){
-            //aggiungo traveler temporaneo
-            val tmp = userDetailsServiceImpl.insertTraveler("username",
-                UserDetailsDTO("name","address","dateOfBirth","234567890","userr")
-            )
-            //creo traveler da controllare con quello aggiornato
-            val tmp2 = UserDetailsDTO("name2","address2","dateOfBirth","234567890","userr")
-            //prendo il traveler aggiunto
-            userDetailsRepository.findUserDetailsByUserr("username")
-            //provo aggiornamento
-            userDetailsServiceImpl.updateTraveler("username",tmp2)
-            //controllo che l'update sia andata bene
-            assert(userDetailsRepository.findUserDetailsByUserr("username")!!.equals(tmp2))
-        }
 
     }
 }

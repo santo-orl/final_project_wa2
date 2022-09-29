@@ -29,6 +29,7 @@ class TicketPurchasedUnitTests {
 
         @Autowired
         lateinit var ticketPurchasedRepository : TicketPurchasedRepository
+        lateinit var ticketPurchasedService : TicketPurchasedService
 
         @Test
 //suppone sia presente il tipo di ticket che voglio controllare
@@ -38,18 +39,6 @@ class TicketPurchasedUnitTests {
         println("salvato")
         }
 
-/*
-        var ticketPurchasedRepository: TicketPurchasedRepository
-        var userDetailsRepository: UserDetailsRepository
-        var userDetailsServiceImpl: UserDetailsServiceImpl
-        var ticketPurchasedService : TicketPurchasedService
-
-        init{
-            ticketPurchasedRepository = Mockito.mock(TicketPurchasedRepository::class.java)
-            userDetailsRepository = Mockito.mock(UserDetailsRepository::class.java)
-            userDetailsServiceImpl = UserDetailsServiceImpl()
-            ticketPurchasedService = TicketPurchasedService(ticketPurchasedRepository, userDetailsRepository)
-        }
 
         @Test
         fun checkZoneInvalidCreateTicket(){
@@ -82,25 +71,7 @@ class TicketPurchasedUnitTests {
 
 
 /********************************/
-@Test
-//suppone sia presente il tipo di ticket che voglio controllare
-fun checkGetsAllTickets(){
-    //suppongo id 0 sia presente
-    ticketPurchasedService.createTicket("1",1,"2022-09-20 19:12","DAILY")
-    var ret = ticketPurchasedService.getAllTickets(1)
-    assert(ret.isNotEmpty())
-}
 
-        @Test
-        //suppone non sia presente il tipo di ticket che sto cercando
-        fun checkGetsAllTicketsNone(){
-            //suppongo id 0 non sia presente
-
-            var ret = ticketPurchasedService.getAllTickets(0)
-            assert(ret.isEmpty())
-        }
-
- */
     }
 
 

@@ -156,50 +156,6 @@ class AdminServiceUnitTest {
 
         /**********************************/
 
-        @Test
-        //check fun registerUser: email should be unique
-        fun registerAdminDuplicateEmail() {
-            //BadCredentialsException
-            //userService.registerUser(UserDTO("Antonio", "GiorgiaChiotti1.", "miao@miao.it"), Role.ADMIN)
-            userRepo.save(User(0,"miao","Miao123","cacca@cacca.it","INACTIVE"))
-            var t = userRepo.findUserByUsername("miao")
-            println(t)
-        /*  Assertions.assertThrows(BadCredentialsException::class.java) {
-                       userRepo.save(User(1, "bau", "Miao123", "cacca@cacca.it", "INACTIVE"))
-                   }
-                       Assertions.assertThrows(BadCredentialsException::class.java) {
-                           userService.registerUser(UserDTO("Antonio", "GiorgiaChiotti1.", "miao@miao.it"), Role.ADMIN)
-                           userService.registerUser(UserDTO("Giovanni", "GiorgiaChiotti1.", "miao@miao.it"), Role.ADMIN)
-                       }*/
-        }
 
-        @Test
-        //check fun registerUser: an activation having the given parameters should be added to the Activation table
-        fun activationAdded() {
-            //activation should be in db
-            userService.registerUser(UserDTO("Giovanni", "GiorgiaChiotti1.", "miao@miao.it"), Role.ADMIN)
-            var activationList = activationRepo.findActivationByUsername("Giovanni")
-            assert(activationList.isNotEmpty())
-        }
-
-        @Test
-        //check fun registerUser: a user having the given parameters should be added to the Users table
-        fun adminAdded() {
-            //user should be in db
-            userService.registerUser(UserDTO("Giovanni", "GiorgiaChiotti1.", "miao@miao.it"), Role.ADMIN)
-            var userList = userRepo.findUserByUsername("Giovanni")
-            assert(userList.isNotEmpty())
-        }
-
-        @Test
-        //check fun registerUser: username should be unique
-        fun registerAdminDuplicateUsername() {
-            //BadCredentialsException
-            Assertions.assertThrows(BadCredentialsException::class.java) {
-                userService.registerUser(UserDTO("Giovanni", "Password1.", "mo@miao.it"), Role.ADMIN)
-                userService.registerUser(UserDTO("Giovanni", "GiorgiaChiotti1.", "miao@miao.it"), Role.ADMIN)
-            }
-
-        }
     }
 }
